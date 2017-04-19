@@ -8,3 +8,5 @@ application-*.yml
 GitVer.java
 *.log
 *.out
+
+node_modules
