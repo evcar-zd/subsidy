@@ -1,4 +1,6 @@
 # subsidy
+![subsidy.svg](https://travis-ci.org/evcar-zd/subsidy.svg?branch=master)
+
 国补指标改进
 
 ## 国家政策
@@ -34,10 +36,8 @@ nvm on
 ### 前提条件 - 依赖组件
 执行以下命令安装依赖组件
 ```SHELL
-npm install -g bower gulp-cli
+npm install -g gulp-cli
 npm install
-bower install
-gulp
 ```
 提示: 在中国内地可以使用--registry参数来指定taobao的镜像来执行npm组件的安装
 ```SHELL
@@ -50,7 +50,6 @@ npm install --registry=http://registry.npm.taobao.org
 执行以下命令检测是否缺少依赖项
 ```SHELL
 npm ls --depth=0 #检测packages.json依赖
-bower ls -o #检测boweer.json依赖
 ```
 
 
