@@ -13,7 +13,7 @@
 - [Git 2.0+](http://git-scm.com/downloads)
 - [JDK 1.8+](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 - [Gradle 3.0+](http://gradle.org/gradle-download/)
-- [nvm 1.1+](https://github.com/creationix/nvm)
+- [nvm 1.1+](https://github.com/creationix/nvm) 可选,前端开发人员推荐安装
 
 ### 前提条件 - 环境配置
 执行以下命令,确认版本符合前提条件中指定的要求
@@ -24,7 +24,7 @@ gradle --version
 nvm version
 ```
 
-### 前提条件 - node
+### 前提条件 - node (可选,前端开发人员推荐安装)
 从 https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V6.md 查询可供使用的node版本(建议使用node 6.10+)
 执行以下命令配置node环境
 ```SHELL
@@ -33,7 +33,7 @@ nvm use 6.10.2
 nvm on
 ```
 
-### 前提条件 - 依赖组件
+### 前提条件 - 依赖组件 (可选,前端开发人员推荐安装)
 执行以下命令安装依赖组件
 ```SHELL
 npm install -g gulp-cli
@@ -41,11 +41,11 @@ npm install
 ```
 提示: 在中国内地可以使用--registry参数来指定taobao的镜像来执行npm组件的安装
 ```SHELL
-npm install -g bower gulp karma-cli --registry=http://registry.npm.taobao.org
+npm install -g gulp-cli --registry=http://registry.npm.taobao.org
 npm install --registry=http://registry.npm.taobao.org
 ```
 
-### 检测是否缺少依赖组件
+### 检测是否缺少依赖组件 (可选,前端开发人员推荐)
 随着开发的进展,其它开发人员会添加新的依赖项,如果缺少依赖项,程序就无法正常工作
 执行以下命令检测是否缺少依赖项
 ```SHELL
@@ -64,6 +64,13 @@ gradle -Dspring.profiles.active=product bootRun
 - 那么直接运行时 $/src/main/resources/application-product.yml 将被激活.
 - 单元测试时 $/src/test/resources/application-product.yml 将被激活.
 - 没有在`application-product.yml`里定义的配置,会继承`application.yml`里的定义.
+
+## 使用Maven中国内地镜像 (可选,中国内地用户推荐使用)
+- 复制[gradle-sample.properties](https://github.com/evcar-zd/subsidy/blob/master/gradle-sample.properties)为`gradle.properties`
+- 或者通过定义一个名为maven的系统属性,如下所示
+```SHELL
+gradle -Dmaven=maven.aliyun.com assemble
+```
 
 ## 运行
 ```SHELL
