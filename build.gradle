@@ -3,10 +3,18 @@ version '1.0'
 
 buildscript {
     repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.+")
+        if (project.hasProperty("maven")) {
+            if (maven.equals("maven.aliyun.com"))
+                maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+            else
+                mavenCentral()
+        } else {
+            mavenCentral()
+        }
+
+        dependencies {
+            classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.+")
+        }
     }
 }
 
@@ -16,7 +24,14 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+    if (project.hasProperty("maven")) {
+        if (maven.equals("maven.aliyun.com"))
+            maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        else
+            mavenCentral()
+    } else {
+        mavenCentral()
+    }
 }
 
 dependencies {
