@@ -1,0 +1,6 @@
+# Tomcat
+server.port: 8017
+
+# Spring settings
+spring:
+    profiles.active: dev

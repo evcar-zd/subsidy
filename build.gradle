@@ -1,0 +1,59 @@
+group 'com.evcar'
+version '1.0'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.+")
+    }
+}
+
+apply plugin: 'org.springframework.boot'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web:1.5.+"){
+        exclude module: "spring-boot-starter-logging"
+    }
+    compile("org.springframework.boot:spring-boot-starter-log4j2:1.5.+")
+    compile("org.json:json:20160810")
+    testCompile("junit:junit:4.12")
+    testCompile("org.springframework.boot:spring-boot-starter-test:1.5.+")
+}
+
+task MarkGitVersion{
+    doLast{
+        def branch = "git symbolic-ref --short HEAD".execute().text.trim()
+        def rev = "git rev-list --count HEAD".execute().text.trim()
+        def hash = "git rev-parse --short HEAD".execute().text.trim()
+        def hash160 = "git rev-parse HEAD".execute().text.trim()
+        println("\tMark Git Version: " + branch + "." + rev + "@" + hash)
+
+        def javaFile = new File("./src/main/java/com/evcar/subsidy/GitVer.jav_").text
+        javaFile = javaFile
+                .replace("\$branch\$", branch)
+                .replace("\$rev\$", rev)
+                .replace("\$hash\$", hash)
+                .replace("\$hash160\$", hash160)
+
+        def writer = new PrintWriter(new File("./src/main/java/com/evcar/subsidy/GitVer.java"))
+        writer.print(javaFile)
+        writer.close()
+    }
+}
+
+compileJava{
+    dependsOn MarkGitVersion
+    options.encoding = "utf-8"
+    options.compilerArgs << "-Xlint:unchecked"
+}
+
+defaultTasks "assemble"
