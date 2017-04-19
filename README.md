@@ -1,4 +1,5 @@
 # subsidy
+![subsidy.svg](https://travis-ci.org/evcar-zd/subsidy.svg?branch=master)
 国补指标改进
 
 ## 国家政策
