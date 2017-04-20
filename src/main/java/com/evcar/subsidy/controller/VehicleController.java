@@ -4,6 +4,8 @@ import com.evcar.subsidy.entity.ESBean;
 import com.evcar.subsidy.entity.Vehicle;
 import com.evcar.subsidy.util.*;
 import org.elasticsearch.client.Client;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class VehicleController {
-
+    private static Logger s_logger = LoggerFactory.getLogger(VehicleController.class);
 
     private ESBean esBean;
     @Autowired

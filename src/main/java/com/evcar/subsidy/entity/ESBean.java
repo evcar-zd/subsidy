@@ -4,6 +4,8 @@ package com.evcar.subsidy.entity;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * Created by Kong on 2017/4/19.
  */
@@ -11,9 +13,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix="elasticsearch")
 public class ESBean {
 
-    private String hostOne ;
-    private String hostTwo ;
-    private String hostThree ;
+    private List<String> host;
     private Integer port ;
     private String clusterName ;
     private Boolean clientTransportSniff ;
@@ -21,29 +21,9 @@ public class ESBean {
     public ESBean(){
     }
 
-    public String getHostOne() {
-        return hostOne;
-    }
+    public List<String> getHost() { return host; }
 
-    public void setHostOne(String hostOne) {
-        this.hostOne = hostOne;
-    }
-
-    public String getHostTwo() {
-        return hostTwo;
-    }
-
-    public void setHostTwo(String hostTwo) {
-        this.hostTwo = hostTwo;
-    }
-
-    public String getHostThree() {
-        return hostThree;
-    }
-
-    public void setHostThree(String hostThree) {
-        this.hostThree = hostThree;
-    }
+    public void setHost(List<String> host) { this.host = host; }
 
     public Integer getPort() {
         return port;
@@ -68,4 +48,6 @@ public class ESBean {
     public void setClientTransportSniff(Boolean clientTransportSniff) {
         this.clientTransportSniff = clientTransportSniff;
     }
+
+
 }

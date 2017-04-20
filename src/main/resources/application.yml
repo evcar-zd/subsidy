@@ -7,9 +7,10 @@ spring:
 
 #Elastic Search
 elasticsearch:
-    hostOne : 192.168.1.101
-    hostTwo : 192.168.1.102
-    hostThree : 192.168.1.103
-    port : 9200
-    clusterName : elasticsearch
+    host:
+        - 192.168.1.101
+        - 192.168.1.102
+        - 192.168.1.103
+    port: 9200
+    clusterName: elasticsearch
     clientTransportSniff: true

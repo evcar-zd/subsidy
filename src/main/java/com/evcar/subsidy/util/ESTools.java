@@ -29,10 +29,12 @@ public class ESTools {
                     .put("cluster.name", esBean.getClusterName())
                     .put("client.transport.sniff", esBean.getClientTransportSniff())
                     .build();
-            client = TransportClient.builder().settings(settings).build()
-                    .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(esBean.getHostOne()), esBean.getPort()))
-                    .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(esBean.getHostTwo()), esBean.getPort()))
-                    .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(esBean.getHostThree()), esBean.getPort()));
+            TransportClient tc = TransportClient.builder().settings(settings).build();
+
+            for(String host: esBean.getHost()){
+                s_logger.info("ElasticSearch Host: {}", host);
+                client = tc.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), esBean.getPort()));
+            }
         } catch (Exception e) {
             s_logger.error(Helper.printStackTrace(e));
         }
