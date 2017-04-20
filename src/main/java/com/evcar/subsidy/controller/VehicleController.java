@@ -33,9 +33,8 @@ public class VehicleController {
     public List<Vehicle> getAllVehicle() {
         List<Vehicle> list = new ArrayList<>() ;
         Client client = null;
-        try {
             //创建client
-            client = ESTools.build(esBean) ;
+            client = ESTools.getClient(esBean) ;
 
             //创建测试数据
 //            List<String> jsonData = DataFactory.getInitJsonData();
@@ -47,10 +46,6 @@ public class VehicleController {
 //            }
 
             list = SelectVehicle.getVehicleList(client) ;
-        } finally {
-            // 用完关闭client
-            if(client != null) ESTools.close(client);
-        }
         return list;
     }
 }

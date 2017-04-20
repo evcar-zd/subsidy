@@ -1,5 +1,6 @@
 package com.evcar.subsidy;
 
+import com.evcar.subsidy.util.ESTools;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
@@ -8,11 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.web.servlet.ErrorPage;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpStatus;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
@@ -30,5 +26,10 @@ public class Application implements CommandLineRunner {
         System.out.println("Active log4j config file: " + config.getName());
         this._logger = LoggerFactory.getLogger(Application.class);
         this._logger.info("appver: " + (new GitVer()).getVersion());
+
+        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+            _logger.info("shutdown ...");
+            ESTools.clearClient();
+        }));
     }
 }

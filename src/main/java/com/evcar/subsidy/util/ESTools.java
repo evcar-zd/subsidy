@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Created by Kong on 2017/4/19.
@@ -18,37 +19,45 @@ import java.net.InetAddress;
 public class ESTools {
     private static Logger s_logger = LoggerFactory.getLogger(ESTools.class);
 
+    private static Client s_client = null;
     /**
      * 创建一次Client
      * @return
      */
-    public static Client build(ESBean esBean){
-        Client client = null;
+    public static synchronized Client getClient(ESBean esBean){
         try {
-            Settings settings = Settings.settingsBuilder()
-                    .put("cluster.name", esBean.getClusterName())
-                    .put("client.transport.sniff", esBean.getClientTransportSniff())
-                    .build();
-            TransportClient tc = TransportClient.builder().settings(settings).build();
+            if (s_client == null && esBean != null) {
+                Settings settings = Settings.settingsBuilder()
+                        .put("cluster.name", esBean.getClusterName())
+                        .put("client.transport.sniff", esBean.getClientTransportSniff())
+                        .build();
+                TransportClient tc = TransportClient.builder().settings(settings).build();
 
-            for(String host: esBean.getHost()){
-                s_logger.info("ElasticSearch Host: {}", host);
-                client = tc.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), esBean.getPort()));
+                if(esBean.getHost().size() == 0){
+                    throw new RuntimeException("Missing config entry: elasticsearch.host");
+                }
+
+                for (String host : esBean.getHost()) {
+                    s_logger.info("ElasticSearch Host: {}", host);
+                    s_client = tc.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), esBean.getPort()));
+                }
             }
-        } catch (Exception e) {
-            s_logger.error(Helper.printStackTrace(e));
         }
-        return client;
+        catch(UnknownHostException ex){
+            throw new RuntimeException(ex);
+        }
+        return s_client;
     }
 
 
     /**
      * 关闭Client
      */
-    public static void close(Client client){
-        if(null != client){
+    public static synchronized void clearClient(){
+        if(s_client != null){
             try {
-                client.close();
+                s_client.close();
+                s_client = null;
             } catch (Exception e) {
                 s_logger.error(Helper.printStackTrace(e));
             }
