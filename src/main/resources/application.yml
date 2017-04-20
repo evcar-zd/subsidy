@@ -4,3 +4,13 @@ server.port: 8017
 # Spring settings
 spring:
     profiles.active: dev
+
+
+#Elastic Search
+elasticsearch:
+    hostOne : 10.10.11.147
+    hostTwo : 10.10.11.148
+    hostThree : 10.10.11.149
+    port : 9300
+    clusterName : elasticsearch
+    clientTransportSniff: true
