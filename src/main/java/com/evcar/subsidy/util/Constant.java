@@ -35,4 +35,18 @@ public class Constant {
     public static final String HISBATTERY_INDEX         =   "i_his_battery_data_v1" ;
     public static final String HISBATTERY_TYPE          =   "his_battery_data" ;
 
+    /**  ES BMS数据  */
+    public static final String RT_BMS_INDEX             =   "i_rt_bms_data_v1" ;
+    public static final String RT_BMS_TYPE              =   "rt_bms_data" ;
+
+    /**  ES OBC数据  */
+    public static final String RT_OBC_INDEX             =   "i_rt_obc_data_v1" ;
+    public static final String RT_OBC_TYPE              =   "rt_obc_data" ;
+
+    /**  ES OBC历史数据  */
+    public static final String HIS_OBC_INDEX            =   "i_his_obc_data_v1" ;
+    public static final String HIS_OBC_TYPE             =   "his_obc_data" ;
+
+
+
 }

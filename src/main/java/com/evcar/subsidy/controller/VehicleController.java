@@ -32,17 +32,9 @@ public class VehicleController {
     @RequestMapping(value = "/getAllVehicle", method = RequestMethod.GET)
     public List<Vehicle> getAllVehicle() {
         List<Vehicle> list = new ArrayList<>() ;
-        Client client = null;
-            //创建client
-            client = ESTools.getClient(esBean) ;
-
-            list = SelectVehicle.getVehicleList(client) ;
-        } finally {
-            /** 用完关闭client */
-            if(client != null)
-                ESTools.close(client);
-
-        }
+        //创建client
+        Client client = ESTools.getClient(esBean) ;
+        list = SelectVehicle.getVehicleList(client) ;
         return list;
     }
 }
