@@ -1,5 +1,7 @@
 .idea
 .gradle
+.classpath
+.project
 *.iml
 build
 out
@@ -11,3 +13,6 @@ gradle.properties
 *.out
 
 node_modules
+
+bin
+.settings
