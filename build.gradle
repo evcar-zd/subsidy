@@ -72,4 +72,13 @@ compileJava{
     options.compilerArgs << "-Xlint:unchecked"
 }
 
+test {
+    systemProperties System.getProperties()
+
+    testLogging {
+        events "passed", "skipped", "failed"
+        showStandardStreams = true
+    }
+}
+
 defaultTasks "assemble"
