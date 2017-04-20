@@ -53,14 +53,14 @@ task MarkGitVersion{
         def hash160 = "git rev-parse HEAD".execute().text.trim()
         println("\tMark Git Version: " + branch + "." + rev + "@" + hash)
 
-        def javaFile = new File("./src/main/java/com/evcar/subsidy/GitVer.jav_").text
+        def javaFile = new File(projectDir, "src/main/java/com/evcar/subsidy/GitVer.jav_").text
         javaFile = javaFile
                 .replace("\$branch\$", branch)
                 .replace("\$rev\$", rev)
                 .replace("\$hash\$", hash)
                 .replace("\$hash160\$", hash160)
 
-        def writer = new PrintWriter(new File("./src/main/java/com/evcar/subsidy/GitVer.java"))
+        def writer = new PrintWriter(new File(projectDir, "src/main/java/com/evcar/subsidy/GitVer.java"))
         writer.print(javaFile)
         writer.close()
     }
