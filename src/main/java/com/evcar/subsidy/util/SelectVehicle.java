@@ -22,7 +22,8 @@ public class SelectVehicle{
 
         List<Vehicle> list = new ArrayList<>() ;
 
-        SearchRequestBuilder search = client.prepareSearch(Constant.VEHICLE_INDEX).setTypes(Constant.VEHICLE_TYPE) ;
+        SearchRequestBuilder search = client.prepareSearch(Constant.VEHICLE_INDEX).
+                setTypes(Constant.VEHICLE_TYPE);
         SearchResponse r = search.get();//得到查询结果
         for(SearchHit hits:r.getHits()){
             //只能获取addFields里面添加的字段

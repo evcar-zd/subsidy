@@ -2,64 +2,81 @@ package com.evcar.subsidy.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
+ * 车辆档案信息
  * Created by Kong on 2017/4/19.
  */
-public class Vehicle {
-    private String carId ;
-    private String vinCode ;
-    private String carSeries ;
-    private String carType ;
-    private String carColor ;
-    private Integer configuration ;
-    private Integer batteryType ;
-    private String machineNo ;
-    private String controlNo ;
-    private String batteryPackNumber ;
-    private String gprsNo ;
-    private String no3g ;
-    private Integer factoryId ;
-    private Date produceTime ;
-    private Date releaseTime ;
-    private Integer sendTo ;
-    private Integer status ;
-    private String areaCode ;
+public class Vehicle implements Serializable{
+    private String carId ;                      //车辆编号
+    private String vinCode ;                    //VIN编码
+    private String carSeries ;                  //车系
+    private String carType ;                    //车辆型号-型号编码
+    private String carColor ;                   //车辆颜色-颜色名称
+    private Integer configuration ;             //配置
+    private Integer batteryType ;               //电池类型
+    private String machineNo ;                  //电机号
+    private String controlNo ;                  //控制器号
+    private String gearBoxNo ;                  //变速箱号
+    private String batteryPackNumber ;          //电池包编号
+    private String gprsNo ;                     //GPRS号
+    private String no3g ;                       //3G卡号
+    private Integer factoryId ;                 //产地标识
+    private Date produceTime ;                  //上线日期
+    private Date releaseTime ;                  //下线日期
+    private Date storageTime ;                  //入库日期
+    private Integer sendTo ;                    //销往
+    private Integer status ;                    //车辆状态
+    private String areaCode ;                   //所属地区
     @JsonProperty("carProvince")
-    private List<CarProvince> carProvince ;
+    private CarProvince carProvince ;     //所属省
     @JsonProperty("carCity")
-    private List<CarCity> carCity ;
-    private String pseudoIp ;
-    private String simNumber ;
-    private String iccid ;
-    private String customerName ;
-    private String customerShortName ;
-    private String spellingCode ;
-    private String customerType ;
-    private String customerCategory ;
-    private String customerStatus ;
-    private String province ;
-    private String city ;
-    private String county ;
-    private String address ;
-    private String mobileNo ;
-    private Integer certificateType ;
-    private String idNo ;
-    private String dealerId ;
-    private String dealerCode ;
-    private String dealerName ;
-    private Integer[] orgIds ;
-    private String plateNo ;
-    private Date plateDate ;
-    private String vehicleUses ;
-    private String vehicleCategory ;
-    private Date soldDate ;
-    private Date soldInvoiceDate ;
-    private String soldNivoiceNo ;
-    private Date veDeliveredDate ;
-    private Integer flag ;
+    private CarCity carCity ;             //所属市
+
+    private String deviceType ;                 //设备型号-型号编码
+    private Integer deviceClasses ;             //设备类别
+    private String pseudoIp ;                   //伪IP
+    private String simNumber ;                  //sim卡号
+    private String iccid ;                      //ICCID
+    private String customerName ;               //客户名称(车主名称)
+    private String customerShortName ;          //客户简称
+    private String spellingCode ;               //拼音代码
+    private String customerType ;               //客户类型
+    private String customerCategory ;           //客户分类
+    private String customerStatus ;             //客户状态
+
+    private String country ;                    //国家
+    private String province ;                   //省份
+    private String city ;                       //城市
+    private String county ;                     //区县
+    private String address ;                    //详细地址
+    private String mobileNo ;                   //手机号码
+    private String phoneNo ;                    //固定电话
+    private String otherChannel ;               //其它联系方式
+    private String email ;                      //电子邮箱
+    private String zipCode ;                    //邮政编码
+    private String gender ;                     //性别
+    private Date birthday ;                     //生日
+    private Integer certificateType ;           //证件类型
+    private String idNo ;                       //证件号码
+    private Integer vcCount ;                   //车辆数量
+    private String dealerId ;                   //经销商ID
+    private String dealerCode ;                 //经销商代码
+    private String dealerName ;                 //经销商名称
+    private Integer[] orgIds ;                  //组织机构ID数组
+    private String plateNo ;                    //车牌号
+    private Date plateDate ;                    //上牌日期
+    private String vehicleUses ;                //车辆用途(车辆性质)
+    private String vehicleCategory ;            //车辆类别
+    private Date certificateDate ;              //合格证日期
+    private String certificateNo ;              //合格证号
+    private Date soldDate ;                     //销售日期(购车日期)
+    private Date soldInvoiceDate ;              //销售发票日期
+    private String soldNivoiceNo ;              //销售发票编号
+    private Date veDeliveredDate ;              //交车日期
+    private Integer flag ;                      //老通讯协议标记       1老通讯协议，0新通讯协议
 
     public Vehicle(){
 
@@ -137,6 +154,14 @@ public class Vehicle {
         this.controlNo = controlNo;
     }
 
+    public String getGearBoxNo() {
+        return gearBoxNo;
+    }
+
+    public void setGearBoxNo(String gearBoxNo) {
+        this.gearBoxNo = gearBoxNo;
+    }
+
     public String getBatteryPackNumber() {
         return batteryPackNumber;
     }
@@ -185,6 +210,14 @@ public class Vehicle {
         this.releaseTime = releaseTime;
     }
 
+    public Date getStorageTime() {
+        return storageTime;
+    }
+
+    public void setStorageTime(Date storageTime) {
+        this.storageTime = storageTime;
+    }
+
     public Integer getSendTo() {
         return sendTo;
     }
@@ -209,20 +242,36 @@ public class Vehicle {
         this.areaCode = areaCode;
     }
 
-    public List<CarProvince> getCarProvince() {
+    public CarProvince getCarProvince() {
         return carProvince;
     }
 
-    public void setCarProvince(List<CarProvince> carProvince) {
+    public void setCarProvince(CarProvince carProvince) {
         this.carProvince = carProvince;
     }
 
-    public List<CarCity> getCarCity() {
+    public CarCity getCarCity() {
         return carCity;
     }
 
-    public void setCarCity(List<CarCity> carCity) {
+    public void setCarCity(CarCity carCity) {
         this.carCity = carCity;
+    }
+
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }
+
+    public Integer getDeviceClasses() {
+        return deviceClasses;
+    }
+
+    public void setDeviceClasses(Integer deviceClasses) {
+        this.deviceClasses = deviceClasses;
     }
 
     public String getPseudoIp() {
@@ -297,6 +346,14 @@ public class Vehicle {
         this.customerStatus = customerStatus;
     }
 
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
     public String getProvince() {
         return province;
     }
@@ -337,6 +394,54 @@ public class Vehicle {
         this.mobileNo = mobileNo;
     }
 
+    public String getPhoneNo() {
+        return phoneNo;
+    }
+
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
+    }
+
+    public String getOtherChannel() {
+        return otherChannel;
+    }
+
+    public void setOtherChannel(String otherChannel) {
+        this.otherChannel = otherChannel;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
     public Integer getCertificateType() {
         return certificateType;
     }
@@ -351,6 +456,14 @@ public class Vehicle {
 
     public void setIdNo(String idNo) {
         this.idNo = idNo;
+    }
+
+    public Integer getVcCount() {
+        return vcCount;
+    }
+
+    public void setVcCount(Integer vcCount) {
+        this.vcCount = vcCount;
     }
 
     public String getDealerId() {
@@ -415,6 +528,22 @@ public class Vehicle {
 
     public void setVehicleCategory(String vehicleCategory) {
         this.vehicleCategory = vehicleCategory;
+    }
+
+    public Date getCertificateDate() {
+        return certificateDate;
+    }
+
+    public void setCertificateDate(Date certificateDate) {
+        this.certificateDate = certificateDate;
+    }
+
+    public String getCertificateNo() {
+        return certificateNo;
+    }
+
+    public void setCertificateNo(String certificateNo) {
+        this.certificateNo = certificateNo;
     }
 
     public Date getSoldDate() {

@@ -36,16 +36,13 @@ public class VehicleController {
             //创建client
             client = ESTools.getClient(esBean) ;
 
-            //创建测试数据
-//            List<String> jsonData = DataFactory.getInitJsonData();
-//            for (int i = 0; i < jsonData.size(); i++) {
-//                IndexResponse response = client.prepareIndex("blog", "article",String.valueOf(i+1)).setSource(jsonData.get(i)).get();
-//                if (response.isCreated()) {
-//                    System.out.println("创建成功!");
-//                }
-//            }
-
             list = SelectVehicle.getVehicleList(client) ;
+        } finally {
+            /** 用完关闭client */
+            if(client != null)
+                ESTools.close(client);
+
+        }
         return list;
     }
 }
