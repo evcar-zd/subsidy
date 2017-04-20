@@ -1,11 +1,12 @@
 package com.evcar.subsidy.entity;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
  * Created by Kong on 2017/4/19.
  */
-public class CarCity {
+public class CarCity implements Serializable {
     private String name ;
     private BigDecimal longitude ;
     private BigDecimal latitude ;

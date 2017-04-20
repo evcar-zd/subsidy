@@ -32,20 +32,9 @@ public class VehicleController {
     @RequestMapping(value = "/getAllVehicle", method = RequestMethod.GET)
     public List<Vehicle> getAllVehicle() {
         List<Vehicle> list = new ArrayList<>() ;
-        Client client = null;
-            //创建client
-            client = ESTools.getClient(esBean) ;
-
-            //创建测试数据
-//            List<String> jsonData = DataFactory.getInitJsonData();
-//            for (int i = 0; i < jsonData.size(); i++) {
-//                IndexResponse response = client.prepareIndex("blog", "article",String.valueOf(i+1)).setSource(jsonData.get(i)).get();
-//                if (response.isCreated()) {
-//                    System.out.println("创建成功!");
-//                }
-//            }
-
-            list = SelectVehicle.getVehicleList(client) ;
+        //创建client
+        Client client = ESTools.getClient(esBean) ;
+        list = SelectVehicle.getVehicleList(client) ;
         return list;
     }
 }
