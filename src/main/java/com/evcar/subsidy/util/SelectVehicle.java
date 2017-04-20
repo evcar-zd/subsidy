@@ -6,7 +6,8 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
-
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +15,10 @@ import java.util.List;
  * Created by Kong on 2017/4/19.
  */
 public class SelectVehicle{
+    private static Logger s_logger = LoggerFactory.getLogger(SelectVehicle.class);
 
 
-    public List<Vehicle> getVehicleList(Client client) {
+    public static List<Vehicle> getVehicleList(Client client) {
 
         List<Vehicle> list = new ArrayList<>() ;
 
@@ -27,7 +29,7 @@ public class SelectVehicle{
             //	System.out.println(hits.getFields().get("userId").getValue());
             //默认可会source里面获取所需字段
             String json = JacksonUtil.toJSon(hits.getSource()) ;
-            System.out.println(json);
+            s_logger.debug(json);
             Vehicle vehicle = JacksonUtil.readValue(json, Vehicle.class);
             list.add(vehicle) ;
             //注意不支持data.subjectName这样的访问方式
@@ -38,6 +40,9 @@ public class SelectVehicle{
 //            long hitsnum =r.getHits().getTotalHits();//读取命中数量
 //            System.out.println(hitsnum);
         }
+
+        s_logger.info("fetched {} vehicles", list.size());
+
         return list ;
     }
 

@@ -31,19 +31,4 @@ public class Application implements CommandLineRunner {
         this._logger = LoggerFactory.getLogger(Application.class);
         this._logger.info("appver: " + (new GitVer()).getVersion());
     }
-
-
-    @Bean
-    public EmbeddedServletContainerCustomizer containerCustomizer() {
-        return container -> {
-            // TODO Auto-generated method stub
-            ErrorPage error400Page = new ErrorPage(HttpStatus.BAD_REQUEST, "/404.html");
-            ErrorPage error401Page = new ErrorPage(HttpStatus.UNAUTHORIZED, "/401.html");
-            ErrorPage error404Page = new ErrorPage(HttpStatus.NOT_FOUND, "/404.html");
-            ErrorPage error405Page = new ErrorPage(HttpStatus.METHOD_NOT_ALLOWED, "/405.html");
-            ErrorPage error500Page = new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/500.html");
-
-            container.addErrorPages(error400Page, error401Page, error404Page, error405Page, error500Page);
-        };
-    }
 }

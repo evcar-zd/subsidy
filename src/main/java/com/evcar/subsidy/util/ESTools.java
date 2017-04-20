@@ -5,6 +5,8 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
@@ -14,7 +16,7 @@ import java.net.InetAddress;
  */
 @Component
 public class ESTools {
-
+    private static Logger s_logger = LoggerFactory.getLogger(ESTools.class);
 
     /**
      * 创建一次Client
@@ -32,7 +34,7 @@ public class ESTools {
                     .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(esBean.getHostTwo()), esBean.getPort()))
                     .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(esBean.getHostThree()), esBean.getPort()));
         } catch (Exception e) {
-            e.printStackTrace();
+            s_logger.error(Helper.printStackTrace(e));
         }
         return client;
     }
@@ -46,7 +48,7 @@ public class ESTools {
             try {
                 client.close();
             } catch (Exception e) {
-
+                s_logger.error(Helper.printStackTrace(e));
             }
         }
     }
