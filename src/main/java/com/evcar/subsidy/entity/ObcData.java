@@ -5,10 +5,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * OBC历史数据
+ * OBC数据
  * Created by Kong on 2017/4/20.
  */
-public class RtObcData implements Serializable {
+public class ObcData implements Serializable {
 
     private Date collectTime ;              //采集时间
     private Date reciveTime ;               //接收时间
@@ -46,7 +46,7 @@ public class RtObcData implements Serializable {
     private Integer v12UpdervolError ;      //充电机12V欠压异常
 
 
-    public RtObcData(){
+    public ObcData(){
 
     }
 

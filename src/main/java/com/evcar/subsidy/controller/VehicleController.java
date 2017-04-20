@@ -1,6 +1,7 @@
 package com.evcar.subsidy.controller;
 
 import com.evcar.subsidy.entity.ESBean;
+import com.evcar.subsidy.entity.HisVehicleMotor;
 import com.evcar.subsidy.entity.Vehicle;
 import com.evcar.subsidy.util.*;
 import org.elasticsearch.client.Client;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -34,7 +36,8 @@ public class VehicleController {
         List<Vehicle> list = new ArrayList<>() ;
         //创建client
         Client client = ESTools.getClient(esBean) ;
-        list = SelectVehicle.getVehicleList(client) ;
+        list = SelectManager.getVehicleList(client) ;
+
         return list;
     }
 }
