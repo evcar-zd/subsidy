@@ -47,10 +47,11 @@ dependencies {
 
 task MarkGitVersion{
     doLast{
-        def branch = "git symbolic-ref --short HEAD".execute().text.trim()
-        def rev = "git rev-list --count HEAD".execute().text.trim()
-        def hash = "git rev-parse --short HEAD".execute().text.trim()
-        def hash160 = "git rev-parse HEAD".execute().text.trim()
+        def git = "git -C " + projectDir + " "
+        def branch = (git + "symbolic-ref --short HEAD").execute().text.trim()
+        def rev = (git + "rev-list --count HEAD").execute().text.trim()
+        def hash = (git + "rev-parse --short HEAD").execute().text.trim()
+        def hash160 = (git + "rev-parse HEAD").execute().text.trim()
         println("\tMark Git Version: " + branch + "." + rev + "@" + hash)
 
         def javaFile = new File(projectDir, "src/main/java/com/evcar/subsidy/GitVer.jav_").text
