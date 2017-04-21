@@ -12,21 +12,13 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>&nbsp;</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+            <tr v-for="x in stat">
+                <td class="text-center">{{x.name}}</td>
+                <td class="text-center">{{x.good}}</td>
+                <td class="text-center">{{x.lo}}</td>
+                <td class="text-center">{{x.hi}}</td>
+                <td class="text-center">{{x.na}}</td>
+                <td class="text-center">{{x.good+x.lo+x.hi+x.na}}</td>
             </tr>
         </tbody>
     </table>
