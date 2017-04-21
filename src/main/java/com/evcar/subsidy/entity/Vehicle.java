@@ -1,5 +1,6 @@
 package com.evcar.subsidy.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
@@ -24,16 +25,19 @@ public class Vehicle implements Serializable{
     private String gprsNo ;                     //GPRS号
     private String no3g ;                       //3G卡号
     private Integer factoryId ;                 //产地标识
+    @JSONField(format = "yyyy-MM-dd")
     private Date produceTime ;                  //上线日期
+    @JSONField(format = "yyyy-MM-dd")
     private Date releaseTime ;                  //下线日期
+    @JSONField(format = "yyyy-MM-dd")
     private Date storageTime ;                  //入库日期
     private Integer sendTo ;                    //销往
     private Integer status ;                    //车辆状态
     private String areaCode ;                   //所属地区
     @JsonProperty("carProvince")
-    private CarProvince carProvince ;     //所属省
+    private CarProvince carProvince ;           //所属省
     @JsonProperty("carCity")
-    private CarCity carCity ;             //所属市
+    private CarCity carCity ;                   //所属市
 
     private String deviceType ;                 //设备型号-型号编码
     private Integer deviceClasses ;             //设备类别
@@ -58,6 +62,7 @@ public class Vehicle implements Serializable{
     private String email ;                      //电子邮箱
     private String zipCode ;                    //邮政编码
     private String gender ;                     //性别
+    @JSONField(format = "yyyy-MM-dd")
     private Date birthday ;                     //生日
     private Integer certificateType ;           //证件类型
     private String idNo ;                       //证件号码
@@ -67,14 +72,19 @@ public class Vehicle implements Serializable{
     private String dealerName ;                 //经销商名称
     private Integer[] orgIds ;                  //组织机构ID数组
     private String plateNo ;                    //车牌号
+    @JSONField(format = "yyyy-MM-dd")
     private Date plateDate ;                    //上牌日期
     private String vehicleUses ;                //车辆用途(车辆性质)
     private String vehicleCategory ;            //车辆类别
+    @JSONField(format = "yyyy-MM-dd")
     private Date certificateDate ;              //合格证日期
     private String certificateNo ;              //合格证号
+    @JSONField(format = "yyyy-MM-dd")
     private Date soldDate ;                     //销售日期(购车日期)
+    @JSONField(format = "yyyy-MM-dd")
     private Date soldInvoiceDate ;              //销售发票日期
     private String soldNivoiceNo ;              //销售发票编号
+    @JSONField(format = "yyyy-MM-dd")
     private Date veDeliveredDate ;              //交车日期
     private Integer flag ;                      //老通讯协议标记       1老通讯协议，0新通讯协议
 

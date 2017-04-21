@@ -8,7 +8,7 @@ import java.util.Date;
  * BMS数据
  * Created by Kong on 2017/4/20.
  */
-public class RtBmsData implements Serializable {
+public class BmsData implements Serializable {
 
     private Date collectTime ;                  //采集时间
     private Date reciveTime ;                   //接收时间
@@ -119,7 +119,7 @@ public class RtBmsData implements Serializable {
     private Integer batteryProSn ;              //流水号
     private Integer batteryCodeLength ;         //可充电储能系统编码长度
 
-    public RtBmsData(){
+    public BmsData(){
 
     }
 

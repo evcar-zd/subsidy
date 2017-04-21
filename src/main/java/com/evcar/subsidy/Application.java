@@ -1,5 +1,6 @@
 package com.evcar.subsidy;
 
+import com.evcar.subsidy.util.Constant;
 import com.evcar.subsidy.util.ESTools;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -10,6 +11,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
@@ -18,6 +22,21 @@ public class Application implements CommandLineRunner {
     }
 
     private Logger _logger;
+
+
+    /**
+     * 初始化系统数据
+     *
+     * @throws IOException
+     */
+    @PostConstruct
+    public void initApp() throws IOException {
+        /**
+         * 初始化车型的六项指标数据
+         */
+        Constant.init();
+    }
+
 
     @Override
     public void run(String... args) throws Exception {

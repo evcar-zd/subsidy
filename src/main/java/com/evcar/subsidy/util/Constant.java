@@ -1,5 +1,10 @@
 package com.evcar.subsidy.util;
 
+import com.evcar.subsidy.entity.TargeBean;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 常量类
  * Created by Kong on 2017/4/20.
@@ -48,5 +53,33 @@ public class Constant {
     public static final String HIS_OBC_TYPE             =   "his_obc_data" ;
 
 
+    /**  指标常量  **/
+    public static final int MILEAGE                     =   1 ;
+    public static final int LIMITMILEAGE                =   2 ;
+    public static final int MAXENERGYTIME               =   3 ;
+    public static final int MAXELECTRICPOWER            =   4 ;
+    public static final int AVGDAILYRUNTIME             =   5 ;
+    public static final int HUNDREDSKMUSEPOWER          =   6 ;
+
+    /** 车辆型号常量 */
+    public static final String VEHICLE_V18              =   "SMA7001BEV18" ;
+    public static final String VEHICLE_V19              =   "SMA7001BEV19" ;
+    public static final String VEHICLE_V22              =   "SMA7001BEV22" ;
+    public static final String VEHICLE_V23              =   "SMA7001BEV23" ;
+    public static final String VEHICLE_V60              =   "SMA7001BEV60" ;
+    public static final String VEHICLE_V61              =   "SMA7001BEV61" ;
+    public static final String VEHICLE_V34              =   "JL7001BEV34" ;
+
+    public static Map<String,TargeBean> targetmap = new HashMap<>();
+
+    public static void init(){
+        targetmap.put(VEHICLE_V18,new TargeBean(VEHICLE_V18)) ;
+        targetmap.put(VEHICLE_V19,new TargeBean(VEHICLE_V19)) ;
+        targetmap.put(VEHICLE_V22,new TargeBean(VEHICLE_V22)) ;
+        targetmap.put(VEHICLE_V23,new TargeBean(VEHICLE_V23)) ;
+        targetmap.put(VEHICLE_V60,new TargeBean(VEHICLE_V60)) ;
+        targetmap.put(VEHICLE_V61,new TargeBean(VEHICLE_V61)) ;
+        targetmap.put(VEHICLE_V34,new TargeBean(VEHICLE_V34)) ;
+    }
 
 }
