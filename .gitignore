@@ -1,5 +1,7 @@
 .idea
 .gradle
+.vs
+.vscode
 .classpath
 .project
 *.iml
