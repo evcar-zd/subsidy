@@ -1,5 +1,5 @@
 # subsidy
-![subsidy.svg](https://travis-ci.org/evcar-zd/subsidy.svg?branch=master)
+![subsidy.svg](https://travis-ci.org/evcar-zd/subsidy.svg?branch=dev)
 
 国补指标改进
 

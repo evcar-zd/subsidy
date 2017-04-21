@@ -47,20 +47,21 @@ dependencies {
 
 task MarkGitVersion{
     doLast{
-        def branch = "git symbolic-ref --short HEAD".execute().text.trim()
-        def rev = "git rev-list --count HEAD".execute().text.trim()
-        def hash = "git rev-parse --short HEAD".execute().text.trim()
-        def hash160 = "git rev-parse HEAD".execute().text.trim()
+        def git = "git -C " + projectDir + " "
+        def branch = (git + "symbolic-ref --short HEAD").execute().text.trim()
+        def rev = (git + "rev-list --count HEAD").execute().text.trim()
+        def hash = (git + "rev-parse --short HEAD").execute().text.trim()
+        def hash160 = (git + "rev-parse HEAD").execute().text.trim()
         println("\tMark Git Version: " + branch + "." + rev + "@" + hash)
 
-        def javaFile = new File("./src/main/java/com/evcar/subsidy/GitVer.jav_").text
+        def javaFile = new File(projectDir, "src/main/java/com/evcar/subsidy/GitVer.jav_").text
         javaFile = javaFile
                 .replace("\$branch\$", branch)
                 .replace("\$rev\$", rev)
                 .replace("\$hash\$", hash)
                 .replace("\$hash160\$", hash160)
 
-        def writer = new PrintWriter(new File("./src/main/java/com/evcar/subsidy/GitVer.java"))
+        def writer = new PrintWriter(new File(projectDir, "src/main/java/com/evcar/subsidy/GitVer.java"))
         writer.print(javaFile)
         writer.close()
     }
@@ -70,6 +71,15 @@ compileJava{
     dependsOn MarkGitVersion
     options.encoding = "utf-8"
     options.compilerArgs << "-Xlint:unchecked"
+}
+
+test {
+    systemProperties System.getProperties()
+
+    testLogging {
+        events "passed", "skipped", "failed"
+        showStandardStreams = true
+    }
 }
 
 defaultTasks "assemble"
