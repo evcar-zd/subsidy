@@ -9,6 +9,8 @@
 
             zdAPI.fetchTotalCarCount().then(function (count) {
                 model.total = count;
+            }, function (err) {
+                model.total = err;
             });
 
             return model;
