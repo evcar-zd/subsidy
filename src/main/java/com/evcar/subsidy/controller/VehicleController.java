@@ -27,6 +27,16 @@ public class VehicleController {
     @Autowired
     void setEsBean(ESBean value) { this.esBean = value;}
 
+    /***
+     * 获取车辆总数
+     * @return
+     */
+    @RequestMapping(value = "/getVehicleNum", method = RequestMethod.GET)
+    public Long getVehicleNum(){
+        Client client = ESTools.getClient(esBean) ;
+        return SelectManager.getVehicleNum(client) ;
+    }
+
     /**
      * 获取所有车辆信息
      * @return

@@ -10,8 +10,12 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.slf4j.LoggerFactory;
+import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +26,16 @@ import java.util.List;
 public class SelectManager{
     private static Logger s_logger = LoggerFactory.getLogger(SelectManager.class);
 
+    /**
+     * 获取车辆总数
+     * @param client
+     * @return
+     */
+    public static long getVehicleNum(Client client){
+        SearchRequestBuilder search = client.prepareSearch(Constant.VEHICLE_INDEX).setTypes(Constant.VEHICLE_TYPE) ;
+        SearchResponse sr = search.get();//得到查询结果
+        return sr.getHits().getTotalHits();//读取数量
+    }
 
     /**
      * 查询所有车辆信息
@@ -31,29 +45,21 @@ public class SelectManager{
     public static List<Vehicle> getVehicleList(Client client) {
 
         List<Vehicle> list = new ArrayList<>() ;
-        QueryBuilder qb = new BoolQueryBuilder();
-        SearchRequestBuilder search = client.prepareSearch(Constant.VEHICLE_INDEX).
-                setTypes(Constant.VEHICLE_TYPE).setQuery(qb);
-        SearchResponse r = search.get();//得到查询结果
-        for(SearchHit hits:r.getHits()){
-            //只能获取addFields里面添加的字段
-            //	System.out.println(hits.getFields().get("userId").getValue());
-            //默认可会source里面获取所需字段
+        SearchRequestBuilder search = client.prepareSearch(Constant.VEHICLE_INDEX).setTypes(Constant.VEHICLE_TYPE) ;
+        SearchResponse sr = search.get();//得到查询结果
+        long sizeNum = sr.getHits().getTotalHits();//读取数量
+
+        SortBuilder sortBuilder = SortBuilders.fieldSort("produceTime").order(SortOrder.ASC);
+        search = search.addSort(sortBuilder).setFrom(0).setSize((int)sizeNum);
+        sr = search.get();//得到查询结果
+
+        for(SearchHit hits:sr.getHits()){
             String json = JacksonUtil.toJSon(hits.getSource()) ;
             s_logger.debug(json);
             Vehicle vehicle = JacksonUtil.readValue(json, Vehicle.class);
             list.add(vehicle) ;
-            //注意不支持data.subjectName这样的访问方式
-            //System.out.println(hits.getId()+""+hits.score()+""+data.get("subjectName"));
-            //如果是个嵌套json，需要转成map后，访问其属性
-            //	Map data=(Map) hits.getSource().get("data");
-            //	System.out.println(hits.getId()+""+hits.score()+""+data.get("subjectName"));	}
-//            long hitsnum =r.getHits().getTotalHits();//读取命中数量
-//            System.out.println(hitsnum);
         }
-
         s_logger.info("fetched {} vehicles", list.size());
-
         return list ;
     }
 
@@ -65,7 +71,7 @@ public class SelectManager{
         List<HisVehicleMotor> list = new ArrayList<>() ;
         QueryBuilder qb = new BoolQueryBuilder()
                 .must(QueryBuilders.matchQuery("vinCode",vinCode))
-                .must(QueryBuilders.rangeQuery("reciveTime").gt("2016-01-03 01:00:00").lt("2017-04-03 01:00:00"));
+                .must(QueryBuilders.rangeQuery("reciveTime").from("2016-01-03 01:00:00").to("2017-04-03 01:00:00"));
         SearchRequestBuilder search = client.prepareSearch(Constant.HISVEHICLE_MOTOR_INDEX).
                 setTypes(Constant.HISVEHICLE_MOTOR_TYPE).setQuery(qb);
         SearchResponse sr = search.get();//得到查询结果
