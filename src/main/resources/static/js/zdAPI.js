@@ -29,5 +29,17 @@
         });
     }
 
+    // 摸拟数据
+    zdAPI.prototype.fetchX1History = function () {
+        var data = [];
+
+        // 随机产生模拟数据
+        for (var i = 0; i < 30; i++) {
+            data.push({ tm: new Date(2017, 3, i), v: Math.ceil(Math.random()*100) });;
+        }
+
+        return Promise.resolve(data);
+    }
+
     return new zdAPI();
 });

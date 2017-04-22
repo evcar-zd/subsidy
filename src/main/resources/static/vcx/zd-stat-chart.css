@@ -1,0 +1,12 @@
+.zd-stat-chart>svg path{
+    fill: none;
+    stroke: steelblue;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    stroke-width: 1.0px;
+}
+
+.zd-stat-chart > svg path:hover {
+    stroke: darkblue;
+    stroke-width: 3px !important;
+}
