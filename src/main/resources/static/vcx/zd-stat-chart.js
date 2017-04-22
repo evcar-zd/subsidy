@@ -22,8 +22,8 @@
             var svg = holder.select("svg");
             svg.attr("width", width).attr("height", height);
 
-            var fnScaleX = d3.scaleLinear()
-                .domain([0, values.length+1])
+            var fnScaleX = d3.scaleTime()
+                .domain(d3.extent(values, function (d) { return d.tm; }))
                 .range([margin, width]);
 
             var fnScaleY = d3.scaleLinear()
@@ -43,7 +43,7 @@
                 .call(axisY);
 
             var fnLine = d3.line()
-                .x(function (d, i) { return fnScaleX(i); })
+                .x(function (d) { return fnScaleX(d.tm); })
                 .y(function (d) { return fnScaleY(d.v); })
                 .curve(d3.curveCardinal);
 
