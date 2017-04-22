@@ -1,1 +1,25 @@
-﻿<div>这里计划是历史折线</div>
+﻿<div class="table-responsive">
+    <table class="table table-bordered table-condensed">
+        <caption>统计指标</caption>
+        <thead>
+            <tr>
+                <th class="text-center">指标</th>
+                <th class="text-center">正常</th>
+                <th class="text-center">偏低</th>
+                <th class="text-center">偏高</th>
+                <th class="text-center">无效</th>
+                <th class="text-center">合计</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="x in stat">
+                <td class="text-center">{{x.name}}</td>
+                <td class="text-center">{{x.good}}</td>
+                <td class="text-center">{{x.lo}}</td>
+                <td class="text-center">{{x.hi}}</td>
+                <td class="text-center">{{x.na}}</td>
+                <td class="text-center">{{x.good+x.lo+x.hi+x.na}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

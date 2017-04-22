@@ -13,7 +13,8 @@ var App = (function () {
                 jquery: "//cdn.jsdelivr.net/jquery/3.2.1/jquery.min",
                 bootstrap: "//cdn.jsdelivr.net/bootstrap/3.3.7/js/bootstrap.min",
                 vue: "//cdn.jsdelivr.net/vue/2.2.6/vue.min",
-                'vue-router': "//cdn.jsdelivr.net/vue.router/2.4.0/vue-router.min"
+                'vue-router': "//cdn.jsdelivr.net/vue.router/2.4.0/vue-router.min",
+                d3: "//cdn.jsdelivr.net/d3js/4.8.0/d3.min"
             },
             shim: {
                 bootstrap: {
@@ -48,7 +49,8 @@ var App = (function () {
             // global vcx modules
             requirejs([
                 '../vcx/zd-car-count',
-                '../vcx/zd-stat'
+                '../vcx/zd-stat',
+                '../vcx/zd-stat-chart'
             ], function () {
                 app.$mount('#app');
                 console.info("ready!");
