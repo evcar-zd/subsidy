@@ -30,8 +30,6 @@
                 .domain([0, 105])
                 .range([height - margin, 0]);
 
-            console.info(fnScaleY(0));
-
             var axisX = d3.axisBottom(fnScaleX);
             svg.append("g")
                 .attr("transform", "translate(0," + (height - margin) + ")")
