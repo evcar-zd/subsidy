@@ -1,18 +1,14 @@
 package com.evcar.subsidy.controller;
 
-import com.evcar.subsidy.entity.ESBean;
-import com.evcar.subsidy.entity.HisVehicleMotor;
 import com.evcar.subsidy.entity.Vehicle;
-import com.evcar.subsidy.util.*;
-import org.elasticsearch.client.Client;
+import com.evcar.subsidy.service.VehicleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -23,9 +19,6 @@ import java.util.Map;
 public class VehicleController {
     private static Logger s_logger = LoggerFactory.getLogger(VehicleController.class);
 
-    private ESBean esBean;
-    @Autowired
-    void setEsBean(ESBean value) { this.esBean = value;}
 
     /***
      * 获取车辆总数
@@ -33,8 +26,7 @@ public class VehicleController {
      */
     @RequestMapping(value = "/getVehicleNum", method = RequestMethod.GET)
     public Long getVehicleNum(){
-        Client client = ESTools.getClient(esBean) ;
-        return SelectManager.getVehicleNum(client) ;
+        return VehicleService.getVehicleNum() ;
     }
 
     /**
@@ -43,11 +35,9 @@ public class VehicleController {
      */
     @RequestMapping(value = "/getAllVehicle", method = RequestMethod.GET)
     public List<Vehicle> getAllVehicle() {
-        List<Vehicle> list = new ArrayList<>() ;
-        //创建client
-        Client client = ESTools.getClient(esBean) ;
-        list = SelectManager.getVehicleList(client) ;
-
-        return list;
+        return VehicleService.getVehicleList() ;
     }
+
+
+
 }

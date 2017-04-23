@@ -7,6 +7,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
@@ -20,11 +21,16 @@ public class ESTools {
     private static Logger s_logger = LoggerFactory.getLogger(ESTools.class);
 
     private static Client s_client = null;
+
+    private static ESBean esBean;
+    @Autowired
+    void setEsBean(ESBean value) { this.esBean = value;}
+
     /**
      * 创建一次Client
      * @return
      */
-    public static synchronized Client getClient(ESBean esBean){
+    public static synchronized Client getClient(){
         try {
             if (s_client == null && esBean != null) {
                 Settings settings = Settings.settingsBuilder()

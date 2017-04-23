@@ -14,7 +14,7 @@ public class TargetUtil {
     /**
      * 单个验证
      */
-    public static Boolean mileageVerify(String carType,BigDecimal num ,Integer targeType){
+    public static Boolean targeVerify(String carType,BigDecimal num ,Integer targeType){
         TargeBean targeBean = Constant.targetmap.get(carType) ;
         LgAndLt lgAndLt = null;
         switch (targeType){
@@ -40,6 +40,5 @@ public class TargetUtil {
         return CountUtil.countTarge(num,lgAndLt) ;
     }
 
-    
 
 }
