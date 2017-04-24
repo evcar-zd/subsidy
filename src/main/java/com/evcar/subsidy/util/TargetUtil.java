@@ -60,6 +60,7 @@ public class TargetUtil {
         Integer currentPage = 1 ;
         Integer pageSize = MAX_SIZE ;
 
+        Vehicle lastVehicle =
         for (int i = 0 ; i < groupNum ; i++ ){
             List<Vehicle> vehicleList = VehicleService.getVehicleByPage(currentPage,pageSize) ;
 
