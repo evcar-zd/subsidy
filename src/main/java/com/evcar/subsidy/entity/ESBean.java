@@ -17,6 +17,9 @@ public class ESBean {
     private Integer port ;
     private String clusterName ;
     private Boolean clientTransportSniff ;
+    private Integer startDate ;
+    private Integer endDate ;
+    private Integer monthDay ;
 
     public ESBean(){
     }
@@ -49,5 +52,27 @@ public class ESBean {
         this.clientTransportSniff = clientTransportSniff;
     }
 
+    public Integer getStartDate() {
+        return startDate;
+    }
 
+    public void setStartDate(Integer startDate) {
+        this.startDate = startDate;
+    }
+
+    public Integer getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Integer endDate) {
+        this.endDate = endDate;
+    }
+
+    public Integer getMonthDay() {
+        return monthDay;
+    }
+
+    public void setMonthDay(Integer monthDay) {
+        this.monthDay = monthDay;
+    }
 }

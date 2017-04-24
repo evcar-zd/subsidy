@@ -2,8 +2,13 @@ package com.evcar.subsidy.util;
 
 import com.evcar.subsidy.entity.LgAndLt;
 import com.evcar.subsidy.entity.TargeBean;
+import com.evcar.subsidy.entity.Vehicle;
+import com.evcar.subsidy.service.VehicleService;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import static com.evcar.subsidy.service.VehicleService.getVehicleNum;
 
 /**
  * 指标验证工具类
@@ -40,5 +45,29 @@ public class TargetUtil {
         return CountUtil.countTarge(num,lgAndLt) ;
     }
 
+    public static final Integer MAX_SIZE = 100 ;
+
+    /**
+     * 六项指标计算
+     */
+    public static void targeCount(){
+        Long vehicleNum = VehicleService.getVehicleNum() ;
+        Integer num = Integer.valueOf(String.valueOf(vehicleNum)) ;
+
+        int groupNum = num/MAX_SIZE ;
+        groupNum = num%MAX_SIZE > 0 ? groupNum+1 : groupNum ;
+
+        Integer currentPage = 1 ;
+        Integer pageSize = MAX_SIZE ;
+
+        for (int i = 0 ; i < groupNum ; i++ ){
+            List<Vehicle> vehicleList = VehicleService.getVehicleByPage(currentPage,pageSize) ;
+
+            for (Vehicle vehicle : vehicleList){
+
+            }
+            currentPage ++ ;
+        }
+    }
 
 }

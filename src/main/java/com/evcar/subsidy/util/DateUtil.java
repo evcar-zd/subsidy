@@ -107,4 +107,28 @@ public class DateUtil {
 	}
 
 
+	/**
+	 * 将指定日期(Date)对象转换成 格式化字符串 (String)
+	 *
+	 * @param date	Date 日期对象
+	 * @param datePattern	String 日期格式
+	 * @return String
+	 */
+	public static String dateToStr(Date date, String datePattern) {
+		SimpleDateFormat sd = new SimpleDateFormat(datePattern);
+		return sd.format(date);
+	}
+
+	/**
+	 * 获得当前时间的str格式，格式为yyyyMMddHHmmssSSS
+	 *
+	 * @Title: todayStr
+	 * @param @return    设定文件
+	 * @return String    返回类型
+	 */
+	public static String getDateStr(){
+		Date date = new Date();
+		return dateToStr(date, "yyyyMMddHHmmssSSS");
+	}
+
 }

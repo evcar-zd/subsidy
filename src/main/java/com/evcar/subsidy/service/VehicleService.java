@@ -67,6 +67,31 @@ public class VehicleService {
         return list ;
     }
 
+    /**
+     * 查询所有车辆信息
+     * @return
+     */
+    public static List<Vehicle> getVehicleByPage(Integer currentPage , Integer pageSize) {
+
+        Client client = ESTools.getClient() ;
+        List<Vehicle> list = new ArrayList<>() ;
+        SortBuilder sortBuilder = SortBuilders.fieldSort("produceTime").order(SortOrder.ASC);
+        SearchRequestBuilder search = client.prepareSearch(Constant.VEHICLE_INDEX)
+                .setTypes(Constant.VEHICLE_TYPE)
+                .addSort(sortBuilder).setFrom((currentPage-1)*pageSize)
+                .setSize(currentPage*pageSize);
+
+        SearchResponse sr = search.get();//得到查询结果
+
+        for(SearchHit hits:sr.getHits()){
+            String json = JacksonUtil.toJSon(hits.getSource()) ;
+            s_logger.debug(json);
+            Vehicle vehicle = JacksonUtil.readValue(json, Vehicle.class);
+            list.add(vehicle) ;
+        }
+        s_logger.info("fetched {} vehicles", list.size());
+        return list ;
+    }
 
     /**
      * 根据vinCode查询车辆对象
