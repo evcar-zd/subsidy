@@ -22,7 +22,7 @@ public class TargeBean {
     public TargeBean(String carType){
         switch (carType){
             case Constant.VEHICLE_V18 :
-                this.mileage = new LgAndLt(BigDecimal.valueOf(200),BigDecimal.valueOf(9999999));
+                this.mileage = new LgAndLt(BigDecimal.valueOf(0),BigDecimal.valueOf(220));
                 this.limitMileage = new LgAndLt(BigDecimal.valueOf(155),BigDecimal.valueOf(180)) ;
                 this.maxEnergyTime = new LgAndLt(BigDecimal.valueOf(6),BigDecimal.valueOf(9)) ;
                 this.maxElectricPower = new LgAndLt(BigDecimal.valueOf(1300),BigDecimal.valueOf(3400)) ;
@@ -30,7 +30,7 @@ public class TargeBean {
                 this.hundredsKmusePower = new LgAndLt(BigDecimal.valueOf(10.749),BigDecimal.valueOf(11.05)) ;
                 break;
             case Constant.VEHICLE_V19 :
-                this.mileage = new LgAndLt(BigDecimal.valueOf(200),BigDecimal.valueOf(9999999));
+                this.mileage = new LgAndLt(BigDecimal.valueOf(0),BigDecimal.valueOf(220));
                 this.limitMileage = new LgAndLt(BigDecimal.valueOf(155),BigDecimal.valueOf(180)) ;
                 this.maxEnergyTime = new LgAndLt(BigDecimal.valueOf(6),BigDecimal.valueOf(9)) ;
                 this.maxElectricPower = new LgAndLt(BigDecimal.valueOf(1300),BigDecimal.valueOf(3400)) ;
@@ -38,7 +38,7 @@ public class TargeBean {
                 this.hundredsKmusePower = new LgAndLt(BigDecimal.valueOf(0),BigDecimal.valueOf(13.9)) ;
                 break;
             case Constant.VEHICLE_V22 :
-                this.mileage = new LgAndLt(BigDecimal.valueOf(200),BigDecimal.valueOf(9999999));
+                this.mileage = new LgAndLt(BigDecimal.valueOf(0),BigDecimal.valueOf(220));
                 this.limitMileage = new LgAndLt(BigDecimal.valueOf(155),BigDecimal.valueOf(180)) ;
                 this.maxEnergyTime = new LgAndLt(BigDecimal.valueOf(6),BigDecimal.valueOf(9)) ;
                 this.maxElectricPower = new LgAndLt(BigDecimal.valueOf(1300),BigDecimal.valueOf(3400)) ;
@@ -46,7 +46,7 @@ public class TargeBean {
                 this.hundredsKmusePower = new LgAndLt(BigDecimal.valueOf(9.81),BigDecimal.valueOf(11.05)) ;
                 break;
             case Constant.VEHICLE_V23 :
-                this.mileage = new LgAndLt(BigDecimal.valueOf(200),BigDecimal.valueOf(9999999));
+                this.mileage = new LgAndLt(BigDecimal.valueOf(0),BigDecimal.valueOf(220));
                 this.limitMileage = new LgAndLt(BigDecimal.valueOf(155),BigDecimal.valueOf(180)) ;
                 this.maxEnergyTime = new LgAndLt(BigDecimal.valueOf(6),BigDecimal.valueOf(9)) ;
                 this.maxElectricPower = new LgAndLt(BigDecimal.valueOf(1300),BigDecimal.valueOf(3400)) ;
@@ -54,7 +54,7 @@ public class TargeBean {
                 this.hundredsKmusePower = new LgAndLt(BigDecimal.valueOf(9.34),BigDecimal.valueOf(11.35)) ;
                 break;
             case Constant.VEHICLE_V60 :
-                this.mileage = new LgAndLt(BigDecimal.valueOf(200),BigDecimal.valueOf(9999999));
+                this.mileage = new LgAndLt(BigDecimal.valueOf(0),BigDecimal.valueOf(220));
                 this.limitMileage = new LgAndLt(BigDecimal.valueOf(161),BigDecimal.valueOf(180)) ;
                 this.maxEnergyTime = new LgAndLt(BigDecimal.valueOf(6),BigDecimal.valueOf(9)) ;
                 this.maxElectricPower = new LgAndLt(BigDecimal.valueOf(1300),BigDecimal.valueOf(3400)) ;
@@ -62,7 +62,7 @@ public class TargeBean {
                 this.hundredsKmusePower = new LgAndLt(BigDecimal.valueOf(10.43),BigDecimal.valueOf(11.05)) ;
                 break;
             case Constant.VEHICLE_V61 :
-                this.mileage = new LgAndLt(BigDecimal.valueOf(200),BigDecimal.valueOf(9999999));
+                this.mileage = new LgAndLt(BigDecimal.valueOf(0),BigDecimal.valueOf(220));
                 this.limitMileage = new LgAndLt(BigDecimal.valueOf(155),BigDecimal.valueOf(180)) ;
                 this.maxEnergyTime = new LgAndLt(BigDecimal.valueOf(6),BigDecimal.valueOf(9)) ;
                 this.maxElectricPower = new LgAndLt(BigDecimal.valueOf(1300),BigDecimal.valueOf(3400)) ;
@@ -70,7 +70,7 @@ public class TargeBean {
                 this.hundredsKmusePower = new LgAndLt(BigDecimal.valueOf(10.419),BigDecimal.valueOf(11.35)) ;
                 break;
             case Constant.VEHICLE_V34 :
-                this.mileage = new LgAndLt(BigDecimal.valueOf(200),BigDecimal.valueOf(9999999));
+                this.mileage = new LgAndLt(BigDecimal.valueOf(0),BigDecimal.valueOf(220));
                 this.limitMileage = new LgAndLt(BigDecimal.valueOf(161),BigDecimal.valueOf(180)) ;
                 this.maxEnergyTime = new LgAndLt(BigDecimal.valueOf(6),BigDecimal.valueOf(9)) ;
                 this.maxElectricPower = new LgAndLt(BigDecimal.valueOf(1300),BigDecimal.valueOf(3400)) ;

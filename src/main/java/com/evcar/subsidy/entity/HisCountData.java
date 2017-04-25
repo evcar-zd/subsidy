@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class HisCountData implements Serializable {
 
-    private String id ;                         //根据时间+随机数生成
+    private String id ;                         //VIN+时间串
     private String vinCode ;                    //VIN
     private String gprsCode ;                   //GPRS号
     private Integer consumeSoc ;                //消耗SOC

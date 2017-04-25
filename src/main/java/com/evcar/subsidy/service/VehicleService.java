@@ -78,7 +78,8 @@ public class VehicleService {
         SortBuilder sortBuilder = SortBuilders.fieldSort("produceTime").order(SortOrder.ASC);
         SearchRequestBuilder search = client.prepareSearch(Constant.VEHICLE_INDEX)
                 .setTypes(Constant.VEHICLE_TYPE)
-                .addSort(sortBuilder).setFrom((currentPage-1)*pageSize)
+                .addSort(sortBuilder)
+                .setFrom((currentPage-1)*pageSize)
                 .setSize(currentPage*pageSize);
 
         SearchResponse sr = search.get();//得到查询结果
@@ -113,40 +114,6 @@ public class VehicleService {
             break;
         }
         return vehicle ;
-    }
-
-    /**
-     * 新增计算数据
-     * @param hisCountData
-     * @return
-     */
-    public static boolean addHisCountData(HisCountData hisCountData){
-        Client client = ESTools.getClient() ;
-        boolean flag = false ;
-        try {
-            IndexResponse indexResponse = client.prepareIndex(Constant.HISCOUNT_DATA_INDEX,Constant.HISCOUNT_DATA_TYPE,hisCountData.getId())
-                    .setSource(JacksonUtil.toJSon(hisCountData)).execute().get();
-            flag = indexResponse.isCreated() ;
-        } catch (Exception e) {
-            s_logger.error("save hisCountData ERROR");
-        }
-        return flag ;
-    }
-
-    /**
-     * 删除计算数据
-     * @return
-     */
-    public static boolean deleteHisCountData(String id){
-        Client client = ESTools.getClient() ;
-        boolean flag = false ;
-        try{
-            DeleteResponse deleteResponse = client.prepareDelete(Constant.HISCOUNT_DATA_INDEX,Constant.HISCOUNT_DATA_TYPE,id).execute().get() ;
-            flag = deleteResponse.isFound() ;
-        } catch (Exception e) {
-            s_logger.error("delete hisCountData ERROR");
-        }
-        return flag ;
     }
 
 

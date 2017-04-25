@@ -10,6 +10,7 @@
             zdAPI.fetchX1History().then(function (values) {
                 _this.render(values);
             });
+
         };
 
         VisualModel.prototype.render = function (values) {

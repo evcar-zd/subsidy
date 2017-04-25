@@ -131,4 +131,31 @@ public class DateUtil {
 		return dateToStr(date, "yyyyMMddHHmmssSSS");
 	}
 
+	/**
+	 * 获得当前时间的str格式，格式为yyyyMMdd
+	 *
+	 * @Title: todayStr
+	 * @param @return    设定文件
+	 * @return String    返回类型
+	 */
+	public static String getDateStryyyyMMdd(){
+		Date date = new Date();
+		return dateToStr(date, "yyyyMMdd");
+	}
+
+
+	/**
+	 * 获取某天的后几天的日期
+	 * @return
+	 */
+	public static Date getDate(Date date,Integer num){
+		Calendar calendar = Calendar.getInstance() ;
+		calendar.setTime(date);
+		calendar.set(Calendar.DATE,calendar.get(Calendar.DATE) + num);
+		SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
+		String startDate = dft.format(calendar.getTime())+" 00:00:00";
+		return parseStrToDate(startDate) ;
+
+	}
+
 }

@@ -56,6 +56,9 @@ public class Constant {
     public static final String HISCOUNT_DATA_INDEX      =   "hiscount_data_v1" ;
     public static final String HISCOUNT_DATA_TYPE       =   "hiscount_data" ;
 
+    public static final String HISCOUNT_DATAL2_INDEX    =   "hiscount_datal2_v1" ;
+    public static final String HISCOUNT_DATAL2_TYPE     =   "hiscount_datal2" ;
+
     /**  指标常量  **/
     public static final int MILEAGE                     =   1 ;
     public static final int LIMITMILEAGE                =   2 ;
