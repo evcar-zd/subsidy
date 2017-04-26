@@ -168,7 +168,7 @@ public class TargetUtil {
         monthCountData.setCanNearNoData(canNearNoData);
         monthCountData.setCanNoData(canNoData) ;
         monthCountData.setCountDate(new Date()) ;
-
+        monthCountData.setVehicleNum(num);
         HisCountDataService.addHisCountDataL2(monthCountData) ;
     }
 

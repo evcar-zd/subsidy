@@ -23,6 +23,7 @@ public class MonthCountData implements Serializable {
     private Integer canNearNoData ;             //CAN近期数据
     private Integer canNoData ;                 //CAN无数据
     private Date countDate ;                    //计算时间
+    private Integer vehicleNum ;                //车辆数量
 
     public MonthCountData(){
 
@@ -138,5 +139,13 @@ public class MonthCountData implements Serializable {
 
     public void setCountDate(Date countDate) {
         this.countDate = countDate;
+    }
+
+    public Integer getVehicleNum() {
+        return vehicleNum;
+    }
+
+    public void setVehicleNum(Integer vehicleNum) {
+        this.vehicleNum = vehicleNum;
     }
 }

@@ -61,18 +61,45 @@
         return value ;
     }
 
+    // 摸拟数据
+    zdAPI.prototype.fetchHistory = function (data) {
+        var model = [];
+        for (var i = 0; i < data.length; i++) {
+            var date = new Date(data[i].countDate) ;
+            var formatDate = this.dealDatePattern(date) ;
+            var value = new Object();
+            var vehicleNum = data[i].vehicleNum ;
+            value.mileage = data[i].mileage.normal/vehicleNum*100 ;
+            value.limitMileage = data[i].limitMileage.normal/vehicleNum*100 ;
+            value.maxEnergyTime = data[i].maxEnergyTime.normal/vehicleNum*100 ;
+            value.maxElectricPower = data[i].maxElectricPower.normal/vehicleNum*100 ;
+            value.avgDailyRunTime = data[i].avgDailyRunTime.normal/vehicleNum*100 ;
+            value.hundredsKmusePower = data[i].hundredsKmusePower.normal/vehicleNum*100 ;
+            model.push({ tm: formatDate , v: value });;
+        }
+        return model;
+    }
+
+    zdAPI.prototype.dealDatePattern = function(date){
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        month = month < 10 ? ('0' + month) : month;
+        var day = date.getDate();
+        day = day < 10 ? ('0' + day) : day;
+        return new Date(2017, month, day) ;
+    }
 
     // 摸拟数据
-    zdAPI.prototype.fetchX1History = function () {
-        var data = [];
-
-        // 随机产生模拟数据
-        for (var i = 0; i < 30; i++) {
-            data.push({ tm: new Date(2017, 3, i), v: Math.ceil(Math.random()*100) });;
-        }
-
-        return Promise.resolve(data);
-    }
+//    zdAPI.prototype.fetchX1History = function () {
+//        var data = [];
+//
+//        // 随机产生模拟数据
+//        for (var i = 0; i < 30; i++) {
+//            data.push({ tm: new Date(2017, 3, i), v: Math.ceil(Math.random()*100) });;
+//        }
+//
+//        return Promise.resolve(data);
+//    }
 
     return new zdAPI();
 });
