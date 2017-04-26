@@ -52,6 +52,12 @@ public class Constant {
     public static final String HIS_OBC_INDEX            =   "i_his_obc_data_v1" ;
     public static final String HIS_OBC_TYPE             =   "his_obc_data" ;
 
+    /** ES算法数据 */
+    public static final String HISCOUNT_DATA_INDEX      =   "hiscount_data_v1" ;
+    public static final String HISCOUNT_DATA_TYPE       =   "hiscount_data" ;
+
+    public static final String HISCOUNT_DATAL2_INDEX    =   "hiscount_datal2_v1" ;
+    public static final String HISCOUNT_DATAL2_TYPE     =   "hiscount_datal2" ;
 
     /**  指标常量  **/
     public static final int MILEAGE                     =   1 ;

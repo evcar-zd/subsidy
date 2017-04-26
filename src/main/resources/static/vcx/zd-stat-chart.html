@@ -1,4 +1,13 @@
 ﻿<div v-bind:id="id" class="zd-stat-chart">
+    <div id="change" style="float:right;">
+        <span>选择指标:</span>
+        <select id="target" v-model="selected" @change="methods.changeStyle();" >
+            <option v-for="option in options" v-bind:value="option.value">
+                {{ option.text }}
+            </option>
+        </select>
+    </div>
     <link rel="stylesheet" href="vcx/zd-stat-chart.css" />
     <svg></svg>
 </div>
+
