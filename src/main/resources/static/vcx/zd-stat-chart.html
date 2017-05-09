@@ -1,13 +1,26 @@
-﻿<div v-bind:id="id" class="zd-stat-chart">
-    <div id="change" style="float:right;">
-        <span>选择指标:</span>
-        <select id="target" v-model="selected" @change="methods.changeStyle();" >
-            <option v-for="option in options" v-bind:value="option.value">
-                {{ option.text }}
-            </option>
-        </select>
+﻿
+<div>
+    <div class="row">
+        <div class="col-xs-6 col-xs-offset-0">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label>选择指标:</label>
+                    <select id="target" v-model="selected" class="form-control" @change="changeTarget" >
+                        <option v-for="(v, k) in options" v-bind:value="k">
+                            {{ v }}
+                        </option>
+                    </select>
+                </div>
+            </form>
+        </div>
     </div>
-    <link rel="stylesheet" href="vcx/zd-stat-chart.css" />
-    <svg></svg>
-</div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div v-bind:id="id" class="zd-stat-chart row">
+                <link rel="stylesheet" href="vcx/zd-stat-chart.css" />
+                <svg></svg>
+            </div>
+        </div>
+    </div>
 
+</div>

@@ -1,6 +1,7 @@
 ﻿define(['jquery'], function ($) {
 
     function zdAPI() {
+        this.data = {};
     }
 
     // 获取车辆总数
@@ -75,18 +76,38 @@
             value.maxElectricPower = data[i].maxElectricPower.normal/vehicleNum*100 ;
             value.avgDailyRunTime = data[i].avgDailyRunTime.normal/vehicleNum*100 ;
             value.hundredsKmusePower = data[i].hundredsKmusePower.normal/vehicleNum*100 ;
+            value.vehicleNum = vehicleNum ;
             model.push({ tm: formatDate , v: value });;
         }
         return model;
     }
 
     zdAPI.prototype.dealDatePattern = function(date){
+        date = new Date(date);
         var year = date.getFullYear();
         var month = date.getMonth() + 1;
         month = month < 10 ? ('0' + month) : month;
         var day = date.getDate();
         day = day < 10 ? ('0' + day) : day;
         return new Date(2017, month, day) ;
+    }
+
+    zdAPI.prototype.fetchHistTarget = function(target){
+        var _this = this ;
+        if(_this.data[target]){
+            return Promise.resolve(_this.data[target]) ;
+        }
+        return $.get('/api/getTargetParams',{target:target}).then(function(data){
+            var model = [] ;
+            for(var i in data){
+                var value = new Object();
+                value.tm = new Date(data[i].countDate);
+                value.v = data[i].targetNum ;
+                model.push(value);
+            }
+            _this.data[target] = model ;
+            return model;
+        });
     }
 
     // 摸拟数据

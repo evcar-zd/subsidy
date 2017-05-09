@@ -28,8 +28,11 @@ public class TargetUtil {
     @Autowired
     void setEsBean(ESBean esBean) { this.esBean = esBean;}
 
-
-    public static final Integer MAX_SIZE = 100 ;
+    /**
+     * 每MAX_SIZE分为一组，避免数据量大出现内存不足情况
+     * 后期可以使用多线程去处理（快速）
+     */
+    public static final Integer MAX_SIZE = 1000 ;
 
     /**
      * 六项指标计算
@@ -74,6 +77,9 @@ public class TargetUtil {
 
             if (vehicleList.size() > 0 ){
                 for (Vehicle vehicle : vehicleList){
+                    /**
+                     * 计算每一辆车每天的指标数据
+                     */
                     HisCountData hisCountData = countData(vehicle.getVinCode(),vehicle.getGprsNo(),startDate,endDate) ;
                     HisCountDataService.addHisCountData(hisCountData) ;
 
@@ -132,6 +138,10 @@ public class TargetUtil {
                         hundredsKmusePower.setInvalids(hundredsKmusePower.getInvalids()+1);
                     }
 
+                    /**
+                     * GPS正常、近期有数据、无数据
+                     * CAN正常、近期有数据、无数据
+                     */
                     if (hisCountData.getGpsNumber() > 0){
                         gpsNormal ++ ;
                     }else{
@@ -152,7 +162,10 @@ public class TargetUtil {
             currentPage ++ ;
         }
 
-
+        /**
+         * 指标数据使用：
+         * 每天生成一条六项指标数据
+         */
         MonthCountData monthCountData = new MonthCountData() ;
         monthCountData.setId(id);
         monthCountData.setMileage(mileage) ;
