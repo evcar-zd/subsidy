@@ -1,0 +1,22 @@
+{
+  "name": "subsidy",
+  "description": "zhidou",
+  "main": "index.js",
+  "authors": [
+    "XGH <ghxiong@incarcloud.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/evcar-zd/subsidy",
+  "private": true,
+  "dependencies": {
+    "requirejs": "^2.3.3",
+    "text": "requirejs-text#^2.0.15",
+    "bluebird": "^3.5.0",
+    "jquery": "^3.2.1",
+    "cookie": "jquery.cookie#^1.4.1",
+    "bootstrap": "^3.3.7",
+    "vue": "^2.3.2",
+    "vue-router": "^2.5.3",
+    "d3": "https://github.com/d3/d3/releases/download/v4.8.0/d3.zip"
+  }
+}

@@ -15,6 +15,7 @@ gradle.properties
 *.out
 
 node_modules
+src/main/resources/static/lib/
 
 bin
 .settings
