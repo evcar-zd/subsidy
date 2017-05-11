@@ -1,13 +1,10 @@
 package com.evcar.subsidy.service;
 
 
-import com.evcar.subsidy.entity.HisCountData;
 import com.evcar.subsidy.entity.Vehicle;
 import com.evcar.subsidy.util.Constant;
 import com.evcar.subsidy.util.ESTools;
 import com.evcar.subsidy.util.JacksonUtil;
-import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -80,7 +77,7 @@ public class VehicleService {
                 .setTypes(Constant.VEHICLE_TYPE)
                 .addSort(sortBuilder)
                 .setFrom((currentPage-1)*pageSize)
-                .setSize(currentPage*pageSize);
+                .setSize(pageSize);
 
         SearchResponse sr = search.get();//得到查询结果
 

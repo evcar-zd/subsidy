@@ -120,7 +120,7 @@ public class DateUtil {
 	}
 
 	/**
-	 * 获得当前时间的str格式，格式为yyyyMMddHHmmssSSS
+	 * 获得当前时间的str格式，格式为yyyyMMddHHmmss
 	 *
 	 * @Title: todayStr
 	 * @param @return    设定文件
@@ -128,7 +128,7 @@ public class DateUtil {
 	 */
 	public static String getDateStr(){
 		Date date = new Date();
-		return dateToStr(date, "yyyyMMddHHmmssSSS");
+		return dateToStr(date, "yyyyMMddHHmmss");
 	}
 
 	/**
@@ -138,8 +138,7 @@ public class DateUtil {
 	 * @param @return    设定文件
 	 * @return String    返回类型
 	 */
-	public static String getDateStryyyyMMdd(){
-		Date date = new Date();
+	public static String getDateStryyyyMMdd(Date date){
 		return dateToStr(date, "yyyyMMdd");
 	}
 
@@ -156,6 +155,28 @@ public class DateUtil {
 		String startDate = dft.format(calendar.getTime())+" 00:00:00";
 		return parseStrToDate(startDate) ;
 
+	}
+
+	/**
+	 * 功能描述：返回毫秒
+	 * @param date 日期
+	 * @return 返回毫秒
+	 */
+	public static long getMillis(Date date) {
+		calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		return calendar.getTimeInMillis();
+	}
+
+
+	/**
+	 * 功能描述：日期相减
+	 * @param date 日期
+	 * @param date1 日期
+	 * @return 返回相减后的天数
+	 */
+	public static int diffDate(Date date, Date date1) {
+		return (int) ((getMillis(date) - getMillis(date1)) / (24 * 3600 * 1000));
 	}
 
 }

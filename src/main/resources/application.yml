@@ -14,6 +14,10 @@ elasticsearch:
     port: 9200
     clusterName: elasticsearch
     clientTransportSniff: true
-    startDate : -150
-    endDate : -120
-    monthDay : 30
+    minSoc : 10
+    maxSoc : 97
+    linearSoc : 3
+    linearMileage : 3
+    startDate : -3
+    endDate : -1
+    monthDay : -30
