@@ -4,7 +4,6 @@ import com.evcar.subsidy.entity.HisCountData;
 import com.evcar.subsidy.entity.Vehicle;
 import com.evcar.subsidy.service.HisCountDataService;
 import com.evcar.subsidy.service.VehicleService;
-import com.evcar.subsidy.util.TargetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
