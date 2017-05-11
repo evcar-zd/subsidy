@@ -1,13 +1,12 @@
 package com.evcar.subsidy.controller;
 
 import com.evcar.subsidy.TargetVo;
+import com.evcar.subsidy.agg.Agg;
 import com.evcar.subsidy.entity.ESBean;
-import com.evcar.subsidy.entity.HisCountData;
 import com.evcar.subsidy.entity.MonthCountData;
 import com.evcar.subsidy.service.HisCountDataService;
 import com.evcar.subsidy.util.DateUtil;
 import com.evcar.subsidy.util.StringUtil;
-import com.evcar.subsidy.util.TargetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +20,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static com.evcar.subsidy.util.DateUtil.diffDate;
-import static com.evcar.subsidy.util.DateUtil.getDateStryyyyMMdd;
-import static javafx.scene.input.KeyCode.T;
 
 /**
  * Created by Kong on 2017/4/24.
@@ -164,7 +159,8 @@ public class TargetController {
 
                     List<String> vinCodes = new ArrayList<>() ;
                     vinCodes.add("LJU70W1Z1GG082321") ;
-                    TargetUtil.targeCount(startDay,endDay,vinCodes) ;
+                    Agg agg = new Agg() ;
+                    agg.takeAgg(-startDay,-endDay,vinCodes);
 //                    TargetUtil.countMonthData(monthDay,Math.abs(startDay)) ;
                 }
             }

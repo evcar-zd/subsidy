@@ -1,8 +1,8 @@
 package com.evcar.subsidy.quartz;
 
+import com.evcar.subsidy.agg.Agg;
 import com.evcar.subsidy.entity.ESBean;
 import com.evcar.subsidy.util.DateUtil;
-import com.evcar.subsidy.util.TargetUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -19,9 +19,9 @@ import org.springframework.stereotype.Component;
 @EnableScheduling
 public class JobExecute {
 
-    TargetUtil targetUtil ;
-    @Autowired
-    void setTargetUtil(TargetUtil targetUtil) { this.targetUtil = targetUtil;}
+//    TargetUtil targetUtil ;
+//    @Autowired
+//    void setTargetUtil(TargetUtil targetUtil) { this.targetUtil = targetUtil;}
 
     private static ESBean esBean;
     @Autowired
@@ -29,8 +29,11 @@ public class JobExecute {
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void execute(){
-        targetUtil.targeCount(esBean.getStartDate(),esBean.getEndDate(),null) ;
-        targetUtil.countMonthData(esBean.getMonthDay(),Math.abs(esBean.getStartDate())) ;
+        Agg agg = new Agg() ;
+        agg.takeAgg(esBean.getStartDate(),esBean.getEndDate(),null);
+
+//        targetUtil.targeCount(esBean.getStartDate(),esBean.getEndDate(),null) ;
+//        targetUtil.countMonthData(esBean.getMonthDay(),Math.abs(esBean.getStartDate())) ;
         System.out.println("结束时间:"+ DateUtil.getDateStr());
     }
 

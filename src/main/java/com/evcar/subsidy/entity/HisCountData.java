@@ -11,25 +11,22 @@ import java.util.Date;
 public class HisCountData implements Serializable {
 
     private String id ;                         //VIN+时间串
+    private Date tm ;                           //数据时间
     private String vinCode ;                    //VIN
-    private String gprsCode ;                   //GPRS号
     private String carType ;                    //车类型
-    private Integer consumeSoc ;                //消耗SOC
-    private Integer chargeSoc ;                 //充电SOC
-    private Integer surplusSoc ;                //剩余SOC
-    private BigDecimal mileageTotal ;           //总里程
-    private Long chargeTime ;                   //充电时间(单位：S)
-    private Long dischargeTime ;                //放电时间(单位：S)
-    private BigDecimal maxInElectricPower ;     //最大电功率1
-    private BigDecimal maxOutElectricPower ;    //最大电功率2
-    private Integer gpsNumber ;                 //GPS数据条数
-    private Integer canNumber ;                 //CAN数据条数
-    private Integer linearSoc ;                 //近似线性中段当日总放电SOC
-    private BigDecimal linearMileage ;          //近似线性中段当日总行驶里程
     private Date veDeliveredDate ;              //交车日期
-    private Date runDate ;                      //数据时间
-    private Date countDate ;                    //计算时间
-
+    private Integer gpsCount ;                  //GPS数据条数
+    private Integer canCount ;                  //CAN数据条数
+    private BigDecimal mileageTotal ;           //总里程
+    private Integer chargeMidSoc ;              //近似线性中段充电SOC
+    private Long chargeMidSec ;                 //近似线性中段充电时间(单位：S)
+    private Long dischargeTotalSec ;            //放电总时长(单位：S)
+    private BigDecimal maxInChargerPower ;      //最大输入电功率
+    private BigDecimal maxOutChargerPower ;     //最大输出电功率
+    private Integer dischargeMidSoc ;           //近似线性中段当日总放电SOC
+    private BigDecimal dischargeMidMileage ;    //近似线性中段当日总行驶里程
+    private Date calcTime ;                     //计算时间
+    private String version ;                    //版本
 
     public HisCountData(){
 
@@ -43,20 +40,20 @@ public class HisCountData implements Serializable {
         this.id = id;
     }
 
+    public Date getTm() {
+        return tm;
+    }
+
+    public void setTm(Date tm) {
+        this.tm = tm;
+    }
+
     public String getVinCode() {
         return vinCode;
     }
 
     public void setVinCode(String vinCode) {
         this.vinCode = vinCode;
-    }
-
-    public String getGprsCode() {
-        return gprsCode;
-    }
-
-    public void setGprsCode(String gprsCode) {
-        this.gprsCode = gprsCode;
     }
 
     public String getCarType() {
@@ -67,28 +64,28 @@ public class HisCountData implements Serializable {
         this.carType = carType;
     }
 
-    public Integer getConsumeSoc() {
-        return consumeSoc;
+    public Date getVeDeliveredDate() {
+        return veDeliveredDate;
     }
 
-    public void setConsumeSoc(Integer consumeSoc) {
-        this.consumeSoc = consumeSoc;
+    public void setVeDeliveredDate(Date veDeliveredDate) {
+        this.veDeliveredDate = veDeliveredDate;
     }
 
-    public Integer getChargeSoc() {
-        return chargeSoc;
+    public Integer getGpsCount() {
+        return gpsCount;
     }
 
-    public void setChargeSoc(Integer chargeSoc) {
-        this.chargeSoc = chargeSoc;
+    public void setGpsCount(Integer gpsCount) {
+        this.gpsCount = gpsCount;
     }
 
-    public Integer getSurplusSoc() {
-        return surplusSoc;
+    public Integer getCanCount() {
+        return canCount;
     }
 
-    public void setSurplusSoc(Integer surplusSoc) {
-        this.surplusSoc = surplusSoc;
+    public void setCanCount(Integer canCount) {
+        this.canCount = canCount;
     }
 
     public BigDecimal getMileageTotal() {
@@ -99,91 +96,75 @@ public class HisCountData implements Serializable {
         this.mileageTotal = mileageTotal;
     }
 
-    public Long getChargeTime() {
-        return chargeTime;
+    public Integer getChargeMidSoc() {
+        return chargeMidSoc;
     }
 
-    public void setChargeTime(Long chargeTime) {
-        this.chargeTime = chargeTime;
+    public void setChargeMidSoc(Integer chargeMidSoc) {
+        this.chargeMidSoc = chargeMidSoc;
     }
 
-    public Long getDischargeTime() {
-        return dischargeTime;
+    public Long getChargeMidSec() {
+        return chargeMidSec;
     }
 
-    public void setDischargeTime(Long dischargeTime) {
-        this.dischargeTime = dischargeTime;
+    public void setChargeMidSec(Long chargeMidSec) {
+        this.chargeMidSec = chargeMidSec;
     }
 
-    public BigDecimal getMaxInElectricPower() {
-        return maxInElectricPower;
+    public Long getDischargeTotalSec() {
+        return dischargeTotalSec;
     }
 
-    public void setMaxInElectricPower(BigDecimal maxInElectricPower) {
-        this.maxInElectricPower = maxInElectricPower;
+    public void setDischargeTotalSec(Long dischargeTotalSec) {
+        this.dischargeTotalSec = dischargeTotalSec;
     }
 
-    public BigDecimal getMaxOutElectricPower() {
-        return maxOutElectricPower;
+    public BigDecimal getMaxInChargerPower() {
+        return maxInChargerPower;
     }
 
-    public void setMaxOutElectricPower(BigDecimal maxOutElectricPower) {
-        this.maxOutElectricPower = maxOutElectricPower;
+    public void setMaxInChargerPower(BigDecimal maxInChargerPower) {
+        this.maxInChargerPower = maxInChargerPower;
     }
 
-    public Integer getGpsNumber() {
-        return gpsNumber;
+    public BigDecimal getMaxOutChargerPower() {
+        return maxOutChargerPower;
     }
 
-    public void setGpsNumber(Integer gpsNumber) {
-        this.gpsNumber = gpsNumber;
+    public void setMaxOutChargerPower(BigDecimal maxOutChargerPower) {
+        this.maxOutChargerPower = maxOutChargerPower;
     }
 
-    public Integer getCanNumber() {
-        return canNumber;
+    public Integer getDischargeMidSoc() {
+        return dischargeMidSoc;
     }
 
-    public void setCanNumber(Integer canNumber) {
-        this.canNumber = canNumber;
+    public void setDischargeMidSoc(Integer dischargeMidSoc) {
+        this.dischargeMidSoc = dischargeMidSoc;
     }
 
-    public Integer getLinearSoc() {
-        return linearSoc;
+    public BigDecimal getDischargeMidMileage() {
+        return dischargeMidMileage;
     }
 
-    public void setLinearSoc(Integer linearSoc) {
-        this.linearSoc = linearSoc;
+    public void setDischargeMidMileage(BigDecimal dischargeMidMileage) {
+        this.dischargeMidMileage = dischargeMidMileage;
     }
 
-    public BigDecimal getLinearMileage() {
-        return linearMileage;
+    public Date getCalcTime() {
+        return calcTime;
     }
 
-    public void setLinearMileage(BigDecimal linearMileage) {
-        this.linearMileage = linearMileage;
+    public void setCalcTime(Date calcTime) {
+        this.calcTime = calcTime;
     }
 
-    public Date getVeDeliveredDate() {
-        return veDeliveredDate;
+    public String getVersion() {
+        return version;
     }
 
-    public void setVeDeliveredDate(Date veDeliveredDate) {
-        this.veDeliveredDate = veDeliveredDate;
-    }
-
-    public Date getRunDate() {
-        return runDate;
-    }
-
-    public void setRunDate(Date runDate) {
-        this.runDate = runDate;
-    }
-
-    public Date getCountDate() {
-        return countDate;
-    }
-
-    public void setCountDate(Date countDate) {
-        this.countDate = countDate;
+    public void setVersion(String version) {
+        this.version = version;
     }
 }
