@@ -34,7 +34,7 @@ public class GpsDataService {
         if (startDate != null && endDate != null ){
             qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode",vinCode))
-                    .must(QueryBuilders.rangeQuery("reciveTime")
+                    .must(QueryBuilders.rangeQuery("collectTime")
                             .from(DateUtil.format(startDate))
                             .to(DateUtil.format(endDate)));
         }

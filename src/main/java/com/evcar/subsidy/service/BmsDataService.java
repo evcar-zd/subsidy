@@ -1,5 +1,6 @@
 package com.evcar.subsidy.service;
 
+import com.evcar.subsidy.entity.BmsData;
 import com.evcar.subsidy.entity.HisVehicleMotor;
 import com.evcar.subsidy.util.Constant;
 import com.evcar.subsidy.util.DateUtil;
@@ -23,18 +24,17 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Kong on 2017/4/21.
+ * Created by Kong on 2017/5/10.
  */
-public class VehicleMotorService {
-    private static Logger s_logger = LoggerFactory.getLogger(VehicleMotorService.class);
+public class BmsDataService {
 
-
+    private static Logger s_logger = LoggerFactory.getLogger(BmsDataService.class);
 
     /**
-     * 查询历史整车和电机数据
+     * 查询历史BMS数据NUM
      * @return
      */
-    public static Long getHisVehicleMotorNum(String vinCode, Date startDate, Date endDate){
+    public static Long getHisBmsDataNum(String vinCode, Date startDate, Date endDate){
 
         Client client = ESTools.getClient() ;
         QueryBuilder qb = new BoolQueryBuilder()
@@ -42,29 +42,28 @@ public class VehicleMotorService {
                 .must(QueryBuilders.rangeQuery("collectTime")
                         .from(DateUtil.format(startDate))
                         .to(DateUtil.format(endDate)));
-        SearchRequestBuilder search = client.prepareSearch(Constant.HISVEHICLE_MOTOR_INDEX).
-                setTypes(Constant.HISVEHICLE_MOTOR_TYPE).setQuery(qb);
+        SearchRequestBuilder search = client.prepareSearch(Constant.HIS_BMS_INDEX).
+                setTypes(Constant.HIS_BMS_TYPE).setQuery(qb);
         SearchResponse sr = search.get();//得到查询结果
         return sr.getHits().getTotalHits();//读取数量
-
     }
 
     /**
-     * 查询历史整车和电机数据
+     * 查询历史BMS数据
      * @return
      */
-    public static List<HisVehicleMotor> getHisVehicleMotor(String vinCode, Date startDate, Date endDate,long sizeNum){
+    public static List<BmsData> getHisBmsData(String vinCode, Date startDate, Date endDate, long sizeNum){
 
         Client client = ESTools.getClient() ;
-        List<HisVehicleMotor> list = new ArrayList<>() ;
+        List<BmsData> list = new ArrayList<>() ;
         SortBuilder sortBuilder = SortBuilders.fieldSort("collectTime").order(SortOrder.ASC);
         QueryBuilder qb = new BoolQueryBuilder()
                 .must(QueryBuilders.matchQuery("vinCode",vinCode))
                 .must(QueryBuilders.rangeQuery("collectTime")
                         .from(DateUtil.format(startDate))
                         .to(DateUtil.format(endDate)));
-        SearchRequestBuilder search = client.prepareSearch(Constant.HISVEHICLE_MOTOR_INDEX).
-                setTypes(Constant.HISVEHICLE_MOTOR_TYPE)
+        SearchRequestBuilder search = client.prepareSearch(Constant.HIS_BMS_INDEX).
+                setTypes(Constant.HIS_BMS_TYPE)
                 .addSort(sortBuilder)
                 .setQuery(qb)
                 .setFrom(0)
@@ -74,32 +73,12 @@ public class VehicleMotorService {
         for(SearchHit hits:sr.getHits()){
             String json = JacksonUtil.toJSon(hits.getSource()) ;
             s_logger.debug(json);
-            HisVehicleMotor hisVehicleMotor = JacksonUtil.readValue(json, HisVehicleMotor.class);
-            list.add(hisVehicleMotor) ;
+            BmsData bmsData = JacksonUtil.readValue(json, BmsData.class);
+            list.add(bmsData) ;
         }
 
-        s_logger.info("fetched {} hisVehicleMotor", list.size());
+        s_logger.info("fetched {} hisBmsData", list.size());
 
         return list ;
-    }
-
-
-    /**
-     * 查询所有有SOC的整车和电机数据的数量
-     * @param vinCode
-     * @return
-     */
-    public static Long getHisVehicleMotorNumber(String vinCode){
-        Client client = ESTools.getClient() ;
-        QueryBuilder qb = new BoolQueryBuilder()
-                .must(QueryBuilders.matchQuery("vinCode",vinCode))
-                .must(QueryBuilders.rangeQuery("soc")
-                        .from(0)
-                        .to(100));
-        SearchRequestBuilder search = client.prepareSearch(Constant.HISVEHICLE_MOTOR_INDEX).
-                setTypes(Constant.HISVEHICLE_MOTOR_TYPE).setQuery(qb);
-
-        SearchResponse sr = search.get();//得到查询结果
-        return sr.getHits().getTotalHits();//读取数量
     }
 }

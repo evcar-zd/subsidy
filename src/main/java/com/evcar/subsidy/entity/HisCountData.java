@@ -13,17 +13,23 @@ public class HisCountData implements Serializable {
     private String id ;                         //VIN+时间串
     private String vinCode ;                    //VIN
     private String gprsCode ;                   //GPRS号
+    private String carType ;                    //车类型
     private Integer consumeSoc ;                //消耗SOC
     private Integer chargeSoc ;                 //充电SOC
     private Integer surplusSoc ;                //剩余SOC
-    private BigDecimal mileagePoor ;            //里程差
     private BigDecimal mileageTotal ;           //总里程
     private Long chargeTime ;                   //充电时间(单位：S)
     private Long dischargeTime ;                //放电时间(单位：S)
-    private BigDecimal maxElectricPower ;       //最大电功率
+    private BigDecimal maxInElectricPower ;     //最大电功率1
+    private BigDecimal maxOutElectricPower ;    //最大电功率2
     private Integer gpsNumber ;                 //GPS数据条数
     private Integer canNumber ;                 //CAN数据条数
+    private Integer linearSoc ;                 //近似线性中段当日总放电SOC
+    private BigDecimal linearMileage ;          //近似线性中段当日总行驶里程
+    private Date veDeliveredDate ;              //交车日期
+    private Date runDate ;                      //数据时间
     private Date countDate ;                    //计算时间
+
 
     public HisCountData(){
 
@@ -53,6 +59,14 @@ public class HisCountData implements Serializable {
         this.gprsCode = gprsCode;
     }
 
+    public String getCarType() {
+        return carType;
+    }
+
+    public void setCarType(String carType) {
+        this.carType = carType;
+    }
+
     public Integer getConsumeSoc() {
         return consumeSoc;
     }
@@ -75,14 +89,6 @@ public class HisCountData implements Serializable {
 
     public void setSurplusSoc(Integer surplusSoc) {
         this.surplusSoc = surplusSoc;
-    }
-
-    public BigDecimal getMileagePoor() {
-        return mileagePoor;
-    }
-
-    public void setMileagePoor(BigDecimal mileagePoor) {
-        this.mileagePoor = mileagePoor;
     }
 
     public BigDecimal getMileageTotal() {
@@ -109,12 +115,20 @@ public class HisCountData implements Serializable {
         this.dischargeTime = dischargeTime;
     }
 
-    public BigDecimal getMaxElectricPower() {
-        return maxElectricPower;
+    public BigDecimal getMaxInElectricPower() {
+        return maxInElectricPower;
     }
 
-    public void setMaxElectricPower(BigDecimal maxElectricPower) {
-        this.maxElectricPower = maxElectricPower;
+    public void setMaxInElectricPower(BigDecimal maxInElectricPower) {
+        this.maxInElectricPower = maxInElectricPower;
+    }
+
+    public BigDecimal getMaxOutElectricPower() {
+        return maxOutElectricPower;
+    }
+
+    public void setMaxOutElectricPower(BigDecimal maxOutElectricPower) {
+        this.maxOutElectricPower = maxOutElectricPower;
     }
 
     public Integer getGpsNumber() {
@@ -131,6 +145,38 @@ public class HisCountData implements Serializable {
 
     public void setCanNumber(Integer canNumber) {
         this.canNumber = canNumber;
+    }
+
+    public Integer getLinearSoc() {
+        return linearSoc;
+    }
+
+    public void setLinearSoc(Integer linearSoc) {
+        this.linearSoc = linearSoc;
+    }
+
+    public BigDecimal getLinearMileage() {
+        return linearMileage;
+    }
+
+    public void setLinearMileage(BigDecimal linearMileage) {
+        this.linearMileage = linearMileage;
+    }
+
+    public Date getVeDeliveredDate() {
+        return veDeliveredDate;
+    }
+
+    public void setVeDeliveredDate(Date veDeliveredDate) {
+        this.veDeliveredDate = veDeliveredDate;
+    }
+
+    public Date getRunDate() {
+        return runDate;
+    }
+
+    public void setRunDate(Date runDate) {
+        this.runDate = runDate;
     }
 
     public Date getCountDate() {

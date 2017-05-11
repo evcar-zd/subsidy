@@ -2,14 +2,18 @@ package com.evcar.subsidy.controller;
 
 import com.evcar.subsidy.TargetVo;
 import com.evcar.subsidy.entity.ESBean;
+import com.evcar.subsidy.entity.HisCountData;
 import com.evcar.subsidy.entity.MonthCountData;
 import com.evcar.subsidy.service.HisCountDataService;
 import com.evcar.subsidy.util.DateUtil;
+import com.evcar.subsidy.util.StringUtil;
+import com.evcar.subsidy.util.TargetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.evcar.subsidy.util.DateUtil.diffDate;
+import static com.evcar.subsidy.util.DateUtil.getDateStryyyyMMdd;
 import static javafx.scene.input.KeyCode.T;
 
 /**
@@ -32,7 +38,6 @@ public class TargetController {
     private static ESBean esBean;
     @Autowired
     void setEsBean(ESBean value) { this.esBean = value;}
-
 
 
     /**
@@ -105,6 +110,68 @@ public class TargetController {
         }
 
         return targetVos ;
+    }
+
+    /** 避免重复请求 */
+    public static Boolean REPEAT_REQUEST = true ;
+
+    /**
+     * 手动计算
+     * @param startDate 为空。默认
+     * @param endDate   为空。默认
+     * @param monthDay
+     * @param sign
+     * @param clearIndex
+     */
+    @RequestMapping(value = "/handCount" , method = RequestMethod.GET)
+    public void HandCount(@RequestParam(value = "startDate" , required = false) String startDate,
+                          @RequestParam(value = "endDate" , required = false) String endDate,
+                          @RequestParam(value = "monthDay" , required = false) Integer monthDay,
+                          @RequestParam(value = "v" , required = false) String sign,
+                          @RequestParam(value = "clearIndex" ,required = false) String clearIndex){
+        try {
+            String dateStr = DateUtil.getDateStryyyyMMdd(new Date()) ;
+
+            if (REPEAT_REQUEST){
+                REPEAT_REQUEST = false ;
+
+                /** 是否删除全部索引重新建立数据 */
+                String deleteIndexL1 = "deleteL1" + dateStr ;
+                String deleteIndexL2 = "deleteL2" + dateStr ;
+                String deleteIndexAll = "deleteAll" + dateStr ;
+                if (clearIndex.equals(deleteIndexL1)){
+                    HisCountDataService.deleteByIndex();
+                }else if(clearIndex.equals(deleteIndexL2)){
+                    HisCountDataService.deleteHisCountDataL2();
+                }else if(clearIndex.equals(deleteIndexAll)){
+                    HisCountDataService.deleteByIndex();
+                    HisCountDataService.deleteHisCountDataL2();
+                }
+
+                if (sign.equals(dateStr)){
+                    int startDay = esBean.getStartDate() ;
+                    int endDay = esBean.getEndDate() ;
+                    if (!StringUtil.isEmpty(startDate)){
+                        startDay = DateUtil.diffDate(DateUtil.parseDate(startDate),new Date());
+                        if (!StringUtil.isEmpty(endDate)){
+                            endDay = DateUtil.diffDate(DateUtil.parseDate(endDate),new Date());
+                        }else{
+                            endDay = startDay + 1 ;
+                        }
+                    }
+
+                    if (monthDay == null || monthDay > 0 ) monthDay = esBean.getMonthDay() ;
+
+                    List<String> vinCodes = new ArrayList<>() ;
+                    vinCodes.add("LJU70W1Z1GG082321") ;
+                    TargetUtil.targeCount(startDay,endDay,vinCodes) ;
+//                    TargetUtil.countMonthData(monthDay,Math.abs(startDay)) ;
+                }
+            }
+
+        } finally {
+            REPEAT_REQUEST = true ;
+        }
     }
 
 }
