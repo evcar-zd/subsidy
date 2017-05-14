@@ -14,8 +14,8 @@ elasticsearch:
     port: 9200
     clusterName: elasticsearch
     clientTransportSniff: true
-    minSoc : 10
-    maxSoc : 97
+    minSoc : 30
+    maxSoc : 80
     linearSoc : 3
     linearMileage : 3
     startDate : -3

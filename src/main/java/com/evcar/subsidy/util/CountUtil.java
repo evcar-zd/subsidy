@@ -102,4 +102,19 @@ public class CountUtil {
         }
         return statistical ;
     }
+
+    /**
+     * L3运算工具类
+     * @param model
+     * @param statistical
+     * @return
+     */
+    public static Statistical getStatistical(Statistical model ,Statistical statistical){
+        if (model == null) model = new Statistical() ;
+        model.setNormal(model.getNormal()+statistical.getNormal());
+        model.setHighSide(model.getHighSide()+statistical.getHighSide());
+        model.setLowSide(model.getLowSide()+statistical.getLowSide());
+        model.setInvalids(model.getInvalids()+statistical.getInvalids());
+        return model ;
+    }
 }

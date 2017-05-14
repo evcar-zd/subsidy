@@ -202,7 +202,7 @@ public class VehicleL1 extends VehicleBase{
                     }
 
                     /** SOC处理 */
-                    if (vehicleMotor.getSoc() <= esBean.getMaxSoc() && vehicleMotor.getSoc() >= esBean.getMinSoc()){
+                    if (vehicleMotor.getSoc() != null && beforeVehicleMotor.getSoc() != null && vehicleMotor.getSoc() <= esBean.getMaxSoc() && vehicleMotor.getSoc() >= esBean.getMinSoc()){
                         Integer soc = vehicleMotor.getSoc() - beforeVehicleMotor.getSoc() ;
 
                         if( soc <= 0 ){    //放电中
@@ -239,6 +239,8 @@ public class VehicleL1 extends VehicleBase{
                 mileageNum -- ;
             }
         }
+
+        mileageTotal = mileageTotal == null ? BigDecimal.ZERO : mileageTotal ;
 
         this.hisCountData.setCanCount(canCount);
         this.hisCountData.setMileageTotal(mileageTotal);

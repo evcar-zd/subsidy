@@ -5,6 +5,7 @@ import com.evcar.subsidy.agg.Agg;
 import com.evcar.subsidy.entity.ESBean;
 import com.evcar.subsidy.entity.MonthCountData;
 import com.evcar.subsidy.service.HisCountDataService;
+import com.evcar.subsidy.service.MonthCountDataService;
 import com.evcar.subsidy.util.DateUtil;
 import com.evcar.subsidy.util.StringUtil;
 import org.slf4j.Logger;
@@ -42,8 +43,8 @@ public class TargetController {
     @RequestMapping(value = "/getLastTarget" ,method = RequestMethod.GET)
     public MonthCountData getLastTarget(){
         Date date = new Date() ;
-        Date startDate = DateUtil.getDate(date,-esBean.getMonthDay()) ;
-        List<MonthCountData> monthCountDatas = HisCountDataService.getMonthCountData(startDate,date) ;
+        Date startDate = DateUtil.getDate(date,esBean.getMonthDay()) ;
+        List<MonthCountData> monthCountDatas = MonthCountDataService.getMonthCountData(startDate,date) ;
         if (monthCountDatas.size() > 0){
             return monthCountDatas.get(0) ;
         }
@@ -57,11 +58,11 @@ public class TargetController {
     @RequestMapping(value = "/getTarget" ,method = RequestMethod.GET)
     public List<MonthCountData> getTarget(HttpServletRequest request){
         Date date = new Date() ;
-        Date startDate = DateUtil.getDate(date,-esBean.getMonthDay()) ;
-        Long months = HisCountDataService.getMonthCountDataNumber(startDate,date) ;
+        Date startDate = DateUtil.getDate(date,esBean.getMonthDay()) ;
+        Long months = MonthCountDataService.getMonthCountDataNumber(startDate,date) ;
         List<MonthCountData> monthCountDatas = new ArrayList<>();
         if (months > 0){
-            monthCountDatas = HisCountDataService.getMonthCountData(startDate,date,months) ;
+            monthCountDatas = MonthCountDataService.getMonthCountData(startDate,date) ;
         }
         return monthCountDatas ;
     }
@@ -71,11 +72,11 @@ public class TargetController {
     public List<TargetVo> getTargetParams(HttpServletRequest request){
         String target = request.getParameter("target") ;
         Date date = new Date() ;
-        Date startDate = DateUtil.getDate(date,-esBean.getMonthDay()) ;
-        Long months = HisCountDataService.getMonthCountDataNumber(startDate,date) ;
+        Date startDate = DateUtil.getDate(date,esBean.getMonthDay()) ;
+        Long months = MonthCountDataService.getMonthCountDataNumber(startDate,date) ;
         List<MonthCountData> monthCountDatas = new ArrayList<>();
         if (months > 0){
-            monthCountDatas = HisCountDataService.getMonthCountData(startDate,date,months) ;
+            monthCountDatas = MonthCountDataService.getMonthCountData(startDate,date) ;
         }
 
         List<TargetVo> targetVos = new ArrayList<>() ;
@@ -99,11 +100,9 @@ public class TargetController {
                 targetNum = BigDecimal.valueOf(monthCountData.getHundredsKmusePower().getNormal()*100).divide(BigDecimal.valueOf(vehicleNum),2,BigDecimal.ROUND_UP);
             }
             targetVo.setTargetNum(targetNum);
-            
-            targetVo.setCountDate(monthCountData.getCountDate());
+            targetVo.setCountDate(monthCountData.getCalcTime());
             targetVos.add(targetVo);
         }
-
         return targetVos ;
     }
 
@@ -141,6 +140,7 @@ public class TargetController {
                 }else if(clearIndex.equals(deleteIndexAll)){
                     HisCountDataService.deleteByIndex();
                     HisCountDataService.deleteHisCountDataL2();
+                    MonthCountDataService.deleteByIndex();
                 }
 
                 if (sign.equals(dateStr)){
@@ -158,13 +158,26 @@ public class TargetController {
                     if (monthDay == null || monthDay > 0 ) monthDay = esBean.getMonthDay() ;
 
                     List<String> vinCodes = new ArrayList<>() ;
-                    vinCodes.add("LJU70W1Z1GG082321") ;
+//                    vinCodes.add("LJU70W1Z1GG082321") ;
+//                    vinCodes.add("LJU70W1ZXFG076113") ;
+//                    vinCodes.add("LJU70W1Z7FG070348") ;
+//                    vinCodes.add("LJU70W1ZXFG073499") ;
+//                    vinCodes.add("LJU70W1Z0FG076637") ;
                     Agg agg = new Agg() ;
-                    agg.takeAgg(-startDay,-endDay,vinCodes);
-//                    TargetUtil.countMonthData(monthDay,Math.abs(startDay)) ;
+                    agg.takeAgg(startDay,endDay,vinCodes);
+
+                    if (monthDay != null ){
+                        Thread.sleep(2000);
+                        agg.takeVehicleL2(startDay,endDay,monthDay,vinCodes);
+
+                        Thread.sleep(3000);
+                        agg.takeVehicleL3(startDay,endDay,monthDay,vinCodes);
+                    }
                 }
             }
 
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         } finally {
             REPEAT_REQUEST = true ;
         }

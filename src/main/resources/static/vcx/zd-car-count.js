@@ -16,11 +16,12 @@
         VisualModel.prototype.fetch = function () {
             var _this = this;
             // 所有车辆数目
-            zdAPI.fetchTotalCarCount().then(function (count) {
-                _this.total = count;
-            }, function (jqXHR, text) {
-                _this.total = text;
-            });
+//            zdAPI.fetchTotalCarCount().then(function (count) {
+//                _this.total = count;
+//            }, function (jqXHR, text) {
+//                _this.total = text;
+//            });
+
 
             zdAPI.monthLastTargetData().then(function (data) {
                 _this.canNormal = data.canNormal ;
@@ -31,6 +32,7 @@
                 _this.gpsNearNoData = data.gpsNearNoData ;
                 _this.gpsNoData = data.gpsNoData ;
                 _this.gpsTotal = parseInt(data.gpsNormal)+parseInt(data.gpsNearNoData)+parseInt(data.gpsNoData) ;
+                _this.total = data.vehicleNum ;
             }, function (jqXHR, text) {
                 _this.canTotal = text;
                 _this.gpsTotal = text;
