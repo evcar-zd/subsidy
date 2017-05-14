@@ -11,6 +11,8 @@ import java.util.Map;
  */
 public class Constant {
 
+    public static final String LOGO                     =   "ZD" ;
+
     /** ES 车辆  index&type*/
     public static final String VEHICLE_INDEX            =   "vehicle_archives_v1" ;
     public static final String VEHICLE_TYPE             =   "vehicle_info" ;
@@ -62,6 +64,10 @@ public class Constant {
 
     public static final String HISCOUNT_DATAL2_INDEX    =   "hiscount_datal2_v1" ;
     public static final String HISCOUNT_DATAL2_TYPE     =   "hiscount_datal2" ;
+
+    public static final String HISCOUNT_DATAL3_INDEX    =   "hiscount_datal3_v1" ;
+    public static final String HISCOUNT_DATAL3_TYPE     =   "hiscount_datal3" ;
+
 
     /**  指标常量  **/
     public static final int MILEAGE                     =   1 ;

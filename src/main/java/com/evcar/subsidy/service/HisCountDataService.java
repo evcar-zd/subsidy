@@ -1,9 +1,7 @@
 package com.evcar.subsidy.service;
 
 import com.evcar.subsidy.entity.HisCountData;
-import com.evcar.subsidy.entity.MonthCountData;
 import com.evcar.subsidy.util.Constant;
-import com.evcar.subsidy.util.DateUtil;
 import com.evcar.subsidy.util.ESTools;
 import com.evcar.subsidy.util.JacksonUtil;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -33,6 +31,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.evcar.subsidy.util.Constant.HISCOUNT_DATA_TYPE;
 
 /**
  * Created by Kong on 2017/4/24.
@@ -79,7 +79,7 @@ public class HisCountDataService {
                         .endObject()
                         .endObject()
                         .endObject();
-                PutMappingRequest mapping = Requests.putMappingRequest(Constant.HISCOUNT_DATA_INDEX).type(Constant.HISCOUNT_DATA_TYPE).source(mappingBuilder);
+                PutMappingRequest mapping = Requests.putMappingRequest(Constant.HISCOUNT_DATA_INDEX).type(HISCOUNT_DATA_TYPE).source(mappingBuilder);
                 client.admin().indices().putMapping(mapping).actionGet();
             } catch (Exception e) {
                 s_logger.error("--------- createIndex 创建 mapping 失败：",e);
@@ -95,7 +95,7 @@ public class HisCountDataService {
     public static void addHisCountData(HisCountData hisCountData){
         Client client = ESTools.getClient() ;
         try {
-            client.prepareIndex(Constant.HISCOUNT_DATA_INDEX,Constant.HISCOUNT_DATA_TYPE,hisCountData.getId())
+            client.prepareIndex(Constant.HISCOUNT_DATA_INDEX, HISCOUNT_DATA_TYPE,hisCountData.getId())
                     .setSource(JacksonUtil.toJSon(hisCountData)).execute().get();
         } catch (Exception e) {
             s_logger.error("save hisCountData ERROR");
@@ -111,14 +111,13 @@ public class HisCountDataService {
         Client client = ESTools.getClient() ;
         boolean flag = false ;
         try{
-            DeleteResponse deleteResponse = client.prepareDelete(Constant.HISCOUNT_DATA_INDEX,Constant.HISCOUNT_DATA_TYPE,id).execute().get() ;
+            DeleteResponse deleteResponse = client.prepareDelete(Constant.HISCOUNT_DATA_INDEX, HISCOUNT_DATA_TYPE,id).execute().get() ;
             flag = deleteResponse.isFound() ;
         } catch (Exception e) {
             s_logger.error("delete hisCountData ERROR");
         }
         return flag ;
     }
-
 
     /**
      * 删除所有数据
@@ -134,27 +133,29 @@ public class HisCountDataService {
 
 
     /**
-     * 查询计算数据
+     * 查询计算数据L1、L2
+     * @param vinCode
      * @param startDate
      * @param endDate
-     * @param currentPage
-     * @param pageSize
      * @return
      */
-    public static List<HisCountData> getHisCountData(Date startDate, Date endDate,Integer currentPage,Integer pageSize){
+    public static List<HisCountData> getHisCountData(String vinCode ,Date startDate, Date endDate,String index,String type){
+
+        Long size = getHisCountDataNumber(vinCode,startDate,endDate,index,type);
 
         Client client = ESTools.getClient() ;
 
         List<HisCountData> list = new ArrayList<>() ;
-        SortBuilder sortBuilder = SortBuilders.fieldSort("countDate").order(SortOrder.ASC);
+        SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.ASC);
         QueryBuilder qb = new BoolQueryBuilder()
-                .must(QueryBuilders.rangeQuery("countDate")
+                .must(QueryBuilders.matchQuery("vinCode",vinCode))
+                .must(QueryBuilders.rangeQuery("tm")
                         .from(startDate.getTime())
-                        .to(startDate.getTime()));
-        SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATA_INDEX)
-                .setTypes(Constant.HISCOUNT_DATA_TYPE).setQuery(qb).addSort(sortBuilder)
-                .setFrom((currentPage-1)*pageSize)
-                .setSize(pageSize);
+                        .to(endDate.getTime()));
+        SearchRequestBuilder search = client.prepareSearch(index)
+                .setTypes(type).setQuery(qb).addSort(sortBuilder)
+                .setFrom(0)
+                .setSize(Integer.valueOf(String.valueOf(size)));
         SearchResponse sr = search.get();//得到查询结果
         for(SearchHit hits:sr.getHits()){
             String json = JacksonUtil.toJSon(hits.getSource()) ;
@@ -168,23 +169,54 @@ public class HisCountDataService {
     }
 
     /**
-     * 获取时间段的计算数据条数
+     * 获取时间段的计算数据条数 L1/L2
+     * @param vinCode
      * @param startDate
      * @param endDate
      * @return
      */
-    public static Long getHisCountDataNumber(Date startDate, Date endDate){
+    public static Long getHisCountDataNumber(String vinCode ,Date startDate, Date endDate,String index ,String type){
         Client client = ESTools.getClient() ;
         QueryBuilder qb = new BoolQueryBuilder()
-                .must(QueryBuilders.rangeQuery("countDate")
+                .must(QueryBuilders.matchQuery("vinCode",vinCode))
+                .must(QueryBuilders.rangeQuery("tm")
                         .from(startDate.getTime())
                         .to(endDate.getTime()));
-        SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATA_INDEX)
-                .setTypes(Constant.HISCOUNT_DATA_TYPE).setQuery(qb);
+        SearchRequestBuilder search = client.prepareSearch(index)
+                .setTypes(type).setQuery(qb);
         SearchResponse sr = search.get();//得到查询结果
         return sr.getHits().getTotalHits() ;
     }
 
+
+    /**
+     * 查询计L1是否有CAN数据或者GPS数据
+     * @param vinCode
+     * @param mark  标志， 0   can,  1 gps
+     * @return
+     */
+    public static List<HisCountData> getCanOrGps(String vinCode,int mark){
+        Client client = ESTools.getClient() ;
+        String queryFlag = mark == 1 ? "gpsCount" : "canCount" ;
+
+        List<HisCountData> list = new ArrayList<>() ;
+        SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.ASC);
+        QueryBuilder qb = new BoolQueryBuilder()
+                .must(QueryBuilders.matchQuery("vinCode",vinCode))
+                .must(QueryBuilders.rangeQuery(queryFlag).from(1).to(100));
+        SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATA_INDEX)
+                .setTypes(HISCOUNT_DATA_TYPE).setQuery(qb).addSort(sortBuilder)
+                .setFrom(0)
+                .setSize(10);
+        SearchResponse sr = search.get();//得到查询结果
+        for(SearchHit hits:sr.getHits()){
+            String json = JacksonUtil.toJSon(hits.getSource()) ;
+            s_logger.debug(json);
+            HisCountData hisCountData = JacksonUtil.readValue(json, HisCountData.class);
+            list.add(hisCountData) ;
+        }
+        return list ;
+    }
 
 
     /**
@@ -255,15 +287,15 @@ public class HisCountDataService {
 
     /**
      * 新增一段时间计算数据
-     * @param monthCountData
+     * @param hisCountData
      * @return
      */
-    public static boolean addHisCountDataL2(MonthCountData monthCountData){
+    public static boolean addHisCountDataL2(HisCountData hisCountData){
         Client client = ESTools.getClient() ;
         boolean flag = false ;
         try {
-            IndexResponse indexResponse = client.prepareIndex(Constant.HISCOUNT_DATAL2_INDEX,Constant.HISCOUNT_DATAL2_TYPE,monthCountData.getId())
-                    .setSource(JacksonUtil.toJSon(monthCountData)).execute().get();
+            IndexResponse indexResponse = client.prepareIndex(Constant.HISCOUNT_DATAL2_INDEX,Constant.HISCOUNT_DATAL2_TYPE,hisCountData.getId())
+                    .setSource(JacksonUtil.toJSon(hisCountData)).execute().get();
             flag = indexResponse.isCreated() ;
         } catch (Exception e) {
             s_logger.error("save hisCountDataL2 ERROR");
@@ -299,92 +331,5 @@ public class HisCountDataService {
             client.admin().indices().prepareDelete(Constant.HISCOUNT_DATAL2_INDEX).get();
     }
 
-
-    /**
-     * 查询计算数据
-     * @param startDate
-     * @param endDate
-     * @param sizeNum
-     * @return
-     */
-    public static List<MonthCountData> getMonthCountData(Date startDate, Date endDate,long sizeNum){
-
-        Client client = ESTools.getClient() ;
-
-        List<MonthCountData> list = new ArrayList<>() ;
-        SortBuilder sortBuilder = SortBuilders.fieldSort("countDate").order(SortOrder.ASC);
-        QueryBuilder qb = new BoolQueryBuilder()
-                .must(QueryBuilders.rangeQuery("countDate")
-                        .from(startDate.getTime())
-                        .to(endDate.getTime()));
-        SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATAL2_INDEX)
-                .setTypes(Constant.HISCOUNT_DATAL2_TYPE).setQuery(qb).addSort(sortBuilder)
-                .setFrom(0)
-                .setSize((int)sizeNum);
-        SearchResponse sr = search.get();//得到查询结果
-        for(SearchHit hits:sr.getHits()){
-            String json = JacksonUtil.toJSon(hits.getSource()) ;
-            MonthCountData monthCountData = JacksonUtil.readValue(json, MonthCountData.class);
-            list.add(monthCountData) ;
-        }
-        s_logger.info("fetched {} monthCountData", list.size());
-        return list ;
-    }
-
-    /**
-     * 获取时间段的计算数据条数
-     * @param startDate
-     * @param endDate
-     * @return
-     */
-    public static Long getMonthCountDataNumber(Date startDate, Date endDate){
-        Client client = ESTools.getClient() ;
-        Long num = Long.valueOf(0);
-        try {
-            QueryBuilder qb = new BoolQueryBuilder()
-                    .must(QueryBuilders.rangeQuery("countDate")
-                            .from(startDate.getTime())
-                            .to(endDate.getTime()));
-            SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATAL2_INDEX)
-                    .setTypes(Constant.HISCOUNT_DATAL2_TYPE).setQuery(qb);
-            SearchResponse sr = search.get();//得到查询结果
-            num = sr.getHits().getTotalHits() ;
-        } catch (Exception e){
-            s_logger.error("hiscount_datal2_v1 is nonentity");
-        }
-
-        return num ;
-    }
-
-
-    /**
-     * 查询计算数据
-     * @param startDate
-     * @param endDate
-     * @return
-     */
-    public static List<MonthCountData> getMonthCountData(Date startDate, Date endDate){
-
-        Client client = ESTools.getClient() ;
-
-        List<MonthCountData> list = new ArrayList<>() ;
-        SortBuilder sortBuilder = SortBuilders.fieldSort("countDate").order(SortOrder.DESC);
-        QueryBuilder qb = new BoolQueryBuilder()
-                .must(QueryBuilders.rangeQuery("countDate")
-                        .from(startDate.getTime())
-                        .to(endDate.getTime()));
-        SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATAL2_INDEX)
-                .setTypes(Constant.HISCOUNT_DATAL2_TYPE).setQuery(qb).addSort(sortBuilder)
-                .setFrom(0)
-                .setSize(1);
-        SearchResponse sr = search.get();//得到查询结果
-        for(SearchHit hits:sr.getHits()){
-            String json = JacksonUtil.toJSon(hits.getSource()) ;
-            MonthCountData monthCountData = JacksonUtil.readValue(json, MonthCountData.class);
-            list.add(monthCountData) ;
-        }
-        s_logger.info("fetched {} monthCountData", list.size());
-        return list ;
-    }
 
 }

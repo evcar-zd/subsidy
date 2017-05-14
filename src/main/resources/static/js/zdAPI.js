@@ -66,7 +66,7 @@
     zdAPI.prototype.fetchHistory = function (data) {
         var model = [];
         for (var i = 0; i < data.length; i++) {
-            var date = new Date(data[i].countDate) ;
+            var date = new Date(data[i].calcTime) ;
             var formatDate = this.dealDatePattern(date) ;
             var value = new Object();
             var vehicleNum = data[i].vehicleNum ;
@@ -101,7 +101,7 @@
             var model = [] ;
             for(var i in data){
                 var value = new Object();
-                value.tm = new Date(data[i].countDate);
+                value.tm = new Date(data[i].calcTime);
                 value.v = data[i].targetNum ;
                 model.push(value);
             }

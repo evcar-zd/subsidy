@@ -28,37 +28,117 @@ public class Agg {
 
     /**
      * 计算L1入口
-     * @param startDay
-     * @param endDay
-     * @param vinCodes
+     * 从startDate至endDate每一天的数据
+     * 实现每车每天一条数据
+     * @param startDay      当前日期的前startDay天
+     * @param endDay        当前日期的前endDay天
+     * @param vinCodes      车辆信息
      */
     public void takeAgg(int startDay, int endDay, List<String> vinCodes){
+        if (startDay - endDay > 0){
+            Date date = new Date() ;
+            Date startDate = DateUtil.getDate(date,startDay) ;
+            Date endDate = DateUtil.getDate(date,endDay) ;
+            int diffNum = DateUtil.diffDate(startDate,endDate) ;
+
+            List<VehicleVo> vehicleVos = this.talkVehicle(vinCodes);
+            for (int i = 0 ; i < diffNum ;i++){
+
+                Date start = DateUtil.getStartDate(startDate,i) ;
+                Date end = DateUtil.getEndDate(startDate,i) ;
+
+                for (VehicleVo vehicleVo : vehicleVos){
+                    VehicleL1 vehicleL1 = new VehicleL1() ;
+                    vehicleL1.calc(vehicleVo,start,end);
+                }
+            }
+        }
+
+    }
+
+    /***
+     * L2计算入口
+     * 取L1中startDate至endDate的数据
+     * 每monthDay天分为一组数据
+     * 如果startDate和endDate日期差大于monthDay，则线性移动。
+     * 实现每车每天一条数据
+     * @param startDay  当前日期的前startDay天
+     * @param endDay    当前日期的前endDay天
+     * @param monthDay  每monthDay天，当做一组数据
+     * @param vinCodes  车辆信息
+     */
+    public void takeVehicleL2(int startDay, int endDay, int monthDay ,List<String> vinCodes){
         Date date = new Date() ;
         Date startDate = DateUtil.getDate(date,startDay) ;
         Date endDate = DateUtil.getDate(date,endDay) ;
         int diffNum = DateUtil.diffDate(startDate,endDate) ;
 
-        List<VehicleVo> vehicleVos = this.talkVehicle(vinCodes);
         for (int i = 0 ; i < diffNum ;i++){
 
             Date start = DateUtil.getStartDate(startDate,i) ;
-            Date end = DateUtil.getEndDate(startDate,i) ;
+            Date end = DateUtil.getEndDate(startDate,monthDay) ;
 
-            for (VehicleVo vehicleVo : vehicleVos){
-                VehicleL1 vehicleL1 = new VehicleL1() ;
-                vehicleL1.calc(vehicleVo,start,end);
+            /** 当不满足monthDay天数时，执行最后一次 */
+            if (DateUtil.compare(end,endDate)){
+                end = endDate ;
+                i = diffNum ;
+            }
+            if (DateUtil.diffDate(end,endDate) == 0){
+                i = diffNum ;
             }
 
+            List<VehicleVo> vehicleVos = this.talkVehicle(vinCodes);
+            for (VehicleVo vehicleVo : vehicleVos){
+                VehicleL2 vehicleL2 = new VehicleL2() ;
+                vehicleL2.calc(vehicleVo,start ,end );
+            }
         }
-
     }
 
     /**
-     * 获取需要计算车辆信息
+     * 计算L3数据入口
+     * 取L2中startDate至endDate的数据，
+     * 每monthDay天分为一组数据
+     * 如果startDate和endDate日期差大于monthDay，则线性移动。
+     * 现实每组每天一条数据
+     * @param startDay
+     * @param endDay
+     * @param monthDay
      * @param vinCodes
+     */
+    public void takeVehicleL3(int startDay, int endDay, int monthDay ,List<String> vinCodes){
+        Date date = new Date() ;
+        Date startDate = DateUtil.getDate(date,startDay) ;
+        Date endDate = DateUtil.getDate(date,endDay) ;
+        int diffNum = DateUtil.diffDate(startDate,endDate) ;
+
+        for (int i = 0 ; i < diffNum ;i++){
+
+            Date start = DateUtil.getStartDate(startDate,i) ;
+            Date end = DateUtil.getEndDate(startDate,monthDay) ;
+
+            /** 当不满足monthDay天数时，执行最后一次 */
+            if (DateUtil.compare(end,endDate)){
+                end = endDate ;
+                i = diffNum ;
+            }
+            if (DateUtil.diffDate(end,endDate) == 0){
+                i = diffNum ;
+            }
+
+            List<VehicleVo> vehicleVos = this.talkVehicle(vinCodes);
+            VehicleL3 vehicleL3 = new VehicleL3() ;
+            vehicleL3.calc(vehicleVos,start ,end );
+        }
+    }
+
+
+    /**
+     * 获取需要计算车辆信息
+     * @param vinCodes 如果vinCodes是null，则查询全部车辆信息
      * @return
      */
-    public List<VehicleVo> talkVehicle(List<String> vinCodes){
+    private List<VehicleVo> talkVehicle(List<String> vinCodes){
         List<VehicleVo> vehicleVos = new ArrayList<>() ;
         if (vinCodes == null || vinCodes.size() == 0){
             /** 车辆分组--避免数据辆过大 */
@@ -71,6 +151,7 @@ public class Agg {
             for (int j = 0 ; j < groupNum ; j++ ) {
                 List<Vehicle> vehicleList = VehicleService.getVehicleByPage(currentPage, pageSize);
                 for (Vehicle vehicle : vehicleList){
+                    if (vehicle == null) continue;
                     VehicleVo vehicleVo = new VehicleVo(vehicle.getVinCode(),vehicle.getCarType() ,vehicle.getVeDeliveredDate()) ;
                     vehicleVos.add(vehicleVo) ;
                 }
@@ -79,12 +160,12 @@ public class Agg {
         }else{
             for (String vinCode : vinCodes){
                 Vehicle vehicle = VehicleService.getVehicle(vinCode) ;
+                if (vehicle == null) continue;
                 VehicleVo vehicleVo = new VehicleVo(vehicle.getVinCode(),vehicle.getCarType() ,vehicle.getVeDeliveredDate()) ;
                 vehicleVos.add(vehicleVo) ;
             }
         }
         return vehicleVos ;
     }
-
 
 }

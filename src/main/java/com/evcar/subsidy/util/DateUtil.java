@@ -144,13 +144,13 @@ public class DateUtil {
 
 
 	/**
-	 * 获取某天的后几天的日期
+	 * 获取某天的前几天的日期
 	 * @return
 	 */
 	public static Date getDate(Date date,Integer num){
 		Calendar calendar = Calendar.getInstance() ;
 		calendar.setTime(date);
-		calendar.set(Calendar.DATE,calendar.get(Calendar.DATE) + num);
+		calendar.set(Calendar.DATE,calendar.get(Calendar.DATE) - num);
 		SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
 		String startDate = dft.format(calendar.getTime())+" 00:00:00";
 		return parseStrToDate(startDate) ;
@@ -206,5 +206,21 @@ public class DateUtil {
 		int dateNum = (int) ((getMillis(date) - getMillis(date1)) / (24 * 3600 * 1000));
 		return Math.abs(dateNum);
 	}
+
+
+	/**
+	 * 功能描述：日期相减
+	 * @param date 日期
+	 * @param date1 日期
+	 * @return 返回相减后的天数
+	 */
+	public static boolean compare(Date date, Date date1) {
+		int dateNum = (int) ((getMillis(date) - getMillis(date1)) / (24 * 3600 * 1000));
+		return dateNum > 0 ? true : false ;
+	}
+
+
+
+
 
 }
