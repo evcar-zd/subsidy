@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.jar.Pack200;
 
 import static com.evcar.subsidy.service.VehicleService.getVehicleNum;
 
@@ -39,19 +40,28 @@ public class Agg {
             Date date = new Date() ;
             Date startDate = DateUtil.getDate(date,startDay) ;
             Date endDate = DateUtil.getDate(date,endDay) ;
-            int diffNum = DateUtil.diffDate(startDate,endDate) ;
+//            int diffNum = DateUtil.diffDate(startDate,endDate) ;
 
             List<VehicleVo> vehicleVos = this.talkVehicle(vinCodes);
-            for (int i = 0 ; i < diffNum ;i++){
-
-                Date start = DateUtil.getStartDate(startDate,i) ;
-                Date end = DateUtil.getEndDate(startDate,i) ;
-
+            if(vehicleVos.size() > 0 ) {
                 for (VehicleVo vehicleVo : vehicleVos){
+                    Date start = DateUtil.getStartDate(startDate,0) ;
+                    Date end = DateUtil.getEndDate(endDate,0) ;
                     VehicleL1 vehicleL1 = new VehicleL1() ;
                     vehicleL1.calc(vehicleVo,start,end);
                 }
             }
+
+//            for (int i = 0 ; i < diffNum ;i++){
+//
+//                Date start = DateUtil.getStartDate(startDate,i) ;
+//                Date end = DateUtil.getEndDate(startDate,i) ;
+//
+//                for (VehicleVo vehicleVo : vehicleVos){
+//                    VehicleL1 vehicleL1 = new VehicleL1() ;
+//                    vehicleL1.calc(vehicleVo,start,end);
+//                }
+//            }
         }
 
     }
@@ -71,28 +81,38 @@ public class Agg {
         Date date = new Date() ;
         Date startDate = DateUtil.getDate(date,startDay) ;
         Date endDate = DateUtil.getDate(date,endDay) ;
-        int diffNum = DateUtil.diffDate(startDate,endDate) ;
+//        int diffNum = DateUtil.diffDate(startDate,endDate) ;
 
-        for (int i = 0 ; i < diffNum ;i++){
-
-            Date start = DateUtil.getStartDate(startDate,i) ;
-            Date end = DateUtil.getEndDate(startDate,monthDay) ;
-
-            /** 当不满足monthDay天数时，执行最后一次 */
-            if (DateUtil.compare(end,endDate)){
-                end = endDate ;
-                i = diffNum ;
-            }
-            if (DateUtil.diffDate(end,endDate) == 0){
-                i = diffNum ;
-            }
-
-            List<VehicleVo> vehicleVos = this.talkVehicle(vinCodes);
+        List<VehicleVo> vehicleVos = this.talkVehicle(vinCodes);
+        if(vehicleVos.size() > 0 ) {
             for (VehicleVo vehicleVo : vehicleVos){
+                Date start = DateUtil.getStartDate(startDate,0) ;
+                Date end = DateUtil.getEndDate(endDate,0) ;
                 VehicleL2 vehicleL2 = new VehicleL2() ;
-                vehicleL2.calc(vehicleVo,start ,end );
+                vehicleL2.calc(vehicleVo,start ,end ,monthDay);
             }
         }
+
+//        for (int i = 0 ; i < diffNum ;i++){
+//
+//            Date start = DateUtil.getStartDate(startDate,i) ;
+//            Date end = DateUtil.getEndDate(startDate,monthDay) ;
+//
+//            /** 当不满足monthDay天数时，执行最后一次 */
+//            if (DateUtil.compare(end,endDate)){
+//                end = endDate ;
+//                i = diffNum ;
+//            }
+//            if (DateUtil.diffDate(end,endDate) == 0){
+//                i = diffNum ;
+//            }
+//
+//            List<VehicleVo> vehicleVos = this.talkVehicle(vinCodes);
+//            for (VehicleVo vehicleVo : vehicleVos){
+//                VehicleL2 vehicleL2 = new VehicleL2() ;
+//                vehicleL2.calc(vehicleVo,start ,end );
+//            }
+//        }
     }
 
     /**
@@ -115,14 +135,10 @@ public class Agg {
         for (int i = 0 ; i < diffNum ;i++){
 
             Date start = DateUtil.getStartDate(startDate,i) ;
-            Date end = DateUtil.getEndDate(startDate,monthDay) ;
+            Date end = DateUtil.getEndDate(startDate,monthDay-1) ;
 
             /** 当不满足monthDay天数时，执行最后一次 */
-            if (DateUtil.compare(end,endDate)){
-                end = endDate ;
-                i = diffNum ;
-            }
-            if (DateUtil.diffDate(end,endDate) == 0){
+            if (DateUtil.compare(end,endDate) || DateUtil.diffDate(end,endDate) == 0){
                 i = diffNum ;
             }
 
@@ -149,10 +165,11 @@ public class Agg {
             Integer currentPage = 1 ;
             Integer pageSize = MAX_SIZE ;
             for (int j = 0 ; j < groupNum ; j++ ) {
+//                if (j == 1) break;
                 List<Vehicle> vehicleList = VehicleService.getVehicleByPage(currentPage, pageSize);
                 for (Vehicle vehicle : vehicleList){
                     if (vehicle == null) continue;
-                    VehicleVo vehicleVo = new VehicleVo(vehicle.getVinCode(),vehicle.getCarType() ,vehicle.getVeDeliveredDate()) ;
+                    VehicleVo vehicleVo = new VehicleVo(vehicle.getVinCode(),vehicle.getCarType() ,vehicle.getVeDeliveredDate(),vehicle.getReleaseTime()) ;
                     vehicleVos.add(vehicleVo) ;
                 }
                 currentPage ++ ;
@@ -161,7 +178,7 @@ public class Agg {
             for (String vinCode : vinCodes){
                 Vehicle vehicle = VehicleService.getVehicle(vinCode) ;
                 if (vehicle == null) continue;
-                VehicleVo vehicleVo = new VehicleVo(vehicle.getVinCode(),vehicle.getCarType() ,vehicle.getVeDeliveredDate()) ;
+                VehicleVo vehicleVo = new VehicleVo(vehicle.getVinCode(),vehicle.getCarType() ,vehicle.getVeDeliveredDate(),vehicle.getReleaseTime()) ;
                 vehicleVos.add(vehicleVo) ;
             }
         }

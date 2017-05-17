@@ -23,21 +23,6 @@ public class Application implements CommandLineRunner {
 
     private Logger _logger;
 
-
-    /**
-     * 初始化系统数据
-     *
-     * @throws IOException
-     */
-    @PostConstruct
-    public void initApp() throws IOException {
-        /**
-         * 初始化车型的六项指标数据
-         */
-        Constant.init();
-    }
-
-
     @Override
     public void run(String... args) throws Exception {
         final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);

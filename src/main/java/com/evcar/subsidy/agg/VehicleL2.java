@@ -1,13 +1,14 @@
 package com.evcar.subsidy.agg;
 
-import com.evcar.subsidy.entity.HisCountData;
-import com.evcar.subsidy.entity.VehicleVo;
+import com.evcar.subsidy.entity.*;
 import com.evcar.subsidy.util.DateUtil;
+import com.evcar.subsidy.util.OrganizationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Kong on 2017/5/12.
@@ -24,28 +25,53 @@ public class VehicleL2 extends VehicleBase{
      * @param startDate
      * @param endDate
      */
-    protected void calc(VehicleVo vehicleVo, Date startDate , Date endDate){
+    protected void calc(VehicleVo vehicleVo, Date startDate , Date endDate, int monthDay){
 
         this.loadL1(vehicleVo.getVinCode(),startDate,endDate);
 
-        this.calcVehicleL2(vehicleVo,endDate);
+        this.calcVehicleL2(vehicleVo,startDate, endDate, monthDay);
 
-        this.saveL2(this.hisCountData);
+    }
 
+    private void calcVehicleL2(VehicleVo vehicleVo,Date startDate,Date endDate,int monthDay){
+
+        int diffNum = DateUtil.diffDate(startDate,endDate) ;
+
+        for (int i = 0 ; i < diffNum ;i++){
+            Date start = DateUtil.getStartDate(startDate,i) ;
+            Date end = DateUtil.getEndDate(startDate,monthDay-1) ;
+
+            /** 当不满足monthDay天数时，执行最后一次 */
+            if (DateUtil.compare(end,endDate) || DateUtil.diffDate(end,endDate) == 0){
+                i = diffNum ;
+            }
+
+            /**
+             * 数据处理，避免多次请求
+             */
+            List<HisCountData> hisCountDatas = OrganizationUtil.getHisCountData(this.hisCountDatas,start,end);
+
+            this.calcTargetL2(vehicleVo,start,end,hisCountDatas);
+
+            this.saveL2(this.hisCountData);
+        }
     }
 
     /**
      * 计算
      * @param vehicleVo
+     * @param startDate
      * @param endDate
      */
-    private void calcVehicleL2(VehicleVo vehicleVo,Date endDate){
+    private void calcTargetL2(VehicleVo vehicleVo,Date startDate ,Date endDate,List<HisCountData> hisCountDatas){
+
         hisCountData = new HisCountData() ;
 
         String vinCode = vehicleVo.getVinCode() ;
         String id = vinCode + DateUtil.getDateStryyyyMMdd(endDate);
         String carType = vehicleVo.getCarType() ;
         Date veDeliveredDate = vehicleVo.getVeDeliveredDate() ;
+        Date releaseTime = vehicleVo.getReleaseTime() ;
         this.hisCountData = new HisCountData() ;
 
         this.hisCountData.setId(id);
@@ -53,7 +79,7 @@ public class VehicleL2 extends VehicleBase{
         this.hisCountData.setVinCode(vinCode);
         this.hisCountData.setCarType(carType);
         this.hisCountData.setVeDeliveredDate(veDeliveredDate);
-
+        this.hisCountData.setReleaseTime(releaseTime);
 
         Integer gpsCount = 0 ;                                  //GPS数据条数
         Integer canCount = 0 ;                                  //CAN数据条数
@@ -74,8 +100,10 @@ public class VehicleL2 extends VehicleBase{
                 chargeMidSoc += hisCountData.getChargeMidSoc() ;
                 chargeMidSec += hisCountData.getChargeMidSec() ;
                 dischargeTotalSec += hisCountData.getDischargeTotalSec() ;
-                maxInChargerPower = maxInChargerPower.add(hisCountData.getMaxInChargerPower()) ;
-                maxOutChargerPower = maxOutChargerPower.add(hisCountData.getMaxOutChargerPower()) ;
+                maxInChargerPower = maxInChargerPower.compareTo(hisCountData.getMaxInChargerPower()) == 1 ?
+                        maxInChargerPower : hisCountData.getMaxInChargerPower() ;
+                maxOutChargerPower = maxOutChargerPower.compareTo(hisCountData.getMaxOutChargerPower()) == 1 ?
+                        maxOutChargerPower : hisCountData.getMaxOutChargerPower() ;
                 dischargeMidSoc += hisCountData.getDischargeMidSoc() ;
                 dischargeMidMileage = dischargeMidMileage.add(hisCountData.getDischargeMidMileage());
             }
@@ -90,6 +118,11 @@ public class VehicleL2 extends VehicleBase{
                 mileageNum -- ;
             }
         }
+
+
+        /** 平均单日运行时间 */
+        int diffNum = DateUtil.diffDate(startDate,endDate)+ 1 ;
+        dischargeTotalSec = dischargeTotalSec / diffNum ;
 
         this.hisCountData.setGpsCount(gpsCount);
         this.hisCountData.setCanCount(canCount);

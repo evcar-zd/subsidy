@@ -26,6 +26,8 @@ public class VehicleBase {
 
     protected List<HisCountData> hisCountDatas ;
 
+    protected List<HvacData> hvacDatas ;
+
     /**
      * 载入数L1据
      * @param vinCode
@@ -47,6 +49,11 @@ public class VehicleBase {
         long obcNum = ObcDataService.getHisObcDataNum(vinCode,startDate,endDate);
         if (bmsNum > 0 )
             this.obcDatas = ObcDataService.getHisObcData(vinCode,startDate,endDate,obcNum) ;
+
+        /** 查询HVAC数据 */
+        long hvacNum = HvacDataService.getHvacDataNum(vinCode,startDate,endDate) ;
+        if (hvacNum > 0)
+            this.hvacDatas = HvacDataService.getHisHvacData(vinCode,startDate,endDate,hvacNum) ;
 
         /** 获取GPS数据 */
         gpsCount = (int) GpsDataService.getHisGpsDataNum(vinCode,startDate,endDate) ;

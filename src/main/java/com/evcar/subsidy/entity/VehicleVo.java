@@ -11,15 +11,17 @@ public class VehicleVo implements Serializable{
     private String vinCode ;
     private String carType ;
     private Date veDeliveredDate ;
+    private Date releaseTime ;
 
     public VehicleVo(){
 
     }
 
-    public VehicleVo(String vinCode,String carType ,Date veDeliveredDate){
+    public VehicleVo(String vinCode,String carType ,Date veDeliveredDate,Date releaseTime){
         this.vinCode = vinCode ;
         this.carType = carType ;
         this.veDeliveredDate = veDeliveredDate ;
+        this.releaseTime = releaseTime ;
     }
 
     public String getVinCode() {
@@ -44,5 +46,13 @@ public class VehicleVo implements Serializable{
 
     public void setVeDeliveredDate(Date veDeliveredDate) {
         this.veDeliveredDate = veDeliveredDate;
+    }
+
+    public Date getReleaseTime() {
+        return releaseTime;
+    }
+
+    public void setReleaseTime(Date releaseTime) {
+        this.releaseTime = releaseTime;
     }
 }

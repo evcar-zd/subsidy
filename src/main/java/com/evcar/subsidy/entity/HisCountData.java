@@ -15,6 +15,7 @@ public class HisCountData implements Serializable {
     private String vinCode ;                    //VIN
     private String carType ;                    //车类型
     private Date veDeliveredDate ;              //交车日期
+    private Date releaseTime ;                  //下线日期
     private Integer gpsCount ;                  //GPS数据条数
     private Integer canCount ;                  //CAN数据条数
     private BigDecimal mileageTotal ;           //总里程
@@ -70,6 +71,14 @@ public class HisCountData implements Serializable {
 
     public void setVeDeliveredDate(Date veDeliveredDate) {
         this.veDeliveredDate = veDeliveredDate;
+    }
+
+    public Date getReleaseTime() {
+        return releaseTime;
+    }
+
+    public void setReleaseTime(Date releaseTime) {
+        this.releaseTime = releaseTime;
     }
 
     public Integer getGpsCount() {

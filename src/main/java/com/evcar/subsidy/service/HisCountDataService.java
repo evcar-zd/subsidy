@@ -164,7 +164,7 @@ public class HisCountDataService {
             list.add(hisCountData) ;
         }
 
-        s_logger.info("fetched {} hisCountData", list.size());
+//        s_logger.info("fetched {} hisCountData", list.size());
         return list ;
     }
 

@@ -77,14 +77,13 @@ public class MonthCountDataService {
             client.admin().indices().prepareDelete(Constant.HISCOUNT_DATAL3_INDEX).get();
     }
 
-
     /**
      * 查询计算数据
      * @param startDate
      * @param endDate
      * @return
      */
-    public static List<MonthCountData> getMonthCountData(Date startDate, Date endDate){
+    public static List<MonthCountData> getLastMonthCountData(Date startDate, Date endDate){
 
         Client client = ESTools.getClient() ;
 
@@ -98,6 +97,38 @@ public class MonthCountDataService {
                 .setTypes(Constant.HISCOUNT_DATAL3_TYPE).setQuery(qb).addSort(sortBuilder)
                 .setFrom(0)
                 .setSize(1);
+        SearchResponse sr = search.get();//得到查询结果
+        for(SearchHit hits:sr.getHits()){
+            String json = JacksonUtil.toJSon(hits.getSource()) ;
+            MonthCountData monthCountData = JacksonUtil.readValue(json, MonthCountData.class);
+            list.add(monthCountData) ;
+        }
+        s_logger.info("fetched {} monthCountData", list.size());
+        return list ;
+    }
+
+
+    /**
+     * 查询计算数据
+     * @param startDate
+     * @param endDate
+     * @param number
+     * @return
+     */
+    public static List<MonthCountData> getMonthCountData(Date startDate, Date endDate,Integer number){
+
+        Client client = ESTools.getClient() ;
+
+        List<MonthCountData> list = new ArrayList<>() ;
+        SortBuilder sortBuilder = SortBuilders.fieldSort("calcTime").order(SortOrder.DESC);
+        QueryBuilder qb = new BoolQueryBuilder()
+                .must(QueryBuilders.rangeQuery("calcTime")
+                        .from(startDate.getTime())
+                        .to(endDate.getTime()));
+        SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATAL3_INDEX)
+                .setTypes(Constant.HISCOUNT_DATAL3_TYPE).setQuery(qb).addSort(sortBuilder)
+                .setFrom(0)
+                .setSize(number);
         SearchResponse sr = search.get();//得到查询结果
         for(SearchHit hits:sr.getHits()){
             String json = JacksonUtil.toJSon(hits.getSource()) ;

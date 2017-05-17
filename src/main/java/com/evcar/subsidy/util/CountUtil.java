@@ -1,21 +1,26 @@
 package com.evcar.subsidy.util;
 
+import com.evcar.subsidy.entity.ESBean;
+import com.evcar.subsidy.entity.EsBeanObj;
 import com.evcar.subsidy.entity.LgAndLt;
 import com.evcar.subsidy.entity.Statistical;
-import com.evcar.subsidy.entity.TargeBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-
-import static com.evcar.subsidy.util.Constant.MILEAGE;
-import static com.evcar.subsidy.util.Constant.init;
 
 /**
  * 计算共用类
  * Created by Kong on 2017/4/20.
  */
+@Component
 public class CountUtil {
+
+    private static ESBean esBean;
+    @Autowired
+    void setEsBean(ESBean value) { this.esBean = value;}
 
     private static Logger s_logger = LoggerFactory.getLogger(CountUtil.class);
     /**
@@ -26,30 +31,30 @@ public class CountUtil {
      * @return
      */
     public static Integer targeVerify(String carType,BigDecimal num ,Integer targeType){
-        TargeBean targeBean = Constant.targetmap.get(carType) ;
-        if (targeBean == null) return -2 ;
+        EsBeanObj esBeanObj = esBean.getTarget().get(carType) ;
+        if (esBeanObj == null) return -2 ;
         LgAndLt lgAndLt = null;
         switch (targeType){
             case Constant.MILEAGE :
-                lgAndLt = targeBean.getMileage() ;
+                lgAndLt = new LgAndLt(esBeanObj.getMileageMin(),esBeanObj.getMileageMax()) ;
                 break;
             case Constant.LIMITMILEAGE :
-                lgAndLt = targeBean.getLimitMileage() ;
+                lgAndLt = new LgAndLt(esBeanObj.getLimitMileageMin(),esBeanObj.getLimitMileageMax()) ;
                 break;
             case Constant.MAXENERGYTIME :
-                lgAndLt = targeBean.getMaxEnergyTime() ;
+                lgAndLt = new LgAndLt(esBeanObj.getEnergyTimeMin(),esBeanObj.getEnergyTimeMax()) ;
                 break;
             case Constant.MAXELECTRICPOWER :
-                lgAndLt = targeBean.getMaxElectricPower() ;
+                lgAndLt = new LgAndLt(esBeanObj.getElectricPowerMin(),esBeanObj.getElectricPowerMax()) ;
                 break;
             case Constant.AVGDAILYRUNTIME :
-                lgAndLt = targeBean.getAvgDailyRunTime() ;
+                lgAndLt = new LgAndLt(esBeanObj.getAvgDailyRunTimeMin(),esBeanObj.getAvgDailyRunTimeMax()) ;
                 break;
             case Constant.HUNDREDSKMUSEPOWER :
-                lgAndLt = targeBean.getHundredsKmusePower() ;
+                lgAndLt = new LgAndLt(esBeanObj.getHundredsPowerMin(),esBeanObj.getHundredsPowerMax()) ;
                 break;
         }
-        return CountUtil.countTarge(num,lgAndLt) ;
+        return countTarge(num,lgAndLt) ;
     }
 
     /**
@@ -57,7 +62,7 @@ public class CountUtil {
      * @param lgAndLt
      * @return
      */
-    public static Integer countTarge(BigDecimal num , LgAndLt lgAndLt) {
+    private static Integer countTarge(BigDecimal num , LgAndLt lgAndLt) {
         Integer flag = -1 ;  //默认无效
         if (num!=null && lgAndLt != null){
             if (num.compareTo(lgAndLt.getMin())!=-1 && num.compareTo(lgAndLt.getMax()) != 1){
