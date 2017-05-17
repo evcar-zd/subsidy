@@ -44,7 +44,7 @@ public class TargetController {
     public MonthCountData getLastTarget(){
         Date date = new Date() ;
         Date startDate = DateUtil.getDate(date,esBean.getMonthDay()) ;
-        List<MonthCountData> monthCountDatas = MonthCountDataService.getMonthCountData(startDate,date) ;
+        List<MonthCountData> monthCountDatas = MonthCountDataService.getLastMonthCountData(startDate,date) ;
         if (monthCountDatas.size() > 0){
             return monthCountDatas.get(0) ;
         }
@@ -62,7 +62,8 @@ public class TargetController {
         Long months = MonthCountDataService.getMonthCountDataNumber(startDate,date) ;
         List<MonthCountData> monthCountDatas = new ArrayList<>();
         if (months > 0){
-            monthCountDatas = MonthCountDataService.getMonthCountData(startDate,date) ;
+            int number = Integer.valueOf(String.valueOf(months)) ;
+            monthCountDatas = MonthCountDataService.getMonthCountData(startDate,date,number) ;
         }
         return monthCountDatas ;
     }
@@ -76,7 +77,8 @@ public class TargetController {
         Long months = MonthCountDataService.getMonthCountDataNumber(startDate,date) ;
         List<MonthCountData> monthCountDatas = new ArrayList<>();
         if (months > 0){
-            monthCountDatas = MonthCountDataService.getMonthCountData(startDate,date) ;
+            int number = Integer.valueOf(String.valueOf(months)) ;
+            monthCountDatas = MonthCountDataService.getMonthCountData(startDate,date,number) ;
         }
 
         List<TargetVo> targetVos = new ArrayList<>() ;
@@ -100,7 +102,7 @@ public class TargetController {
                 targetNum = BigDecimal.valueOf(monthCountData.getHundredsKmusePower().getNormal()*100).divide(BigDecimal.valueOf(vehicleNum),2,BigDecimal.ROUND_UP);
             }
             targetVo.setTargetNum(targetNum);
-            targetVo.setCountDate(monthCountData.getCalcTime());
+            targetVo.setCalcTime(monthCountData.getTm());
             targetVos.add(targetVo);
         }
         return targetVos ;
@@ -133,15 +135,18 @@ public class TargetController {
                 String deleteIndexL1 = "deleteL1" + dateStr ;
                 String deleteIndexL2 = "deleteL2" + dateStr ;
                 String deleteIndexAll = "deleteAll" + dateStr ;
-                if (clearIndex.equals(deleteIndexL1)){
-                    HisCountDataService.deleteByIndex();
-                }else if(clearIndex.equals(deleteIndexL2)){
-                    HisCountDataService.deleteHisCountDataL2();
-                }else if(clearIndex.equals(deleteIndexAll)){
-                    HisCountDataService.deleteByIndex();
-                    HisCountDataService.deleteHisCountDataL2();
-                    MonthCountDataService.deleteByIndex();
+                if (clearIndex != null){
+                    if (clearIndex.equals(deleteIndexL1)){
+                        HisCountDataService.deleteByIndex();
+                    }else if(clearIndex.equals(deleteIndexL2)){
+                        HisCountDataService.deleteHisCountDataL2();
+                    }else if(clearIndex.equals(deleteIndexAll)){
+//                        HisCountDataService.deleteByIndex();
+//                        HisCountDataService.deleteHisCountDataL2();
+//                        MonthCountDataService.deleteByIndex();
+                    }
                 }
+
 
                 if (sign.equals(dateStr)){
                     int startDay = esBean.getStartDate() ;
@@ -158,17 +163,23 @@ public class TargetController {
                     if (monthDay == null || monthDay > 0 ) monthDay = esBean.getMonthDay() ;
 
                     List<String> vinCodes = new ArrayList<>() ;
-//                    vinCodes.add("LJU70W1Z1GG082321") ;
-//                    vinCodes.add("LJU70W1ZXFG076113") ;
-//                    vinCodes.add("LJU70W1Z7FG070348") ;
-//                    vinCodes.add("LJU70W1ZXFG073499") ;
-//                    vinCodes.add("LJU70W1Z0FG076637") ;
+//                    vinCodes.add("LJU70W1Z7GG100501") ;
+//                    vinCodes.add("LJU70W1Z3GG083289") ;
+//                    vinCodes.add("LJU70W1Z2GG100275") ;
+//                    vinCodes.add("LJU70W1Z0GG083122") ;
+//                    vinCodes.add("LB370X1Z5GJ053159") ;
+//                    vinCodes.add("LJU70W1ZXGG082785") ;
+//                    vinCodes.add("LB370X1Z6GJ051887") ;
+//                    vinCodes.add("LJU70W1Z1GG100459") ;
+//                    vinCodes.add("LJU70W1Z1GG083405") ;
+//                    vinCodes.add("LJU70W1Z5GG083603") ;
+
                     Agg agg = new Agg() ;
-                    agg.takeAgg(startDay,endDay,vinCodes);
+//                    agg.takeAgg(startDay,endDay,vinCodes);
 
                     if (monthDay != null ){
-                        Thread.sleep(2000);
-                        agg.takeVehicleL2(startDay,endDay,monthDay,vinCodes);
+//                        Thread.sleep(2000);
+//                        agg.takeVehicleL2(startDay,endDay,monthDay,vinCodes);
 
                         Thread.sleep(3000);
                         agg.takeVehicleL3(startDay,endDay,monthDay,vinCodes);

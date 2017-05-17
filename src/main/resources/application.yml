@@ -18,6 +18,106 @@ elasticsearch:
     maxSoc : 80
     linearSoc : 3
     linearMileage : 3
-    startDate : -3
-    endDate : -1
-    monthDay : -30
+    startDate : 3
+    endDate : 1
+    monthDay : 30
+
+    target :
+      SMA7001BEV18 :
+        mileageMin : 0
+        mileageMax : 220
+        limitMileageMin : 155
+        limitMileageMax : 180
+        energyTimeMin : 6
+        energyTimeMax : 9
+        electricPowerMin : 1300
+        electricPowerMax : 3400
+        avgDailyRunTimeMin : 0
+        avgDailyRunTimeMax : 5
+        hundredsPowerMin : 10.749
+        hundredsPowerMax : 11.05
+        socTotalcapacity : 18.4
+      SMA7001BEV19 :
+        mileageMin : 0
+        mileageMax : 220
+        limitMileageMin : 155
+        limitMileageMax : 180
+        energyTimeMin : 6
+        energyTimeMax : 9
+        electricPowerMin : 1300
+        electricPowerMax : 3400
+        avgDailyRunTimeMin : 0
+        avgDailyRunTimeMax : 5
+        hundredsPowerMin : 10.749
+        hundredsPowerMax : 11.05
+        socTotalcapacity : 18.4
+      SMA7001BEV22 :
+        mileageMin : 0
+        mileageMax : 220
+        limitMileageMin : 155
+        limitMileageMax : 180
+        energyTimeMin : 6
+        energyTimeMax : 9
+        electricPowerMin : 1300
+        electricPowerMax : 3400
+        avgDailyRunTimeMin : 0
+        avgDailyRunTimeMax : 5
+        hundredsPowerMin : 9.81
+        hundredsPowerMax : 11.05
+        socTotalcapacity : 17.52
+      SMA7001BEV23 :
+        mileageMin : 0
+        mileageMax : 220
+        limitMileageMin : 155
+        limitMileageMax : 180
+        energyTimeMin : 6
+        energyTimeMax : 9
+        electricPowerMin : 1300
+        electricPowerMax : 3400
+        avgDailyRunTimeMin : 0
+        avgDailyRunTimeMax : 5
+        hundredsPowerMin : 9.34
+        hundredsPowerMax : 11.35
+        socTotalcapacity : 17.52
+      SMA7001BEV60 :
+        mileageMin : 0
+        mileageMax : 220
+        limitMileageMin : 161
+        limitMileageMax : 180
+        energyTimeMin : 6
+        energyTimeMax : 9
+        electricPowerMin : 1300
+        electricPowerMax : 3400
+        avgDailyRunTimeMin : 0
+        avgDailyRunTimeMax : 5
+        hundredsPowerMin : 10.43
+        hundredsPowerMax : 11.05
+        socTotalcapacity : 17.76
+      SMA7001BEV61 :
+        mileageMin : 0
+        mileageMax : 220
+        limitMileageMin : 155
+        limitMileageMax : 180
+        energyTimeMin : 6
+        energyTimeMax : 9
+        electricPowerMin : 1300
+        electricPowerMax : 3400
+        avgDailyRunTimeMin : 0
+        avgDailyRunTimeMax : 5
+        hundredsPowerMin : 10.419
+        hundredsPowerMax : 11.35
+        socTotalcapacity : 17.76
+      JL7001BEV34 :
+        mileageMin : 0
+        mileageMax : 220
+        limitMileageMin : 161
+        limitMileageMax : 180
+        energyTimeMin : 6
+        energyTimeMax : 9
+        electricPowerMin : 1300
+        electricPowerMax : 3400
+        avgDailyRunTimeMin : 0
+        avgDailyRunTimeMax : 5
+        hundredsPowerMin : 10.29
+        hundredsPowerMax : 11.05
+        socTotalcapacity : 17.76

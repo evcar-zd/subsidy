@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Kong on 2017/4/19.
@@ -24,6 +25,7 @@ public class ESBean {
     private Integer startDate ;
     private Integer endDate ;
     private Integer monthDay ;
+    private Map<String,EsBeanObj> target ;
 
     public ESBean(){
     }
@@ -110,5 +112,13 @@ public class ESBean {
 
     public void setMonthDay(Integer monthDay) {
         this.monthDay = monthDay;
+    }
+
+    public Map<String, EsBeanObj> getTarget() {
+        return target;
+    }
+
+    public void setTarget(Map<String, EsBeanObj> target) {
+        this.target = target;
     }
 }
