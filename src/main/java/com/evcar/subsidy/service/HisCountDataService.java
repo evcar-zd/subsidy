@@ -1,6 +1,7 @@
 package com.evcar.subsidy.service;
 
 import com.evcar.subsidy.entity.HisCountData;
+import com.evcar.subsidy.entity.HisCountDataL2;
 import com.evcar.subsidy.util.Constant;
 import com.evcar.subsidy.util.ESTools;
 import com.evcar.subsidy.util.JacksonUtil;
@@ -32,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.evcar.subsidy.util.Constant.HISCOUNT_DATA_TYPE;
+import static com.evcar.subsidy.util.Constant.*;
 
 /**
  * Created by Kong on 2017/4/24.
@@ -133,15 +134,15 @@ public class HisCountDataService {
 
 
     /**
-     * 查询计算数据L1、L2
+     * 查询计算数据L1
      * @param vinCode
      * @param startDate
      * @param endDate
      * @return
      */
-    public static List<HisCountData> getHisCountData(String vinCode ,Date startDate, Date endDate,String index,String type){
+    public static List<HisCountData> getHisCountData(String vinCode ,Date startDate, Date endDate){
 
-        Long size = getHisCountDataNumber(vinCode,startDate,endDate,index,type);
+        Long size = getHisCountDataNumber(vinCode,startDate,endDate);
 
         Client client = ESTools.getClient() ;
 
@@ -152,8 +153,8 @@ public class HisCountDataService {
                 .must(QueryBuilders.rangeQuery("tm")
                         .from(startDate.getTime())
                         .to(endDate.getTime()));
-        SearchRequestBuilder search = client.prepareSearch(index)
-                .setTypes(type).setQuery(qb).addSort(sortBuilder)
+        SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATA_INDEX)
+                .setTypes(Constant.HISCOUNT_DATA_TYPE).setQuery(qb).addSort(sortBuilder)
                 .setFrom(0)
                 .setSize(Integer.valueOf(String.valueOf(size)));
         SearchResponse sr = search.get();//得到查询结果
@@ -169,21 +170,77 @@ public class HisCountDataService {
     }
 
     /**
-     * 获取时间段的计算数据条数 L1/L2
+     * 获取时间段的计算数据条数 L1
      * @param vinCode
      * @param startDate
      * @param endDate
      * @return
      */
-    public static Long getHisCountDataNumber(String vinCode ,Date startDate, Date endDate,String index ,String type){
+    public static Long getHisCountDataNumber(String vinCode ,Date startDate, Date endDate){
         Client client = ESTools.getClient() ;
         QueryBuilder qb = new BoolQueryBuilder()
                 .must(QueryBuilders.matchQuery("vinCode",vinCode))
                 .must(QueryBuilders.rangeQuery("tm")
                         .from(startDate.getTime())
                         .to(endDate.getTime()));
-        SearchRequestBuilder search = client.prepareSearch(index)
-                .setTypes(type).setQuery(qb);
+        SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATA_INDEX)
+                .setTypes(Constant.HISCOUNT_DATA_TYPE).setQuery(qb);
+        SearchResponse sr = search.get();//得到查询结果
+        return sr.getHits().getTotalHits() ;
+    }
+
+    /**
+     * 查询计算数据L2
+     * @param vinCode
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static List<HisCountDataL2> getHisCountDataL2(String vinCode ,Date startDate, Date endDate){
+
+        Long size = getHisCountDataNumberL2(vinCode,startDate,endDate);
+
+        Client client = ESTools.getClient() ;
+
+        List<HisCountDataL2> list = new ArrayList<>() ;
+        SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.ASC);
+        QueryBuilder qb = new BoolQueryBuilder()
+                .must(QueryBuilders.matchQuery("vinCode",vinCode))
+                .must(QueryBuilders.rangeQuery("tm")
+                        .from(startDate.getTime())
+                        .to(endDate.getTime()));
+        SearchRequestBuilder search = client.prepareSearch(HISCOUNT_DATAL2_INDEX)
+                .setTypes(HISCOUNT_DATAL2_TYPE).setQuery(qb).addSort(sortBuilder)
+                .setFrom(0)
+                .setSize(Integer.valueOf(String.valueOf(size)));
+        SearchResponse sr = search.get();//得到查询结果
+        for(SearchHit hits:sr.getHits()){
+            String json = JacksonUtil.toJSon(hits.getSource()) ;
+            s_logger.debug(json);
+            HisCountDataL2 hisCountData = JacksonUtil.readValue(json, HisCountDataL2.class);
+            list.add(hisCountData) ;
+        }
+
+//        s_logger.info("fetched {} hisCountData", list.size());
+        return list ;
+    }
+
+    /**
+     * 获取时间段的计算数据条数 L2
+     * @param vinCode
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static Long getHisCountDataNumberL2(String vinCode ,Date startDate, Date endDate){
+        Client client = ESTools.getClient() ;
+        QueryBuilder qb = new BoolQueryBuilder()
+                .must(QueryBuilders.matchQuery("vinCode",vinCode))
+                .must(QueryBuilders.rangeQuery("tm")
+                        .from(startDate.getTime())
+                        .to(endDate.getTime()));
+        SearchRequestBuilder search = client.prepareSearch(HISCOUNT_DATAL2_INDEX)
+                .setTypes(HISCOUNT_DATAL2_TYPE).setQuery(qb);
         SearchResponse sr = search.get();//得到查询结果
         return sr.getHits().getTotalHits() ;
     }
@@ -225,7 +282,7 @@ public class HisCountDataService {
     public static void createHisCountIndexL2(){
 
         Client client = ESTools.getClient() ;
-        IndicesExistsResponse inExistsResponse = client.admin().indices().exists(new IndicesExistsRequest(Constant.HISCOUNT_DATAL2_INDEX)).actionGet();
+        IndicesExistsResponse inExistsResponse = client.admin().indices().exists(new IndicesExistsRequest(HISCOUNT_DATAL2_INDEX)).actionGet();
         if (!inExistsResponse.isExists()){
             // settings
             Settings settings = Settings.builder().put("index.number_of_shards", 3).put("index.number_of_replicas", 2).build();
@@ -234,7 +291,7 @@ public class HisCountDataService {
             try {
                 mappingBuilder = XContentFactory.jsonBuilder()
                         .startObject()
-                        .startObject(Constant.HISCOUNT_DATAL2_INDEX)
+                        .startObject(HISCOUNT_DATAL2_INDEX)
                         .startObject("properties")
                         .startObject("id").field("type", "string").field("store", "yes").endObject()
                         .startObject("mileage.normal").field("type", "integer").field("store", "yes").endObject()
@@ -273,9 +330,9 @@ public class HisCountDataService {
                         .endObject()
                         .endObject();
                 IndicesAdminClient indicesAdminClient = client.admin().indices();
-                CreateIndexResponse response = indicesAdminClient.prepareCreate(Constant.HISCOUNT_DATAL2_INDEX)
+                CreateIndexResponse response = indicesAdminClient.prepareCreate(HISCOUNT_DATAL2_INDEX)
                         .setSettings(settings)
-                        .addMapping(Constant.HISCOUNT_DATAL2_INDEX, mappingBuilder)
+                        .addMapping(HISCOUNT_DATAL2_INDEX, mappingBuilder)
                         .get();
                 if (!response.isAcknowledged())
                     s_logger.info("创建索引失败");
@@ -290,11 +347,11 @@ public class HisCountDataService {
      * @param hisCountData
      * @return
      */
-    public static boolean addHisCountDataL2(HisCountData hisCountData){
+    public static boolean addHisCountDataL2(HisCountDataL2 hisCountData){
         Client client = ESTools.getClient() ;
         boolean flag = false ;
         try {
-            IndexResponse indexResponse = client.prepareIndex(Constant.HISCOUNT_DATAL2_INDEX,Constant.HISCOUNT_DATAL2_TYPE,hisCountData.getId())
+            IndexResponse indexResponse = client.prepareIndex(HISCOUNT_DATAL2_INDEX, HISCOUNT_DATAL2_TYPE,hisCountData.getId())
                     .setSource(JacksonUtil.toJSon(hisCountData)).execute().get();
             flag = indexResponse.isCreated() ;
         } catch (Exception e) {
@@ -311,7 +368,7 @@ public class HisCountDataService {
         Client client = ESTools.getClient() ;
         boolean flag = false ;
         try{
-            DeleteResponse deleteResponse = client.prepareDelete(Constant.HISCOUNT_DATAL2_INDEX,Constant.HISCOUNT_DATAL2_TYPE,id).execute().get() ;
+            DeleteResponse deleteResponse = client.prepareDelete(HISCOUNT_DATAL2_INDEX, HISCOUNT_DATAL2_TYPE,id).execute().get() ;
             flag = deleteResponse.isFound() ;
         } catch (Exception e) {
             s_logger.error("delete hisCountDataL2 ERROR");
@@ -326,9 +383,9 @@ public class HisCountDataService {
     public static void deleteHisCountDataL2(){
         Client client = ESTools.getClient() ;
         IndicesExistsResponse inExistsResponse = client.admin().indices()
-                .exists(new IndicesExistsRequest(Constant.HISCOUNT_DATAL2_INDEX)).actionGet();
+                .exists(new IndicesExistsRequest(HISCOUNT_DATAL2_INDEX)).actionGet();
         if (inExistsResponse.isExists())
-            client.admin().indices().prepareDelete(Constant.HISCOUNT_DATAL2_INDEX).get();
+            client.admin().indices().prepareDelete(HISCOUNT_DATAL2_INDEX).get();
     }
 
 

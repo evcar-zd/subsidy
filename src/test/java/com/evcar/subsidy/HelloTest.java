@@ -1,5 +1,8 @@
 package com.evcar.subsidy;
 
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListenableFutureTask;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
@@ -7,11 +10,17 @@ import org.asynchttpclient.Response;
 import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.scheduling.annotation.Async;
 
+import javax.xml.ws.AsyncHandler;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static javafx.scene.input.KeyCode.F;
+import static javafx.scene.input.KeyCode.L;
 
 public class HelloTest {
     private static Logger s_logger = LoggerFactory.getLogger(HelloTest.class);
@@ -28,6 +37,7 @@ public class HelloTest {
 
     @Test
     public void getHttp() throws Exception{
+
         DefaultAsyncHttpClientConfig t = new DefaultAsyncHttpClientConfig.Builder()
                 .setMaxConnections(300)
                 .setIoThreadsCount(20)
@@ -87,7 +97,6 @@ public class HelloTest {
                 canRemoved.clear();
             }
 
-
             if(task == 0 && futureList.size() == 0){
                 bEnd = true;
             }
@@ -99,6 +108,10 @@ public class HelloTest {
     }
 
 
+    @Test
+    public void test() throws Exception {
 
+
+    }
 
 }

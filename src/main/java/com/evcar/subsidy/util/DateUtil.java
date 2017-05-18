@@ -172,13 +172,39 @@ public class DateUtil {
 	}
 
 	/**
-	 * 获取某天的后几天的起始日期
+	 * 获取当天的起始日期
+	 * @return
+	 */
+	public static Date getStartDate(Date date){
+		Calendar calendar = Calendar.getInstance() ;
+		calendar.setTime(date);
+		calendar.set(Calendar.DATE,calendar.get(Calendar.DATE));
+		SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
+		String startDate = dft.format(calendar.getTime())+" 00:00:00";
+		return parseStrToDate(startDate) ;
+	}
+
+	/**
+	 * 获取某天的后几天的结束日期
 	 * @return
 	 */
 	public static Date getEndDate(Date date,Integer num){
 		Calendar calendar = Calendar.getInstance() ;
 		calendar.setTime(date);
 		calendar.set(Calendar.DATE,calendar.get(Calendar.DATE) + num);
+		SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
+		String startDate = dft.format(calendar.getTime())+" 23:59:59";
+		return parseStrToDate(startDate) ;
+	}
+
+	/**
+	 * 获取当天的结束日期
+	 * @return
+	 */
+	public static Date getEndDate(Date date){
+		Calendar calendar = Calendar.getInstance() ;
+		calendar.setTime(date);
+		calendar.set(Calendar.DATE,calendar.get(Calendar.DATE));
 		SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
 		String startDate = dft.format(calendar.getTime())+" 23:59:59";
 		return parseStrToDate(startDate) ;

@@ -148,7 +148,7 @@ public class MonthCountDataService {
      */
     public static Long getMonthCountDataNumber(Date startDate, Date endDate){
         Client client = ESTools.getClient() ;
-        Long num = Long.valueOf(0);
+        Long num = 0L;
         try {
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.rangeQuery("calcTime")

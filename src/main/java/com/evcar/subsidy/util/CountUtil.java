@@ -122,4 +122,26 @@ public class CountUtil {
         model.setInvalids(model.getInvalids()+statistical.getInvalids());
         return model ;
     }
+
+    public static BigDecimal CHARGE_MODEL1 = BigDecimal.valueOf(12) ;
+    public static BigDecimal CHARGE_MODEL2 = BigDecimal.valueOf(16) ;
+
+    /**
+     * 获取充电模式
+     * @param alowableCurrent
+     * @return
+     */
+    public static Integer getChargeModel(BigDecimal alowableCurrent){
+        alowableCurrent = alowableCurrent == null ? BigDecimal.ZERO : alowableCurrent ;
+        int model = 1 ;
+
+        if (alowableCurrent.compareTo(CHARGE_MODEL1)== -1 ){
+            model = 1 ;
+        }else if(alowableCurrent.compareTo(CHARGE_MODEL1) == 1 && alowableCurrent.compareTo(CHARGE_MODEL2) == -1){
+            model = 2 ;
+        }else if (alowableCurrent.compareTo(CHARGE_MODEL2) == 1){
+            model = 3 ;
+        }
+        return model ;
+    }
 }

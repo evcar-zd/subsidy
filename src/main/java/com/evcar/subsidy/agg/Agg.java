@@ -1,5 +1,6 @@
 package com.evcar.subsidy.agg;
 
+import com.evcar.subsidy.entity.ExportTarget;
 import com.evcar.subsidy.entity.Vehicle;
 import com.evcar.subsidy.entity.VehicleVo;
 import com.evcar.subsidy.service.VehicleService;
@@ -9,7 +10,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.jar.Pack200;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.evcar.subsidy.service.VehicleService.getVehicleNum;
 
@@ -27,6 +29,8 @@ public class Agg {
     public static final Integer MAX_SIZE = 500 ;
 
 
+    public static final Integer THREAD_SIZE = 10 ;
+
     /**
      * 计算L1入口
      * 从startDate至endDate每一天的数据
@@ -40,28 +44,40 @@ public class Agg {
             Date date = new Date() ;
             Date startDate = DateUtil.getDate(date,startDay) ;
             Date endDate = DateUtil.getDate(date,endDay) ;
-//            int diffNum = DateUtil.diffDate(startDate,endDate) ;
 
             List<VehicleVo> vehicleVos = this.talkVehicle(vinCodes);
             if(vehicleVos.size() > 0 ) {
-                for (VehicleVo vehicleVo : vehicleVos){
-                    Date start = DateUtil.getStartDate(startDate,0) ;
-                    Date end = DateUtil.getEndDate(endDate,0) ;
-                    VehicleL1 vehicleL1 = new VehicleL1() ;
-                    vehicleL1.calc(vehicleVo,start,end);
+
+                Date start = DateUtil.getStartDate(startDate) ;
+                Date end = DateUtil.getEndDate(endDate) ;
+
+                int groupNum = vehicleVos.size()/THREAD_SIZE ;
+                groupNum = vehicleVos.size()%THREAD_SIZE > 0 ? groupNum+1 : groupNum ;
+                for(int i = 0 ; i < groupNum ; i++ ){
+                    ExecutorService executor = Executors.newScheduledThreadPool(THREAD_SIZE+10) ;
+                    try {
+                        for (int j = 0; j < THREAD_SIZE; j++) {
+                            int y = i*THREAD_SIZE + j ;
+                            executor.execute(() -> {
+                                if (y < vehicleVos.size()){
+                                    VehicleVo vehicleVo = vehicleVos.get(y) ;
+                                    VehicleL1 vehicleL1 = new VehicleL1() ;
+                                    vehicleL1.calc(vehicleVo,start,end);
+                                }
+                            }) ;
+                        }
+                        executor.shutdown();
+                        while (true) {
+                            if (executor.isTerminated()) {
+                                executor.shutdownNow() ;
+                                break;
+                            }
+                        }
+                    }catch (Exception e){
+                        executor.shutdownNow() ;
+                    }
                 }
             }
-
-//            for (int i = 0 ; i < diffNum ;i++){
-//
-//                Date start = DateUtil.getStartDate(startDate,i) ;
-//                Date end = DateUtil.getEndDate(startDate,i) ;
-//
-//                for (VehicleVo vehicleVo : vehicleVos){
-//                    VehicleL1 vehicleL1 = new VehicleL1() ;
-//                    vehicleL1.calc(vehicleVo,start,end);
-//                }
-//            }
         }
 
     }
@@ -81,38 +97,39 @@ public class Agg {
         Date date = new Date() ;
         Date startDate = DateUtil.getDate(date,startDay) ;
         Date endDate = DateUtil.getDate(date,endDay) ;
-//        int diffNum = DateUtil.diffDate(startDate,endDate) ;
 
+        Date start = DateUtil.getStartDate(startDate) ;
+        Date end = DateUtil.getEndDate(endDate) ;
         List<VehicleVo> vehicleVos = this.talkVehicle(vinCodes);
+
         if(vehicleVos.size() > 0 ) {
-            for (VehicleVo vehicleVo : vehicleVos){
-                Date start = DateUtil.getStartDate(startDate,0) ;
-                Date end = DateUtil.getEndDate(endDate,0) ;
-                VehicleL2 vehicleL2 = new VehicleL2() ;
-                vehicleL2.calc(vehicleVo,start ,end ,monthDay);
+            int groupNum = vehicleVos.size()/THREAD_SIZE ;
+            groupNum = vehicleVos.size()%THREAD_SIZE > 0 ? groupNum+1 : groupNum ;
+            for(int i = 0 ; i < groupNum ; i++ ){
+                ExecutorService executor = Executors.newScheduledThreadPool(THREAD_SIZE+10) ;
+                try {
+                    for (int j = 0; j < THREAD_SIZE; j++) {
+                        int y = i*THREAD_SIZE+j ;
+                        executor.execute(() -> {
+                            if (y < vehicleVos.size()){
+                                VehicleVo vehicleVo = vehicleVos.get(y) ;
+                                VehicleL2 vehicleL2 = new VehicleL2() ;
+                                vehicleL2.calc(vehicleVo,start ,end ,monthDay);
+                            }
+                        }) ;
+                    }
+                    executor.shutdown();
+                    while (true) {
+                        if (executor.isTerminated()) {
+                            executor.shutdownNow() ;
+                            break;
+                        }
+                    }
+                }catch (Exception e){
+                    executor.shutdownNow() ;
+                }
             }
         }
-
-//        for (int i = 0 ; i < diffNum ;i++){
-//
-//            Date start = DateUtil.getStartDate(startDate,i) ;
-//            Date end = DateUtil.getEndDate(startDate,monthDay) ;
-//
-//            /** 当不满足monthDay天数时，执行最后一次 */
-//            if (DateUtil.compare(end,endDate)){
-//                end = endDate ;
-//                i = diffNum ;
-//            }
-//            if (DateUtil.diffDate(end,endDate) == 0){
-//                i = diffNum ;
-//            }
-//
-//            List<VehicleVo> vehicleVos = this.talkVehicle(vinCodes);
-//            for (VehicleVo vehicleVo : vehicleVos){
-//                VehicleL2 vehicleL2 = new VehicleL2() ;
-//                vehicleL2.calc(vehicleVo,start ,end );
-//            }
-//        }
     }
 
     /**
@@ -132,19 +149,31 @@ public class Agg {
         Date endDate = DateUtil.getDate(date,endDay) ;
         int diffNum = DateUtil.diffDate(startDate,endDate) ;
 
-        for (int i = 0 ; i < diffNum ;i++){
+        List<VehicleVo> vehicleVos = this.talkVehicle(vinCodes);
 
-            Date start = DateUtil.getStartDate(startDate,i) ;
-            Date end = DateUtil.getEndDate(startDate,monthDay-1) ;
-
-            /** 当不满足monthDay天数时，执行最后一次 */
-            if (DateUtil.compare(end,endDate) || DateUtil.diffDate(end,endDate) == 0){
-                i = diffNum ;
+        ExecutorService executor = Executors.newScheduledThreadPool(diffNum + 10) ;
+        try {
+            for (int i = 0 ; i < diffNum ;i++){
+                Date start = DateUtil.getStartDate(startDate,i) ;
+                Date end = DateUtil.getEndDate(startDate,monthDay-1) ;
+                /** 当不满足monthDay天数时，执行最后一次 */
+                if (DateUtil.compare(end,endDate) || DateUtil.diffDate(end,endDate) == 0){
+                    i = diffNum ;
+                }
+                executor.execute(() -> {
+                    VehicleL3 vehicleL3 = new VehicleL3() ;
+                    vehicleL3.calc(vehicleVos,start ,end );
+                }) ;
             }
-
-            List<VehicleVo> vehicleVos = this.talkVehicle(vinCodes);
-            VehicleL3 vehicleL3 = new VehicleL3() ;
-            vehicleL3.calc(vehicleVos,start ,end );
+            executor.shutdown();
+            while (true) {
+                if (executor.isTerminated()) {
+                    executor.shutdownNow() ;
+                    break;
+                }
+            }
+        }catch (Exception e){
+            executor.shutdownNow() ;
         }
     }
 
@@ -165,7 +194,7 @@ public class Agg {
             Integer currentPage = 1 ;
             Integer pageSize = MAX_SIZE ;
             for (int j = 0 ; j < groupNum ; j++ ) {
-//                if (j == 1) break;
+                if (j == 1) break;
                 List<Vehicle> vehicleList = VehicleService.getVehicleByPage(currentPage, pageSize);
                 for (Vehicle vehicle : vehicleList){
                     if (vehicle == null) continue;
@@ -183,6 +212,18 @@ public class Agg {
             }
         }
         return vehicleVos ;
+    }
+
+
+    public List<ExportTarget> getExport(Date date){
+        Date start = DateUtil.getStartDate(date) ;
+        Date end = DateUtil.getEndDate(date) ;
+        List<VehicleVo> vehicleVos = this.talkVehicle(null);
+        for (VehicleVo vehicleVo : vehicleVos){
+
+        }
+        ExportVehicle exportVehicle = new ExportVehicle();
+        return exportVehicle.getExportTarget(null,null) ;
     }
 
 }

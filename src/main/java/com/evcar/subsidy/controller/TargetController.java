@@ -143,7 +143,7 @@ public class TargetController {
                     }else if(clearIndex.equals(deleteIndexAll)){
 //                        HisCountDataService.deleteByIndex();
 //                        HisCountDataService.deleteHisCountDataL2();
-//                        MonthCountDataService.deleteByIndex();
+                        MonthCountDataService.deleteByIndex();
                     }
                 }
 
@@ -163,7 +163,7 @@ public class TargetController {
                     if (monthDay == null || monthDay > 0 ) monthDay = esBean.getMonthDay() ;
 
                     List<String> vinCodes = new ArrayList<>() ;
-//                    vinCodes.add("LJU70W1Z7GG100501") ;
+//                    vinCodes.add("LJU70W1ZXGG030024") ;
 //                    vinCodes.add("LJU70W1Z3GG083289") ;
 //                    vinCodes.add("LJU70W1Z2GG100275") ;
 //                    vinCodes.add("LJU70W1Z0GG083122") ;
