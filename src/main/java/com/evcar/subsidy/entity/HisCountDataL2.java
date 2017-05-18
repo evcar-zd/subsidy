@@ -5,10 +5,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 计算数据
+ * 计算数据L2
  * Created by Kong on 2017/4/21.
  */
-public class HisCountData implements Serializable {
+public class HisCountDataL2 implements Serializable {
 
     private String id ;                         //VIN+时间串
     private Date tm ;                           //数据时间
@@ -32,8 +32,17 @@ public class HisCountData implements Serializable {
     private BigDecimal dischargeMidMileage ;    //近似线性中段当日总行驶里程
     private Date calcTime ;                     //计算时间
     private String version ;                    //版本
+    private BigDecimal mileage ;                //里程
+    private BigDecimal limitMileage ;           //续驶里程
+    private BigDecimal maxEnergyTime1 ;         //一次满电最少时间（单位：h） - Model1
+    private BigDecimal maxEnergyTime2 ;         //一次满电最少时间（单位：h） - Model2
+    private BigDecimal maxEnergyTime3 ;         //一次满电最少时间（单位：h） - Model3
+    private BigDecimal maxElectricPower ;       //最大充电功率
+    private BigDecimal avgDailyRunTime ;        //平均单日运行时间
+    private BigDecimal hundredsKmusePower ;     //百公里耗电
 
-    public HisCountData(){
+
+    public HisCountDataL2(){
 
     }
 
@@ -211,5 +220,69 @@ public class HisCountData implements Serializable {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public BigDecimal getMileage() {
+        return mileage;
+    }
+
+    public void setMileage(BigDecimal mileage) {
+        this.mileage = mileage;
+    }
+
+    public BigDecimal getLimitMileage() {
+        return limitMileage;
+    }
+
+    public void setLimitMileage(BigDecimal limitMileage) {
+        this.limitMileage = limitMileage;
+    }
+
+    public BigDecimal getMaxEnergyTime1() {
+        return maxEnergyTime1;
+    }
+
+    public void setMaxEnergyTime1(BigDecimal maxEnergyTime1) {
+        this.maxEnergyTime1 = maxEnergyTime1;
+    }
+
+    public BigDecimal getMaxEnergyTime2() {
+        return maxEnergyTime2;
+    }
+
+    public void setMaxEnergyTime2(BigDecimal maxEnergyTime2) {
+        this.maxEnergyTime2 = maxEnergyTime2;
+    }
+
+    public BigDecimal getMaxEnergyTime3() {
+        return maxEnergyTime3;
+    }
+
+    public void setMaxEnergyTime3(BigDecimal maxEnergyTime3) {
+        this.maxEnergyTime3 = maxEnergyTime3;
+    }
+
+    public BigDecimal getMaxElectricPower() {
+        return maxElectricPower;
+    }
+
+    public void setMaxElectricPower(BigDecimal maxElectricPower) {
+        this.maxElectricPower = maxElectricPower;
+    }
+
+    public BigDecimal getAvgDailyRunTime() {
+        return avgDailyRunTime;
+    }
+
+    public void setAvgDailyRunTime(BigDecimal avgDailyRunTime) {
+        this.avgDailyRunTime = avgDailyRunTime;
+    }
+
+    public BigDecimal getHundredsKmusePower() {
+        return hundredsKmusePower;
+    }
+
+    public void setHundredsKmusePower(BigDecimal hundredsKmusePower) {
+        this.hundredsKmusePower = hundredsKmusePower;
     }
 }

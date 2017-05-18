@@ -3,13 +3,9 @@ package com.evcar.subsidy.agg;
 import com.evcar.subsidy.GitVer;
 import com.evcar.subsidy.entity.*;
 import com.evcar.subsidy.service.*;
-import com.evcar.subsidy.util.Constant;
 
 import java.util.Date;
 import java.util.List;
-
-import static com.evcar.subsidy.service.HisCountDataService.getCanOrGps;
-import static javafx.scene.input.KeyCode.L;
 
 /**
  * Created by Kong on 2017/5/11.
@@ -66,9 +62,6 @@ public class VehicleBase {
     protected void save(HisCountData hisCountData){
         GitVer gitVer = new GitVer() ;
         hisCountData.setVersion(gitVer.getVersion());
-        /** 先删除之前数据 */
-        HisCountDataService.deleteHisCountData(hisCountData.getId()) ;
-
         HisCountDataService.addHisCountData(hisCountData);
     }
 
@@ -79,19 +72,16 @@ public class VehicleBase {
      * @param endDate
      */
     protected void loadL1(String vinCode, Date startDate, Date endDate){
-        hisCountDatas = HisCountDataService.getHisCountData(vinCode,startDate,endDate, Constant.HISCOUNT_DATA_INDEX,Constant.HISCOUNT_DATA_TYPE) ;
+        hisCountDatas = HisCountDataService.getHisCountData(vinCode,startDate,endDate) ;
     }
 
     /**
      * 保存L2数据
      * @param hisCountData
      */
-    protected void saveL2(HisCountData hisCountData){
+    protected void saveL2(HisCountDataL2 hisCountData){
         GitVer gitVer = new GitVer() ;
         hisCountData.setVersion(gitVer.getVersion());
-        /** 先删除之前数据 */
-        HisCountDataService.deleteHisCountDataL2(hisCountData.getId()) ;
-
         HisCountDataService.addHisCountDataL2(hisCountData) ;
     }
 
@@ -104,9 +94,6 @@ public class VehicleBase {
         GitVer gitVer = new GitVer() ;
         monthCountData.setVersion(gitVer.getVersion());
 
-        /** 先删除之前数据 */
-        MonthCountDataService.deleteMonthCountData(monthCountData.getId()) ;
-
         MonthCountDataService.addMonthCountData(monthCountData);
     }
 
@@ -116,8 +103,8 @@ public class VehicleBase {
      * @param startDate
      * @param endDate
      */
-    protected List<HisCountData> loadL2(String vinCode,Date startDate ,Date endDate){
-        return HisCountDataService.getHisCountData(vinCode,startDate,endDate, Constant.HISCOUNT_DATAL2_INDEX,Constant.HISCOUNT_DATAL2_TYPE) ;
+    protected List<HisCountDataL2> loadL2(String vinCode,Date startDate ,Date endDate){
+        return HisCountDataService.getHisCountDataL2(vinCode,startDate,endDate) ;
     }
 
 

@@ -48,8 +48,7 @@ public class VehicleL3 extends VehicleBase {
 
         for (VehicleVo vehicleVo : vehicleVos){
             String vinCode = vehicleVo.getVinCode() ;
-            System.out.print("{\"vinCode\":\""+vinCode+"\",");
-            List<HisCountData> hisCountDatas = this.loadL2(vinCode,startDate ,endDate);
+            List<HisCountDataL2> hisCountDatas = this.loadL2(vinCode,startDate ,endDate);
             if (hisCountDatas.size()==0) continue;
             /** 数据处理 */
             this.calcHisCountData(hisCountDatas,vinCode,startDate ,endDate);
@@ -63,7 +62,7 @@ public class VehicleL3 extends VehicleBase {
 
 
 
-    private void calcHisCountData(List<HisCountData> hisCountDatas,String vinCode,Date startDate , Date endDate){
+    private void calcHisCountData(List<HisCountDataL2> hisCountDatas,String vinCode,Date startDate , Date endDate){
         Integer gpsNormal = 0 ;                 //gps正常车辆
         Integer gpsNearNoData = 0 ;             //gps近期数据
         Integer gpsNoData = 0 ;                 //gps无数据
@@ -80,13 +79,26 @@ public class VehicleL3 extends VehicleBase {
 
         String carType = null ;
 
-        int dischargeMidSoc = 0 ;                                   //近似线性中段当日总放电SOC
-        BigDecimal dischargeMidMileage = BigDecimal.ZERO ;          //近似线性中段当日总行驶里程
-        long chargeMidSec = 0 ;                                     //近似线性中段充电时间(单位：S)
-        int ChargeMidSoc = 0 ;                                      //近似线性中段充电SOC
-        BigDecimal maxInChargerPower = BigDecimal.ZERO ;            //最大输入电功率
-        BigDecimal maxOutChargerPower = BigDecimal.ZERO ;           //最大输出电功率
-        for (HisCountData hisCountData : hisCountDatas){
+//        int dischargeMidSoc = 0 ;                                   //近似线性中段当日总放电SOC
+//        BigDecimal dischargeMidMileage = BigDecimal.ZERO ;          //近似线性中段当日总行驶里程
+//        long chargeMidSec = 0 ;                                     //近似线性中段充电时间(单位：S)
+//        int ChargeMidSoc = 0 ;                                      //近似线性中段充电SOC
+//        BigDecimal maxInChargerPower = BigDecimal.ZERO ;            //最大输入电功率
+//        BigDecimal maxOutChargerPower = BigDecimal.ZERO ;           //最大输出电功率
+
+        BigDecimal mileageTarget = BigDecimal.ZERO ;                //里程
+        int mileageNumber = 0 ;
+        BigDecimal limitMileageTarget = BigDecimal.ZERO ;           //续驶里程
+        int limitMileageNumber = 0 ;
+        BigDecimal maxEnergyTimeTarget = BigDecimal.ZERO ;          //一次满电最少时间（单位：h）
+        int maxEnergyTimeNumber = 0 ;
+        BigDecimal maxElectricPowerTarget = BigDecimal.ZERO ;       //最大充电功率
+        int maxElectricPowerNumber = 0 ;
+        BigDecimal avgDailyRunTimeTarget = BigDecimal.ZERO ;        //平均单日运行时间
+        int avgDailyRunTimeNumber = 0 ;
+        BigDecimal hundredsKmusePowerTarget = BigDecimal.ZERO ;     //百公里耗电
+        int hundredsKmusePowerNumber = 0 ;
+        for (HisCountDataL2 hisCountData : hisCountDatas){
             if (carType == null){
                 carType = hisCountData.getCarType() ;
             }
@@ -96,38 +108,71 @@ public class VehicleL3 extends VehicleBase {
             if (hisCountData.getGpsCount()>0){
                 gpsNormal ++ ;
             }
-            dischargeMidSoc += hisCountData.getDischargeMidSoc() ;
-            dischargeMidMileage = dischargeMidMileage.add(hisCountData.getDischargeMidMileage()) ;
-            chargeMidSec += hisCountData.getChargeMidSec() ;
-            ChargeMidSoc += hisCountData.getChargeMidSoc() ;
+//            dischargeMidSoc += hisCountData.getDischargeMidSoc() ;
+//            dischargeMidMileage = dischargeMidMileage.add(hisCountData.getDischargeMidMileage()) ;
+//            chargeMidSec += hisCountData.getChargeMidSec() ;
+//            ChargeMidSoc += hisCountData.getChargeMidSoc() ;
+//
+//            maxInChargerPower = maxInChargerPower.compareTo(hisCountData.getMaxInChargerPower()) == 1 ?
+//                    maxInChargerPower : hisCountData.getMaxInChargerPower() ;
+//            maxOutChargerPower = maxOutChargerPower.compareTo(hisCountData.getMaxOutChargerPower()) == 1 ?
+//                    maxOutChargerPower : hisCountData.getMaxOutChargerPower() ;
+            if (hisCountData.getMileage().compareTo(BigDecimal.ZERO) == 1){
+                mileageNumber ++ ;
+                mileageTarget = mileageTarget.add(hisCountData.getMileage()) ;
+            }
+            if (hisCountData.getLimitMileage().compareTo(BigDecimal.ZERO) == 1){
+                limitMileageNumber ++ ;
+                limitMileageTarget = limitMileageTarget.add(hisCountData.getLimitMileage()) ;
+            }
 
-            maxInChargerPower = maxInChargerPower.compareTo(hisCountData.getMaxInChargerPower()) == 1 ?
-                    maxInChargerPower : hisCountData.getMaxInChargerPower() ;
-            maxOutChargerPower = maxOutChargerPower.compareTo(hisCountData.getMaxOutChargerPower()) == 1 ?
-                    maxOutChargerPower : hisCountData.getMaxOutChargerPower() ;
+            /** ???? **/
+            if (hisCountData.getMaxEnergyTime3().compareTo(BigDecimal.ZERO) == 1){
+                maxEnergyTimeNumber ++ ;
+                maxEnergyTimeTarget = maxEnergyTimeTarget.add(hisCountData.getMaxEnergyTime3()) ;
+            }
+
+
+            if (hisCountData.getMaxElectricPower().compareTo(BigDecimal.ZERO) == 1){
+                maxElectricPowerNumber ++ ;
+                maxElectricPowerTarget = maxElectricPowerTarget.add(hisCountData.getMaxElectricPower()) ;
+            }
+            if (hisCountData.getAvgDailyRunTime().compareTo(BigDecimal.ZERO) == 1){
+                avgDailyRunTimeNumber ++ ;
+                avgDailyRunTimeTarget = avgDailyRunTimeTarget.add(hisCountData.getAvgDailyRunTime()) ;
+            }
+            if (hisCountData.getHundredsKmusePower().compareTo(BigDecimal.ZERO) == 1){
+                hundredsKmusePowerNumber ++ ;
+                hundredsKmusePowerTarget = hundredsKmusePowerTarget.add(hisCountData.getHundredsKmusePower()) ;
+            }
         }
-
         /**1.车辆累计行驶里程*/
-        mileage = this.getMileage(mileage,hisCountDatas,endDate);
+        mileage = this.getMileage(mileage,mileageTarget,carType,mileageNumber);
         /**2.续驶里程*/
-        limitMileage = this.getLimitMileage(limitMileage,dischargeMidSoc,dischargeMidMileage,carType) ;
+        limitMileage = this.getLimitMileage(limitMileage,limitMileageTarget,carType,limitMileageNumber) ;
         /**3.一次充满电所用最少时间*/
-        maxEnergyTime = this.getMaxEnergyTime(maxEnergyTime,chargeMidSec,ChargeMidSoc,carType) ;
+        maxEnergyTime = this.getMaxEnergyTime(maxEnergyTime,maxEnergyTimeTarget,carType,maxEnergyTimeNumber) ;
         /**4.最大充电功率*/
-        maxElectricPower = this.getMaxElectricPower(maxElectricPower,maxInChargerPower,maxOutChargerPower,carType) ;
+        maxElectricPower = this.getMaxElectricPower(maxElectricPower,maxElectricPowerTarget,carType,maxElectricPowerNumber) ;
         /**5.平均单日运行时间*/
-        avgDailyRunTime = this.getAvgDailyRunTime(avgDailyRunTime,hisCountDatas) ;
+        avgDailyRunTime = this.getAvgDailyRunTime(avgDailyRunTime,avgDailyRunTimeTarget,carType,avgDailyRunTimeNumber) ;
         /**6.百公里耗电*/
-        hundredsKmusePower = this.getHundredsKmusePower(hundredsKmusePower,dischargeMidSoc,dischargeMidMileage,carType) ;
+        hundredsKmusePower = this.getHundredsKmusePower(hundredsKmusePower,hundredsKmusePowerTarget,carType,hundredsKmusePowerNumber) ;
 
         if (gpsNormal == 0 ){
-            gpsNearNoData ++ ;
-            gpsNoData = this.getGpsL1(vinCode) ? 0 : 1 ;
+            if (this.getGpsL1(vinCode)){
+                gpsNearNoData ++ ;
+            }else{
+                gpsNoData ++ ;
+            }
         }
 
         if (canNormal == 0 ){
-            canNearNoData ++ ;
-            canNoData = this.getCanL1(vinCode) ? 0 : 1 ;
+            if (this.getCanL1(vinCode)){
+                canNearNoData ++ ;
+            }else{
+                canNoData ++ ;
+            }
         }
 
         if (canNormal > 0 ) monthCountData.setCanNormal(monthCountData.getCanNormal()+1) ;
@@ -149,84 +194,57 @@ public class VehicleL3 extends VehicleBase {
     /**
      * 车辆累计行驶里程
      * 算法：累积行驶里程/（查询结束时间-交车时间）<=N
-     * @param hisCountDatas
-     * @param endDate
      * @param mileage
+     * @param onedaymileage
+     * @param carType
+     * @param diffNum
      * @return
      */
-    private Statistical getMileage(Statistical mileage,List<HisCountData> hisCountDatas,Date endDate){
-        int mileageNum = hisCountDatas != null ? hisCountDatas.size() - 1 : -1;
-        BigDecimal mileageTotal = null ;
-        String carType = null ;
-        Date veDeliveredDate = null ;
-        Date releaseTime = null ;
-        while (mileageNum >= 0 ){
-            if (carType == null )
-                carType = hisCountDatas.get(mileageNum).getCarType() ;
-            if (veDeliveredDate == null )
-                veDeliveredDate = hisCountDatas.get(mileageNum).getVeDeliveredDate() ;
-            if (mileageTotal == null)
-                mileageTotal = hisCountDatas.get(mileageNum).getMileageTotal() ;
-            if (releaseTime == null)
-                releaseTime = hisCountDatas.get(mileageNum).getReleaseTime() ;
-            if (mileageTotal != null && veDeliveredDate != null && carType != null && releaseTime != null)
-                break;
-            mileageNum -- ;
-        }
-        mileageTotal = mileageTotal == null ? BigDecimal.ZERO : mileageTotal ;
-
-        if ((releaseTime !=null || veDeliveredDate != null) && carType != null ){
-            int diffNum ;
-            if (veDeliveredDate != null){
-                diffNum = DateUtil.diffDate(endDate,veDeliveredDate) ;
-            }else{
-                diffNum = DateUtil.diffDate(endDate,releaseTime) ;
-            }
-
-            BigDecimal onedaymileage = BigDecimal.ZERO ;
-            if (diffNum != 0 ){
-                onedaymileage = mileageTotal.divide(BigDecimal.valueOf(diffNum),2, BigDecimal.ROUND_UP);
-            }
-            System.out.print("\"mileage\":"+onedaymileage.toString()+",");
+    private Statistical getMileage(Statistical mileage ,BigDecimal onedaymileage ,String carType ,int diffNum){
+        if (onedaymileage.compareTo(BigDecimal.ZERO) == 0 ){
+            mileage.setInvalids(mileage.getInvalids() + 1);
+        }else{
+            onedaymileage = onedaymileage.divide(BigDecimal.valueOf(diffNum),2,BigDecimal.ROUND_UP ) ;
             mileage = CountUtil.getTarget(mileage,carType,onedaymileage,Constant.MILEAGE) ;
         }
-
         return mileage ;
     }
 
     /**
      * 续驶里程
      * 算法：里程差/消耗SOC * 100
-     * @param dischargeMidSoc
-     * @param dischargeMidMileage
+     * @param limitMileage
+     * @param limitedDriving
+     * @param carType
+     * @param diffNum
      * @return
      */
-    private Statistical getLimitMileage(Statistical limitMileage,int dischargeMidSoc,BigDecimal dischargeMidMileage,String carType){
-        BigDecimal limitedDriving = BigDecimal.ZERO ;
-        if (dischargeMidSoc != 0 ){
-            limitedDriving = dischargeMidMileage.divide(BigDecimal.valueOf(dischargeMidSoc), 2, BigDecimal.ROUND_UP).multiply(BigDecimal.valueOf(100)) ;
+    private Statistical getLimitMileage(Statistical limitMileage,BigDecimal limitedDriving,String carType,int diffNum){
+        if (limitedDriving.compareTo(BigDecimal.ZERO) == 0 ){
+            limitMileage.setInvalids(limitMileage.getInvalids() + 1);
+        }else{
+            limitedDriving = limitedDriving.divide(BigDecimal.valueOf(diffNum),2,BigDecimal.ROUND_UP ) ;
+            limitMileage = CountUtil.getTarget(limitMileage,carType,limitedDriving,Constant.LIMITMILEAGE) ;
         }
-        System.out.print("\"limitMileage\":"+limitedDriving.toString()+",");
-        limitMileage = getTarget(limitMileage,carType,limitedDriving,Constant.LIMITMILEAGE) ;
         return limitMileage ;
     }
 
     /**
      * 一次充满电所用最少时间
      * 算法：充电时间（S）/充电SOC /3600 * 100
-     * @param chargeMidSec
-     * @param ChargeMidSoc
      * @param maxEnergyTime
+     * @param maxenergytimeTarget
+     * @param carType
+     * @param diffNum
      * @return
      */
-    private Statistical getMaxEnergyTime( Statistical maxEnergyTime,long chargeMidSec, int ChargeMidSoc ,String carType){
-        BigDecimal maxenergytime = BigDecimal.ZERO ;
-        if(ChargeMidSoc != 0 ){
-            maxenergytime = BigDecimal.valueOf(chargeMidSec).divide(BigDecimal.valueOf(ChargeMidSoc), 2, BigDecimal.ROUND_UP)
-                    .divide(BigDecimal.valueOf(36),2, BigDecimal.ROUND_UP);
+    private Statistical getMaxEnergyTime( Statistical maxEnergyTime,BigDecimal maxenergytimeTarget,String carType,int diffNum){
+        if (maxenergytimeTarget.compareTo(BigDecimal.ZERO) == 0 ){
+            maxEnergyTime.setInvalids(maxEnergyTime.getInvalids() + 1);
+        }else{
+            maxenergytimeTarget = maxenergytimeTarget.divide(BigDecimal.valueOf(diffNum),2,BigDecimal.ROUND_UP ) ;
+            maxEnergyTime = CountUtil.getTarget(maxEnergyTime,carType,maxenergytimeTarget,Constant.MAXENERGYTIME) ;
         }
-        System.out.print("\"maxEnergyTime\":"+maxenergytime.toString()+",");
-        maxEnergyTime = getTarget(maxEnergyTime,carType,maxenergytime,Constant.MAXENERGYTIME) ;
         return maxEnergyTime ;
     }
 
@@ -234,19 +252,18 @@ public class VehicleL3 extends VehicleBase {
      * 最大充电功率
      * 算法：最大充电功率
      * @param maxElectricPower
-     * @param maxInChargerPower
-     * @param maxOutChargerPower
+     * @param maxChargerPower
      * @param carType
+     * @param diffNum
      * @return
      */
-    private Statistical getMaxElectricPower(Statistical maxElectricPower,BigDecimal maxInChargerPower,BigDecimal maxOutChargerPower,String carType){
-        maxElectricPower = maxInChargerPower.compareTo(maxOutChargerPower) == 1 ?
-                getTarget(maxElectricPower,carType,maxInChargerPower,Constant.MAXELECTRICPOWER) :
-                getTarget(maxElectricPower,carType,maxOutChargerPower,Constant.MAXELECTRICPOWER) ;
-
-        BigDecimal power = maxInChargerPower.compareTo(maxOutChargerPower) == 1 ?
-                maxInChargerPower : maxOutChargerPower ;
-        System.out.print("\"maxElectricPower\":"+power.toString()+",");
+    private Statistical getMaxElectricPower(Statistical maxElectricPower,BigDecimal maxChargerPower,String carType,int diffNum){
+        if (maxChargerPower.compareTo(BigDecimal.ZERO) == 0 ){
+            maxElectricPower.setInvalids(maxElectricPower.getInvalids() + 1);
+        }else{
+            maxChargerPower = maxChargerPower.divide(BigDecimal.valueOf(diffNum),2,BigDecimal.ROUND_UP ) ;
+            maxElectricPower = CountUtil.getTarget(maxElectricPower,carType,maxChargerPower,Constant.MAXELECTRICPOWER) ;
+        }
         return maxElectricPower ;
     }
 
@@ -254,27 +271,19 @@ public class VehicleL3 extends VehicleBase {
     /**
      * 平均单日运行时间
      * 算法：放电时间（S）/3600
-     * @param hisCountDatas
      * @param avgDailyRunTime
+     * @param avgDailyRunTimeTarget
+     * @param carType
+     * @param diffNum
      * @return
      */
-    private Statistical getAvgDailyRunTime(Statistical avgDailyRunTime,List<HisCountData> hisCountDatas){
-        int num = hisCountDatas != null ? hisCountDatas.size() - 1 : -1;
-        Long dischargeTotalSec = null ;
-        String carType = null ;
-        while (num >= 0 ){
-            if (carType == null )
-                carType = hisCountDatas.get(num).getCarType() ;
-            if (dischargeTotalSec == null )
-                dischargeTotalSec = hisCountDatas.get(num).getDischargeTotalSec() ;
-            if (dischargeTotalSec != null && carType != null)
-                break;
-            num -- ;
+    private Statistical getAvgDailyRunTime(Statistical avgDailyRunTime,BigDecimal avgDailyRunTimeTarget,String carType,int diffNum){
+        if (avgDailyRunTimeTarget.compareTo(BigDecimal.ZERO) == 0 ){
+            avgDailyRunTime.setInvalids(avgDailyRunTime.getInvalids() + 1);
+        }else{
+            avgDailyRunTimeTarget = avgDailyRunTimeTarget.divide(BigDecimal.valueOf(diffNum),2,BigDecimal.ROUND_UP ) ;
+            avgDailyRunTime = CountUtil.getTarget(avgDailyRunTime,carType,avgDailyRunTimeTarget,Constant.AVGDAILYRUNTIME) ;
         }
-        dischargeTotalSec = dischargeTotalSec == null ? Long.valueOf(0) : dischargeTotalSec ;
-        BigDecimal dischargeSec = BigDecimal.valueOf(dischargeTotalSec).divide(BigDecimal.valueOf(3600),2,BigDecimal.ROUND_UP) ;
-        System.out.print("\"avgDailyRunTime\":"+dischargeSec.toString()+",");
-        avgDailyRunTime = CountUtil.getTarget(avgDailyRunTime,carType,dischargeSec,Constant.AVGDAILYRUNTIME) ;
         return avgDailyRunTime ;
     }
 
@@ -282,25 +291,19 @@ public class VehicleL3 extends VehicleBase {
      * 百公里耗电
      * 算法：消耗电量/里程差 * 百分百电能(常量->每个车型都不一样)
      * @param hundredsKmusePower
-     * @param dischargeMidSoc
-     * @param dischargeMidMileage
+     * @param hundredskmusepower
      * @param carType
+     * @param diffNum
      * @return
      */
-    private Statistical getHundredsKmusePower(Statistical hundredsKmusePower,int dischargeMidSoc,BigDecimal dischargeMidMileage,String carType){
-        /** 获取配置文件中的电池组总容量 */
-        EsBeanObj esBeanObj = esBean.getTarget().get(carType) ;
-        BigDecimal socTotalcapacity = BigDecimal.ZERO ;
-        if (esBeanObj != null){
-            socTotalcapacity = esBean.getTarget().get(carType).getSocTotalcapacity() ;
-        }
+    private Statistical getHundredsKmusePower(Statistical hundredsKmusePower,BigDecimal hundredskmusepower,String carType,int diffNum){
 
-        BigDecimal hundredskmusepower = BigDecimal.ZERO ;
-        if(dischargeMidSoc != 0){
-            hundredskmusepower = BigDecimal.valueOf(dischargeMidSoc).divide(dischargeMidMileage, 2, BigDecimal.ROUND_UP).multiply(socTotalcapacity) ;
+        if (hundredskmusepower.compareTo(BigDecimal.ZERO) == 0 ){
+            hundredsKmusePower.setInvalids(hundredsKmusePower.getInvalids() + 1);
+        }else{
+            hundredskmusepower = hundredskmusepower.divide(BigDecimal.valueOf(diffNum),2,BigDecimal.ROUND_UP ) ;
+            hundredsKmusePower = CountUtil.getTarget(hundredsKmusePower,carType,hundredskmusepower,Constant.HUNDREDSKMUSEPOWER) ;
         }
-        System.out.println("\"hundredsKmusePower\":"+hundredskmusepower.toString()+"},");
-        hundredsKmusePower = getTarget(hundredsKmusePower,carType,hundredskmusepower,Constant.HUNDREDSKMUSEPOWER) ;
         return hundredsKmusePower ;
     }
 
