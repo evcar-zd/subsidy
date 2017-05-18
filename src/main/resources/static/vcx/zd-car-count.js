@@ -6,11 +6,9 @@
             this.canNormal = "loading..." ;
             this.canNearNoData = "loading..." ;
             this.canNoData = "loading..." ;
-            this.canTotal = "loading..." ;
             this.gpsNormal = "loading..." ;
             this.gpsNearNoData = "loading..." ;
             this.gpsNoData = "loading..." ;
-            this.gpsTotal = "loading..." ;
         }
 
         VisualModel.prototype.fetch = function () {
@@ -27,15 +25,13 @@
                 _this.canNormal = data.canNormal ;
                 _this.canNearNoData = data.canNearNoData ;
                 _this.canNoData = data.canNoData ;
-                _this.canTotal = parseInt(data.canNormal)+parseInt(data.canNearNoData)+parseInt(data.canNoData) ;
+
                 _this.gpsNormal = data.gpsNormal ;
                 _this.gpsNearNoData = data.gpsNearNoData ;
                 _this.gpsNoData = data.gpsNoData ;
-                _this.gpsTotal = parseInt(data.gpsNormal)+parseInt(data.gpsNearNoData)+parseInt(data.gpsNoData) ;
+
                 _this.total = data.vehicleNum ;
             }, function (jqXHR, text) {
-                _this.canTotal = text;
-                _this.gpsTotal = text;
             });
 
         };

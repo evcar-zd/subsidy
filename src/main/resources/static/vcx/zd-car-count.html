@@ -3,11 +3,10 @@
         <caption>车辆数目</caption>
         <thead>
             <tr >
-                <th class="text-center">数据来源</th>
-                <th class="text-center">正常</th>
-                <th class="text-center">近期无数据(30天)</th>
-                <th class="text-center">无数据</th>
-                <th class="text-center">合计</th>
+                <th class="text-center" style="vertical-align:middle">数据来源</th>
+                <th class="text-center" style="vertical-align:middle">正常<br>(30天内有数据)</th>
+                <th class="text-center">近期无数据<br>(30天内无 但30天前有)</th>
+                <th class="text-center">无数据<br>(从来就没有数据)</th>
             </tr>
         </thead>
         <tbody>
@@ -16,18 +15,16 @@
                 <td v-text="canNormal" class="text-center"></td>
                 <td v-text="canNearNoData" class="text-center"></td>
                 <td v-text="canNoData" class="text-center"></td>
-                <td v-text="canTotal" class="text-center"></td>
             </tr>
             <tr>
                 <td class="text-center">GPS</td>
                 <td v-text="gpsNormal" class="text-center"></td>
                 <td v-text="gpsNearNoData" class="text-center"></td>
                 <td v-text="gpsNoData" class="text-center"></td>
-                <td v-text="gpsTotal" class="text-center"></td>
             </tr>
             <tr>
-                <td class="text-center">ALL</td>
-                <td colspan="4" v-text="total" class="text-center">N/A</td>
+                <td class="text-center">合计</td>
+                <td colspan="3" v-text="total" class="text-center">N/A</td>
             </tr>
         </tbody>
     </table>
