@@ -52,6 +52,7 @@ public class VehicleL3 extends VehicleBase {
         monthCountData.setId(id);
         monthCountData.setTm(endDate);
         Integer vehicleNum = 0 ;                //车辆数量
+
         for (int i = 0 ; i < hisCountDataL2s.size() ; i++){
             HisCountDataL2 hisCountDataL2 = hisCountDataL2s.get(i) ;
             String vinCode = hisCountDataL2.getVinCode() ;
@@ -63,8 +64,9 @@ public class VehicleL3 extends VehicleBase {
 
         monthCountData.setCalcTime(new Date());
         monthCountData.setVehicleNum(vehicleNum);
-
-        this.saveL3(monthCountData);
+        boolean execute = hisCountDataL2s.size() > 0 ? true : false ;
+        if (execute)
+            this.saveL3(monthCountData);
     }
 
 
