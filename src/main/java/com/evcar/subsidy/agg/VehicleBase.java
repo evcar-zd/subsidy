@@ -49,9 +49,9 @@ public class VehicleBase {
      * @param hisCountData
      */
     protected void save(HisCountData hisCountData){
-        GitVer gitVer = new GitVer() ;
-        hisCountData.setVersion(gitVer.getVersion());
-        HisCountDataService.addHisCountData(hisCountData);
+        TaskFetchAndSave taskSave = new TaskFetchAndSave();
+        taskSave.bFetch = false;
+        taskSave.tobeSaving = hisCountData;
     }
 
     /**

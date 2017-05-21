@@ -55,9 +55,9 @@ public class Agg {
                     try {
                         long startTimeL1 = System.currentTimeMillis() ;
                         s_logger.info("start L1 {} count", start);
-                        final int fetchSize = 5;
+                        final int fetchSize = 30;
                         for (int j=0;j<vehicleVos.size();j++){
-                            VehicleVo vehicleVo = vehicleVos.get(i);
+                            VehicleVo vehicleVo = vehicleVos.get(j);
                             VehicleL1 vehicleL1 = new VehicleL1() ;
                             // pre fetch
                             if(j == 0) {

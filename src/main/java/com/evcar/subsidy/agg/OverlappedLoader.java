@@ -1,5 +1,6 @@
 package com.evcar.subsidy.agg;
 
+import com.evcar.subsidy.GitVer;
 import com.evcar.subsidy.entity.*;
 import com.evcar.subsidy.service.*;
 import org.slf4j.Logger;
@@ -16,27 +17,32 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class OverlappedLoader {
     private Map<String, OverlappedData> _cache = new HashMap<>();
-    private BlockingQueue<TaskFetch> _blockingVin = new ArrayBlockingQueue<>(10);
+    private BlockingQueue<TaskFetchAndSave> _blockingVin = new ArrayBlockingQueue<>(100);
     private AtomicBoolean _isRunning = new AtomicBoolean(false);
     private List<Thread> listThreads = new ArrayList<>();
     private Logger s_logger = LoggerFactory.getLogger(OverlappedLoader.class);
 
     public void start()
     {
-        for(int i=0;i<10;i++){
+        for(int i=0;i<30;i++){
             Thread worker = new Thread(()->{
                 try {
                     while(true) {
-                        TaskFetch taskFetch = _blockingVin.take();
-                        if(taskFetch == null) return;
+                        TaskFetchAndSave taskFetchSave = _blockingVin.take();
+                        if(taskFetchSave == null) return;
 
-                        cacheData(taskFetch.vin, taskFetch.start, taskFetch.end);
+                        if(taskFetchSave.bFetch)
+                            cacheData(taskFetchSave.vin, taskFetchSave.start, taskFetchSave.end);
+                        else
+                            save(taskFetchSave.tobeSaving);
+
                     }
                 }
                 catch(Exception ex){
                     s_logger.error(ex.toString());
                 }
             });
+            worker.start();
             listThreads.add(worker);
         }
     }
@@ -49,13 +55,14 @@ public class OverlappedLoader {
     }
 
     public void preFetch(String vin, Date startDate, Date endDate){
-        TaskFetch task = new TaskFetch();
+        TaskFetchAndSave task = new TaskFetchAndSave();
         task.vin = vin;
         task.start = startDate;
         task.end = endDate;
         _blockingVin.add(task);
 
         if(_isRunning.compareAndSet(false, true)){
+            s_logger.info("start prefetch...");
             start();
         }
     }
@@ -79,6 +86,7 @@ public class OverlappedLoader {
                 try {
                     // 等100毫秒再试
                     Thread.sleep(100);
+                    // s_logger.warn("load {} failed, retry {}...", vinCode, retry);
                 }catch(Exception ex){
                     s_logger.error(ex.toString());
                 }
@@ -118,12 +126,25 @@ public class OverlappedLoader {
             _cache.put(vinCode, data);
         }
     }
+
+    private void save(HisCountData data){
+        GitVer gitVer = new GitVer() ;
+        data.setVersion(gitVer.getVersion());
+        HisCountDataService.addHisCountData(data);
+    }
 }
 
-class TaskFetch{
+class TaskFetchAndSave {
+    public boolean bFetch;
     public String vin;
     public Date start;
     public Date end;
+
+    public HisCountData tobeSaving;
+
+    public TaskFetchAndSave(){
+        bFetch = true;
+    }
 }
 
 
