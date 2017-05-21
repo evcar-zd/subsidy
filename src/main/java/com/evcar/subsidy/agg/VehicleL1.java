@@ -37,17 +37,25 @@ public class VehicleL1 extends VehicleBase{
      * @param endDate
      */
     protected void calc(VehicleVo vehicleVo, Date startDate , Date endDate){
-
         this.load(vehicleVo.getVinCode(),startDate,endDate);
 
         this.calcVehicle(vehicleVo,startDate,endDate);
     }
 
+    /**
+     * 获取startDate到endDate的Motors、BMS、OBC等数据处理
+     * 支持一天到多天的数据处理
+     * 暂时是一天数据处理
+     * 处理每辆车每天数据
+     * @param vehicleVo
+     * @param startDate
+     * @param endDate
+     */
     private void calcVehicle(VehicleVo vehicleVo,Date startDate,Date endDate){
 
         int diffNum = DateUtil.diffDate(startDate,endDate) ;
-
-        for (int i = 0 ; i <= diffNum ;i++){
+        diffNum = diffNum == 0 ? 1 : diffNum ;
+        for (int i = 0 ; i < diffNum ;i++){
             Date start = DateUtil.getStartDate(startDate,i) ;
             Date end = DateUtil.getEndDate(startDate,i) ;
             /**
@@ -56,8 +64,9 @@ public class VehicleL1 extends VehicleBase{
             List<HisVehicleMotor> hisVehicleMotors = OrganizationUtil.getHisVehicleMotors(this.hisVehicleMotors,start,end) ;
             List<ObcData> obcDatas = OrganizationUtil.getObcDatas(this.obcDatas, start, end);
             List<BmsData> bmsDatas = OrganizationUtil.getBmsDatas(this.bmsDatas, start, end) ;
+            int gpsCount = OrganizationUtil.getGpsNumber(this.hisGpsDatas,start,end) ;
 
-            this.calcTarget(vehicleVo,start,bmsDatas,obcDatas,hisVehicleMotors);
+            this.calcTarget(vehicleVo,start,bmsDatas,obcDatas,hisVehicleMotors,gpsCount);
 
             this.save(this.hisCountData);
         }
@@ -66,7 +75,7 @@ public class VehicleL1 extends VehicleBase{
     /**
      * 计算六项指标
      */
-    private void calcTarget(VehicleVo vehicleVo,Date startDate,List<BmsData> bmsDatas ,List<ObcData> obcDatas,List<HisVehicleMotor> hisVehicleMotors){
+    private void calcTarget(VehicleVo vehicleVo,Date startDate,List<BmsData> bmsDatas ,List<ObcData> obcDatas,List<HisVehicleMotor> hisVehicleMotors,int gpsCount){
         String vinCode = vehicleVo.getVinCode() ;
         String id = vinCode + DateUtil.getDateStryyyyMMdd(startDate);
         String carType = vehicleVo.getCarType() ;
@@ -81,6 +90,7 @@ public class VehicleL1 extends VehicleBase{
         this.hisCountData.setVeDeliveredDate(veDeliveredDate);
         this.hisCountData.setReleaseTime(releaseTime);
         this.hisCountData.setGpsCount(gpsCount);
+
         /**
          * BMS数据计算
          * 近似线性中段充电SOC
@@ -142,16 +152,11 @@ public class VehicleL1 extends VehicleBase{
                             if(bmsData.getCollectTime() != null && beforeBmsData.getCollectTime() != null){
                                 Long time =  DateUtil.getSeconds(beforeBmsData.getCollectTime(),bmsData.getCollectTime());
                                 /** 去掉不符合标准的数据 */
-//                                boolean got = false ;
-//                                if (soc != 0){
-//                                    got = BigDecimal.valueOf(MIN_SIZE).divide(BigDecimal.valueOf(MAX_TIME),2,BigDecimal.ROUND_UP)
-//                                            .compareTo(BigDecimal.valueOf(soc).divide(BigDecimal.valueOf(time),2,BigDecimal.ROUND_UP)) == 1 ;
-//                                }
                                 if(time > MAX_TIME){
-                                    if (beforeBmsData.getBatteryGroupStatus()!=3){
+                                    if (beforeBmsData.getBatteryGroupStatus()!=3 ){
                                         choose = false ;
                                     }
-                                    if (soc != 0){
+                                    if (choose && soc > 0){
                                         choose = BigDecimal.valueOf(MAX_TIME).divide(BigDecimal.valueOf(MIN_SIZE),2,BigDecimal.ROUND_UP)
                                             .compareTo(BigDecimal.valueOf(time).divide(BigDecimal.valueOf(soc),2,BigDecimal.ROUND_UP)) == 1 ;
                                     }
@@ -161,6 +166,9 @@ public class VehicleL1 extends VehicleBase{
 
                                 /** 获取充电模式 */
                                 int model = CountUtil.getChargeModel(alowableCurrent) ;
+
+                                /** 负载类型 = 0（电池时，才计入数据） */
+                                boolean loadType = bmsData.getLoadType() != null && bmsData.getLoadType() == 0 ? true : false ;
                                 /**
                                  * 如果time大于0，正常
                                  * 如果time小于0，说明出现补传
@@ -169,7 +177,8 @@ public class VehicleL1 extends VehicleBase{
                                  *  soc等于0，说明静止不动
                                  */
                                 /** 充电时差 */
-                                if (choose){
+                                if (choose && soc > 0 && loadType){
+//                                    System.out.println("soc:"+soc+"****sec:"+time+"****save:"+choose);
                                     if (model == 1){
                                         chargeMidSec1 += (time > 0 && bmsData.getBatteryGroupStatus() == 3) ? time : 0 ;
                                         chargeMidSoc1 += soc > 0 && bmsData.getBatteryGroupStatus() == 3 ? soc : 0 ;//充电

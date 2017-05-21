@@ -35,17 +35,22 @@ public class VehicleMotorService {
      * @return
      */
     public static Long getHisVehicleMotorNum(String vinCode, Date startDate, Date endDate){
-
-        Client client = ESTools.getClient() ;
-        QueryBuilder qb = new BoolQueryBuilder()
-                .must(QueryBuilders.matchQuery("vinCode",vinCode))
-                .must(QueryBuilders.rangeQuery("collectTime")
-                        .from(DateUtil.format(startDate))
-                        .to(DateUtil.format(endDate)));
-        SearchRequestBuilder search = client.prepareSearch(Constant.HISVEHICLE_MOTOR_INDEX).
-                setTypes(Constant.HISVEHICLE_MOTOR_TYPE).setQuery(qb);
-        SearchResponse sr = search.get();//得到查询结果
-        return sr.getHits().getTotalHits();//读取数量
+        long size = 0L;
+        try {
+            Client client = ESTools.getClient() ;
+            QueryBuilder qb = new BoolQueryBuilder()
+                    .must(QueryBuilders.matchQuery("vinCode",vinCode))
+                    .must(QueryBuilders.rangeQuery("collectTime")
+                            .from(DateUtil.format(startDate))
+                            .to(DateUtil.format(endDate)));
+            SearchRequestBuilder search = client.prepareSearch(Constant.HISVEHICLE_MOTOR_INDEX).
+                    setTypes(Constant.HISVEHICLE_MOTOR_TYPE).setQuery(qb);
+            SearchResponse sr = search.get();//得到查询结果
+            size = sr.getHits().getTotalHits() ;
+        }catch (Exception e){
+            s_logger.error("Connection is closed"+e.getMessage());
+        }
+        return size ;//读取数量
 
     }
 
@@ -55,30 +60,33 @@ public class VehicleMotorService {
      */
     public static List<HisVehicleMotor> getHisVehicleMotor(String vinCode, Date startDate, Date endDate,long sizeNum){
 
-        Client client = ESTools.getClient() ;
         List<HisVehicleMotor> list = new ArrayList<>() ;
-        SortBuilder sortBuilder = SortBuilders.fieldSort("collectTime").order(SortOrder.ASC);
-        QueryBuilder qb = new BoolQueryBuilder()
-                .must(QueryBuilders.matchQuery("vinCode",vinCode))
-                .must(QueryBuilders.rangeQuery("collectTime")
-                        .from(DateUtil.format(startDate))
-                        .to(DateUtil.format(endDate)));
-        SearchRequestBuilder search = client.prepareSearch(Constant.HISVEHICLE_MOTOR_INDEX).
-                setTypes(Constant.HISVEHICLE_MOTOR_TYPE)
-                .addSort(sortBuilder)
-                .setQuery(qb)
-                .setFrom(0)
-                .setSize((int)sizeNum);
+        try{
+            Client client = ESTools.getClient() ;
+            SortBuilder sortBuilder = SortBuilders.fieldSort("collectTime").order(SortOrder.ASC);
+            QueryBuilder qb = new BoolQueryBuilder()
+                    .must(QueryBuilders.matchQuery("vinCode",vinCode))
+                    .must(QueryBuilders.rangeQuery("collectTime")
+                            .from(DateUtil.format(startDate))
+                            .to(DateUtil.format(endDate)));
+            SearchRequestBuilder search = client.prepareSearch(Constant.HISVEHICLE_MOTOR_INDEX).
+                    setTypes(Constant.HISVEHICLE_MOTOR_TYPE)
+                    .addSort(sortBuilder)
+                    .setQuery(qb)
+                    .setFrom(0)
+                    .setSize((int)sizeNum);
 
-        SearchResponse sr = search.get();//得到查询结果
-        for(SearchHit hits:sr.getHits()){
-            String json = JacksonUtil.toJSon(hits.getSource()) ;
-            s_logger.debug(json);
-            HisVehicleMotor hisVehicleMotor = JacksonUtil.readValue(json, HisVehicleMotor.class);
-            list.add(hisVehicleMotor) ;
+            SearchResponse sr = search.get();//得到查询结果
+            for(SearchHit hits:sr.getHits()){
+                String json = JacksonUtil.toJSon(hits.getSource()) ;
+                s_logger.debug(json);
+                HisVehicleMotor hisVehicleMotor = JacksonUtil.readValue(json, HisVehicleMotor.class);
+                list.add(hisVehicleMotor) ;
+            }
+        }catch (Exception e){
+            s_logger.error("Connection is closed"+e.getMessage());
         }
-
-        s_logger.info("fetched {} hisVehicleMotor", list.size());
+//        s_logger.info("fetched {} hisVehicleMotor", list.size());
 
         return list ;
     }
@@ -90,16 +98,22 @@ public class VehicleMotorService {
      * @return
      */
     public static Long getHisVehicleMotorNumber(String vinCode){
-        Client client = ESTools.getClient() ;
-        QueryBuilder qb = new BoolQueryBuilder()
-                .must(QueryBuilders.matchQuery("vinCode",vinCode))
-                .must(QueryBuilders.rangeQuery("soc")
-                        .from(0)
-                        .to(100));
-        SearchRequestBuilder search = client.prepareSearch(Constant.HISVEHICLE_MOTOR_INDEX).
-                setTypes(Constant.HISVEHICLE_MOTOR_TYPE).setQuery(qb);
+        long size = 0L ;
+        try {
+            Client client = ESTools.getClient() ;
+            QueryBuilder qb = new BoolQueryBuilder()
+                    .must(QueryBuilders.matchQuery("vinCode",vinCode))
+                    .must(QueryBuilders.rangeQuery("soc")
+                            .from(0)
+                            .to(100));
+            SearchRequestBuilder search = client.prepareSearch(Constant.HISVEHICLE_MOTOR_INDEX).
+                    setTypes(Constant.HISVEHICLE_MOTOR_TYPE).setQuery(qb);
 
-        SearchResponse sr = search.get();//得到查询结果
-        return sr.getHits().getTotalHits();//读取数量
+            SearchResponse sr = search.get();//得到查询结果
+            size = sr.getHits().getTotalHits() ;
+        }catch (Exception e){
+            s_logger.error("Connection is closed"+e.getMessage());
+        }
+        return size ;//读取数量
     }
 }

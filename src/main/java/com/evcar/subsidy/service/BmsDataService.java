@@ -35,17 +35,23 @@ public class BmsDataService {
      * @return
      */
     public static Long getHisBmsDataNum(String vinCode, Date startDate, Date endDate){
+        long size = 0L ;
+        try{
+            Client client = ESTools.getClient() ;
+            QueryBuilder qb = new BoolQueryBuilder()
+                    .must(QueryBuilders.matchQuery("vinCode",vinCode))
+                    .must(QueryBuilders.rangeQuery("collectTime")
+                            .from(DateUtil.format(startDate))
+                            .to(DateUtil.format(endDate)));
+            SearchRequestBuilder search = client.prepareSearch(Constant.HIS_BMS_INDEX).
+                    setTypes(Constant.HIS_BMS_TYPE).setQuery(qb);
+            SearchResponse sr = search.get();//得到查询结果
+            size = sr.getHits().getTotalHits();//读取数量
+        }catch (Exception e){
+            s_logger.error("Connection is closed"+e.getMessage());
+        }
 
-        Client client = ESTools.getClient() ;
-        QueryBuilder qb = new BoolQueryBuilder()
-                .must(QueryBuilders.matchQuery("vinCode",vinCode))
-                .must(QueryBuilders.rangeQuery("collectTime")
-                        .from(DateUtil.format(startDate))
-                        .to(DateUtil.format(endDate)));
-        SearchRequestBuilder search = client.prepareSearch(Constant.HIS_BMS_INDEX).
-                setTypes(Constant.HIS_BMS_TYPE).setQuery(qb);
-        SearchResponse sr = search.get();//得到查询结果
-        return sr.getHits().getTotalHits();//读取数量
+        return size ;
     }
 
     /**
@@ -54,30 +60,33 @@ public class BmsDataService {
      */
     public static List<BmsData> getHisBmsData(String vinCode, Date startDate, Date endDate, long sizeNum){
 
-        Client client = ESTools.getClient() ;
         List<BmsData> list = new ArrayList<>() ;
-        SortBuilder sortBuilder = SortBuilders.fieldSort("collectTime").order(SortOrder.ASC);
-        QueryBuilder qb = new BoolQueryBuilder()
-                .must(QueryBuilders.matchQuery("vinCode",vinCode))
-                .must(QueryBuilders.rangeQuery("collectTime")
-                        .from(DateUtil.format(startDate))
-                        .to(DateUtil.format(endDate)));
-        SearchRequestBuilder search = client.prepareSearch(Constant.HIS_BMS_INDEX).
-                setTypes(Constant.HIS_BMS_TYPE)
-                .addSort(sortBuilder)
-                .setQuery(qb)
-                .setFrom(0)
-                .setSize((int)sizeNum);
+        try {
+            Client client = ESTools.getClient() ;
+            SortBuilder sortBuilder = SortBuilders.fieldSort("collectTime").order(SortOrder.ASC);
+            QueryBuilder qb = new BoolQueryBuilder()
+                    .must(QueryBuilders.matchQuery("vinCode",vinCode))
+                    .must(QueryBuilders.rangeQuery("collectTime")
+                            .from(DateUtil.format(startDate))
+                            .to(DateUtil.format(endDate)));
+            SearchRequestBuilder search = client.prepareSearch(Constant.HIS_BMS_INDEX).
+                    setTypes(Constant.HIS_BMS_TYPE)
+                    .addSort(sortBuilder)
+                    .setQuery(qb)
+                    .setFrom(0)
+                    .setSize((int)sizeNum);
 
-        SearchResponse sr = search.get();//得到查询结果
-        for(SearchHit hits:sr.getHits()){
-            String json = JacksonUtil.toJSon(hits.getSource()) ;
-            s_logger.debug(json);
-            BmsData bmsData = JacksonUtil.readValue(json, BmsData.class);
-            list.add(bmsData) ;
+            SearchResponse sr = search.get();//得到查询结果
+            for(SearchHit hits:sr.getHits()){
+                String json = JacksonUtil.toJSon(hits.getSource()) ;
+                s_logger.debug(json);
+                BmsData bmsData = JacksonUtil.readValue(json, BmsData.class);
+                list.add(bmsData) ;
+            }
+        }catch (Exception e){
+            s_logger.error("Connection is closed"+e.getMessage());
         }
-
-        s_logger.info("fetched {} hisBmsData", list.size());
+//        s_logger.info("fetched {} hisBmsData", list.size());
 
         return list ;
     }

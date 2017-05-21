@@ -13,8 +13,12 @@ public class EsBeanObj implements Serializable {
     private BigDecimal mileageMax ;
     private BigDecimal limitMileageMin ;
     private BigDecimal limitMileageMax ;
-    private BigDecimal energyTimeMin ;
-    private BigDecimal energyTimeMax ;
+    private BigDecimal energyTimeMinModel1 ;
+    private BigDecimal energyTimeMaxModel1 ;
+    private BigDecimal energyTimeMinModel2 ;
+    private BigDecimal energyTimeMaxModel2 ;
+    private BigDecimal energyTimeMinModel3 ;
+    private BigDecimal energyTimeMaxModel3 ;
     private BigDecimal electricPowerMin ;
     private BigDecimal electricPowerMax ;
     private BigDecimal avgDailyRunTimeMin ;
@@ -59,20 +63,52 @@ public class EsBeanObj implements Serializable {
         this.limitMileageMax = limitMileageMax;
     }
 
-    public BigDecimal getEnergyTimeMin() {
-        return energyTimeMin;
+    public BigDecimal getEnergyTimeMinModel1() {
+        return energyTimeMinModel1;
     }
 
-    public void setEnergyTimeMin(BigDecimal energyTimeMin) {
-        this.energyTimeMin = energyTimeMin;
+    public void setEnergyTimeMinModel1(BigDecimal energyTimeMinModel1) {
+        this.energyTimeMinModel1 = energyTimeMinModel1;
     }
 
-    public BigDecimal getEnergyTimeMax() {
-        return energyTimeMax;
+    public BigDecimal getEnergyTimeMaxModel1() {
+        return energyTimeMaxModel1;
     }
 
-    public void setEnergyTimeMax(BigDecimal energyTimeMax) {
-        this.energyTimeMax = energyTimeMax;
+    public void setEnergyTimeMaxModel1(BigDecimal energyTimeMaxModel1) {
+        this.energyTimeMaxModel1 = energyTimeMaxModel1;
+    }
+
+    public BigDecimal getEnergyTimeMinModel2() {
+        return energyTimeMinModel2;
+    }
+
+    public void setEnergyTimeMinModel2(BigDecimal energyTimeMinModel2) {
+        this.energyTimeMinModel2 = energyTimeMinModel2;
+    }
+
+    public BigDecimal getEnergyTimeMaxModel2() {
+        return energyTimeMaxModel2;
+    }
+
+    public void setEnergyTimeMaxModel2(BigDecimal energyTimeMaxModel2) {
+        this.energyTimeMaxModel2 = energyTimeMaxModel2;
+    }
+
+    public BigDecimal getEnergyTimeMinModel3() {
+        return energyTimeMinModel3;
+    }
+
+    public void setEnergyTimeMinModel3(BigDecimal energyTimeMinModel3) {
+        this.energyTimeMinModel3 = energyTimeMinModel3;
+    }
+
+    public BigDecimal getEnergyTimeMaxModel3() {
+        return energyTimeMaxModel3;
+    }
+
+    public void setEnergyTimeMaxModel3(BigDecimal energyTimeMaxModel3) {
+        this.energyTimeMaxModel3 = energyTimeMaxModel3;
     }
 
     public BigDecimal getElectricPowerMin() {

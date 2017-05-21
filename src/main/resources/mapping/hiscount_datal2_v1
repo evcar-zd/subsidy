@@ -1,0 +1,116 @@
+/*******建立索引********/
+PUT http://10.10.11.147:9200/hiscount_datal2_v1
+{
+    "settings" : {
+        "index" : {
+            "max_result_window": "100000",
+            "number_of_shards": "5",
+            "number_of_replicas": "1"
+        }
+    }
+}
+
+/*******建立类型********/
+PUT http://10.10.11.147:9200/hiscount_datal2_v1/hiscount_datal2/_mapping
+{
+    "properties": {
+             "id": {
+                 "type": "string",
+                 "index": "not_analyzed"
+             },
+         	"vinCode": {
+                 "type": "string",
+                 "index": "not_analyzed"
+             },
+ 			"tm": {
+                 "type": "date",
+ 				"format": "yyyy-MM-dd"
+             },
+             "carType": {
+                 "type": "string"
+             },
+ 			"releaseTime": {
+                 "type": "date",
+                 "format": "yyyy-MM-dd"
+             },
+ 			"veDeliveredDate": {
+                 "type": "date",
+                 "format": "yyyy-MM-dd"
+             },
+ 			"gpsCount": {
+                 "type": "integer"
+             },
+ 			"canCount": {
+                 "type": "integer"
+             },
+ 			"mileageTotal": {
+                 "type": "float"
+             },
+             "chargeMidSoc1": {
+                 "type": "integer"
+             },
+ 			"chargeMidSec1": {
+                 "type": "long"
+             },
+			 "chargeMidSoc2": {
+                 "type": "integer"
+             },
+ 			"chargeMidSec2": {
+                 "type": "long"
+             },
+			 "chargeMidSoc3": {
+                 "type": "integer"
+             },
+ 			"chargeMidSec3": {
+                 "type": "long"
+             },
+ 			"dischargeTotalSec": {
+                 "type": "long"
+             },
+             "dischargeMidSoc": {
+                 "type": "integer"
+             },
+             "dischargeMidMileage": {
+                 "type": "float"
+             },
+             "maxInChargerPower": {
+                 "type": "float"
+             },
+ 			"maxOutChargerPower": {
+                 "type": "float"
+             },
+             "calcTime": {
+                 "type": "date",
+                 "format": "yyyy-MM-dd HH:mm:ss"
+             },
+ 			"version": {
+                 "type": "string",
+                 "index": "not_analyzed"
+             },
+            "mileage": {
+                "type": "float"
+            },
+            "limitMileage": {
+                 "type": "float"
+            },
+            "maxEnergyTime1": {
+                "type": "float"
+            },
+            "maxEnergyTime2": {
+                 "type": "float"
+            },
+            "maxEnergyTime3": {
+                "type": "float"
+            },
+            "maxElectricPower": {
+                "type": "float"
+            },
+            "avgDailyRunTime": {
+                 "type": "float"
+            },
+            "hundredsKmusePower": {
+                "type": "float"
+            }
+         }
+ }
+

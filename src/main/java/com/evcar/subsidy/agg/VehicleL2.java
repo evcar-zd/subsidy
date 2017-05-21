@@ -28,30 +28,147 @@ public class VehicleL2 extends VehicleBase{
 
     /**
      * 计算单车每N天的统计方法
+     * L2两种计算方式处理
+     * 默认方式一：获取L1的start的前一天数据和startDate当天的数据
+     *           再获取L2endDate前一天的数据。获取的L2数据减去L1前一天数据再加上startDate当天数据
+     *           如果获取数据不满足以上需求，则取第二种方式
+     * 方式二：获取start到endDate的L1的数据
      * @param vehicleVo
      * @param startDate
      * @param endDate
      */
-    protected void calc(VehicleVo vehicleVo, Date startDate , Date endDate, int monthDay){
+    protected void calc(VehicleVo vehicleVo, Date startDate , Date endDate, int monthDay) {
         String vinCode = vehicleVo.getVinCode() ;
+        /** 获取 startDate 前 monthDay的数据*/
+        Date start = DateUtil.getDate(startDate,monthDay) ;
+        this.calcL2(vinCode,start,startDate) ;
 
-        this.loadL1(vinCode,startDate,endDate);
+        boolean endResult =  this.calcVehicleL2One() ;
 
-        this.calcVehicleL2(vehicleVo,startDate, endDate, monthDay);
+        if (!endResult){
+            /** 获取L1前monthDay的数据 */
+            this.loadL1(vinCode,start,endDate);
+            this.calcVehicleL2(vehicleVo,startDate, endDate, monthDay);
+        }
+    }
+
+    /***
+     * 计算方式一
+     * 不满足需求，计算方式二执行
+     * @return
+     */
+    private boolean calcVehicleL2One(){
+        if (this.hisCountDatas.size() != 2 && this.hisCountDataL2s.size() != 1){
+            return false ;
+        }else {
+            try{
+                HisCountData hisCountData1 = this.hisCountDatas.get(0) ;
+                HisCountData hisCountData2 = this.hisCountDatas.get(1) ;
+                HisCountDataL2 hisCountDataL2 = this.hisCountDataL2s.get(0) ;
+
+                Date endDate = hisCountData2.getTm() ;
+                Date startDate = hisCountData1.getTm() ;
+                String vinCode = hisCountData2.getVinCode() ;
+                String id = vinCode + DateUtil.getDateStryyyyMMdd(endDate);
+                String carType = hisCountData2.getCarType() ;
+                Date veDeliveredDate = hisCountData2.getVeDeliveredDate() ;
+                Date releaseTime = hisCountData2.getReleaseTime() ;
+
+                this.hisCountData = new HisCountDataL2() ;
+                this.hisCountData.setId(id);
+                this.hisCountData.setTm(endDate);
+                this.hisCountData.setVinCode(vinCode);
+                this.hisCountData.setCarType(carType);
+                this.hisCountData.setVeDeliveredDate(veDeliveredDate);
+                this.hisCountData.setReleaseTime(releaseTime);
+
+                /**GPS数据条数*/
+                Integer gpsCount = hisCountDataL2.getGpsCount() - hisCountData1.getGpsCount() + hisCountData2.getGpsCount() ;
+                /**CAN数据条数*/
+                Integer canCount = hisCountDataL2.getCanCount() - hisCountData1.getCanCount() + hisCountData2.getCanCount() ;
+                /**总里程*/
+                BigDecimal mileageTotal = hisCountData2.getMileageTotal();
+                /**近似线性中段充电SOC -Model1*/
+                Integer chargeMidSoc1 = hisCountDataL2.getChargeMidSoc1() - hisCountData1.getChargeMidSoc1() + hisCountData2.getChargeMidSoc1() ;
+                /** 近似线性中段充电时间(单位：S) -Model1 */
+                Long chargeMidSec1 = hisCountDataL2.getChargeMidSec1() - hisCountData1.getChargeMidSec1() + hisCountData2.getChargeMidSec1();
+                /** 近似线性中段充电SOC -Model2 */
+                Integer chargeMidSoc2 = hisCountDataL2.getChargeMidSoc2() - hisCountData1.getChargeMidSoc2() + hisCountData2.getChargeMidSoc2() ;
+                /** 近似线性中段充电时间(单位：S) -Model2 */
+                Long chargeMidSec2 = hisCountDataL2.getChargeMidSec2() - hisCountData1.getChargeMidSec2() + hisCountData2.getChargeMidSec2();
+                /** 近似线性中段充电SOC -Model3 */
+                Integer chargeMidSoc3 = hisCountDataL2.getChargeMidSoc3() - hisCountData1.getChargeMidSoc3() + hisCountData2.getChargeMidSoc3() ;
+                /** 近似线性中段充电时间(单位：S) -Model3 */
+                Long chargeMidSec3 = hisCountDataL2.getChargeMidSec3() - hisCountData1.getChargeMidSec3() + hisCountData2.getChargeMidSec3();
+                /** 放电总时长(单位：S) */
+                Long dischargeTotalSec = hisCountDataL2.getDischargeTotalSec() - hisCountData1.getDischargeTotalSec() + hisCountData2.getDischargeTotalSec();
+                /** 最大输入电功率 */
+                BigDecimal maxInChargerPower = hisCountDataL2.getMaxInChargerPower().compareTo(hisCountData2.getMaxInChargerPower()) == 1?
+                        hisCountDataL2.getMaxInChargerPower() : hisCountData2.getMaxInChargerPower();
+                /** 最大输出电功率 */
+                BigDecimal maxOutChargerPower = hisCountDataL2.getMaxOutChargerPower().compareTo(hisCountData2.getMaxOutChargerPower()) == 1?
+                        hisCountDataL2.getMaxOutChargerPower() : hisCountData2.getMaxOutChargerPower();
+                /** 近似线性中段当日总放电SOC */
+                Integer dischargeMidSoc = hisCountDataL2.getDischargeMidSoc() - hisCountData1.getDischargeMidSoc() + hisCountData2.getDischargeMidSoc();
+                /** 近似线性中段当日总行驶里程 */
+                BigDecimal dischargeMidMileage = hisCountDataL2.getDischargeMidMileage().subtract(hisCountData1.getDischargeMidMileage()).add(hisCountData2.getDischargeMidMileage());
+
+
+                /** 类型转换 */
+                dischargeMidMileage = dischargeMidMileage.divide(BigDecimal.ONE,2 , BigDecimal.ROUND_UP) ;
+                maxOutChargerPower = maxOutChargerPower.divide(BigDecimal.ONE,2 , BigDecimal.ROUND_UP) ;
+                maxOutChargerPower = maxOutChargerPower.divide(BigDecimal.ONE,2 , BigDecimal.ROUND_UP) ;
+                mileageTotal = mileageTotal.divide(BigDecimal.ONE,2 , BigDecimal.ROUND_UP) ;
+                /** 平均单日运行时间 */
+                int diffNum = DateUtil.diffDate(startDate,endDate) ;
+                dischargeTotalSec = dischargeTotalSec / diffNum ;
+
+                this.hisCountData.setGpsCount(gpsCount);
+                this.hisCountData.setCanCount(canCount);
+                this.hisCountData.setMileageTotal(mileageTotal);
+                this.hisCountData.setChargeMidSoc1(chargeMidSoc1);
+                this.hisCountData.setChargeMidSec1(chargeMidSec1);
+                this.hisCountData.setChargeMidSoc2(chargeMidSoc2);
+                this.hisCountData.setChargeMidSec2(chargeMidSec2);
+                this.hisCountData.setChargeMidSoc3(chargeMidSoc3);
+                this.hisCountData.setChargeMidSec3(chargeMidSec3);
+                this.hisCountData.setDischargeTotalSec(dischargeTotalSec);
+                this.hisCountData.setMaxInChargerPower(maxInChargerPower);
+                this.hisCountData.setMaxOutChargerPower(maxOutChargerPower);
+                this.hisCountData.setDischargeMidSoc(dischargeMidSoc);
+                this.hisCountData.setDischargeMidMileage(dischargeMidMileage);
+                this.hisCountData.setCalcTime(new Date());
+                /** 计算指标数据 */
+                this.getTargetData() ;
+
+                this.saveL2(this.hisCountData);
+                return true ;
+            }catch (Exception e){
+                return false ;
+            }
+        }
 
     }
 
+
+    /**
+     * 算法二
+     * @param vehicleVo
+     * @param startDate
+     * @param endDate
+     * @param monthDay
+     */
     private void calcVehicleL2(VehicleVo vehicleVo,Date startDate,Date endDate,int monthDay){
 
         int diffNum = DateUtil.diffDate(startDate,endDate) ;
-
+        diffNum = diffNum == 0 ? 1 : diffNum ;
         for (int i = 0 ; i < diffNum ;i++){
             Date start = DateUtil.getStartDate(startDate,i) ;
             Date end = DateUtil.getEndDate(startDate,monthDay-1) ;
-
             /** 当不满足monthDay天数时，执行最后一次 */
             if (DateUtil.compare(end,endDate) || DateUtil.diffDate(end,endDate) == 0){
                 i = diffNum ;
+                end = DateUtil.getEndDate(endDate) ;
             }
 
             /**
@@ -66,9 +183,9 @@ public class VehicleL2 extends VehicleBase{
     }
 
     /**
-     * 去除每天充电下于20SOC的数据
+     * 去除每天充电小于20SOC的数据
      */
-    public static final Integer MIN_SOC = 20 ;
+    public static final Integer MIN_SOC = 0 ;
 
     /**
      * 计算
@@ -78,7 +195,6 @@ public class VehicleL2 extends VehicleBase{
      */
     private void calcTargetL2(VehicleVo vehicleVo,Date startDate ,Date endDate,List<HisCountData> hisCountDatas){
 
-
         String vinCode = vehicleVo.getVinCode() ;
         String id = vinCode + DateUtil.getDateStryyyyMMdd(endDate);
         String carType = vehicleVo.getCarType() ;
@@ -86,7 +202,6 @@ public class VehicleL2 extends VehicleBase{
         Date releaseTime = vehicleVo.getReleaseTime() ;
 
         this.hisCountData = new HisCountDataL2() ;
-
         this.hisCountData.setId(id);
         this.hisCountData.setTm(endDate);
         this.hisCountData.setVinCode(vinCode);
@@ -114,16 +229,16 @@ public class VehicleL2 extends VehicleBase{
             for(HisCountData hisCountData : hisCountDatas){
                 gpsCount += hisCountData.getGpsCount() ;
                 canCount += hisCountData.getCanCount() ;
-                /** 去除每天充电下于20SOC的数据*/
-                if (hisCountData.getChargeMidSoc1() < MIN_SOC){
+                /** 去除每天充电小于MIN_SOC的数据*/
+                if (hisCountData.getChargeMidSoc1() > MIN_SOC){
                     chargeMidSoc1 += hisCountData.getChargeMidSoc1() ;
                     chargeMidSec1 += hisCountData.getChargeMidSec1() ;
                 }
-                if (hisCountData.getChargeMidSoc2() < MIN_SOC){
+                if (hisCountData.getChargeMidSoc2() > MIN_SOC){
                     chargeMidSoc2 += hisCountData.getChargeMidSoc2() ;
                     chargeMidSec2 += hisCountData.getChargeMidSec2() ;
                 }
-                if (hisCountData.getChargeMidSoc3() < MIN_SOC){
+                if (hisCountData.getChargeMidSoc3() > MIN_SOC){
                     chargeMidSoc3 += hisCountData.getChargeMidSoc3() ;
                     chargeMidSec3 += hisCountData.getChargeMidSec3() ;
                 }
@@ -148,7 +263,11 @@ public class VehicleL2 extends VehicleBase{
             }
         }
 
-
+        /** 类型转换 */
+        dischargeMidMileage = dischargeMidMileage.divide(BigDecimal.ONE,2 , BigDecimal.ROUND_UP) ;
+        maxOutChargerPower = maxOutChargerPower.divide(BigDecimal.ONE,2 , BigDecimal.ROUND_UP) ;
+        maxOutChargerPower = maxOutChargerPower.divide(BigDecimal.ONE,2 , BigDecimal.ROUND_UP) ;
+        mileageTotal = mileageTotal.divide(BigDecimal.ONE,2 , BigDecimal.ROUND_UP) ;
         /** 平均单日运行时间 */
         int diffNum = DateUtil.diffDate(startDate,endDate)+ 1 ;
         dischargeTotalSec = dischargeTotalSec / diffNum ;
@@ -169,6 +288,31 @@ public class VehicleL2 extends VehicleBase{
         this.hisCountData.setDischargeMidMileage(dischargeMidMileage);
         this.hisCountData.setCalcTime(new Date());
 
+        /** 计算指标数据 */
+        this.getTargetData() ;
+
+    }
+
+    /**
+     * 计算指标数据
+     */
+    private void getTargetData(){
+        String carType = this.hisCountData.getCarType() ;
+        Date veDeliveredDate = this.hisCountData.getVeDeliveredDate() ;
+        Date releaseTime = this.hisCountData.getReleaseTime() ;
+        Date endDate = this.hisCountData.getTm() ;
+        BigDecimal mileageTotal = this.hisCountData.getMileageTotal();              //总里程
+        Integer chargeMidSoc1 = this.hisCountData.getChargeMidSoc1() ;              //近似线性中段充电SOC -Model1
+        Long chargeMidSec1 = this.hisCountData.getChargeMidSec1();                  //近似线性中段充电时间(单位：S) -Model1
+        Integer chargeMidSoc2 = this.hisCountData.getChargeMidSoc2() ;              //近似线性中段充电SOC -Model2
+        Long chargeMidSec2 = this.hisCountData.getChargeMidSec2();                  //近似线性中段充电时间(单位：S) -Model2
+        Integer chargeMidSoc3 = this.hisCountData.getChargeMidSoc3() ;              //近似线性中段充电SOC -Model3
+        Long chargeMidSec3 = this.hisCountData.getChargeMidSec3();                  //近似线性中段充电时间(单位：S) -Model3
+        Long dischargeTotalSec = this.hisCountData.getDischargeTotalSec() ;         //放电总时长(单位：S)
+        BigDecimal maxInChargerPower = this.hisCountData.getMaxInChargerPower() ;   //最大输入电功率
+        BigDecimal maxOutChargerPower = this.hisCountData.getMaxOutChargerPower() ; //最大输出电功率
+        Integer dischargeMidSoc = this.hisCountData.getDischargeMidSoc() ;          //近似线性中段当日总放电SOC
+        BigDecimal dischargeMidMileage = this.hisCountData.getDischargeMidMileage() ;//近似线性中段当日总行驶里程
         /**1.车辆累计行驶里程*/
         BigDecimal mileage = this.getMileage(mileageTotal,veDeliveredDate,releaseTime,endDate);
         /**2.续驶里程*/
@@ -218,7 +362,7 @@ public class VehicleL2 extends VehicleBase{
                 onedaymileage = mileageTotal.divide(BigDecimal.valueOf(diffNum),2, BigDecimal.ROUND_UP);
             }
         }
-
+        onedaymileage = onedaymileage.divide(BigDecimal.ONE, 2 ,BigDecimal.ROUND_UP) ;
         return onedaymileage ;
     }
 
@@ -234,6 +378,7 @@ public class VehicleL2 extends VehicleBase{
         if (dischargeMidSoc != 0 ){
             limitedDriving = dischargeMidMileage.divide(BigDecimal.valueOf(dischargeMidSoc), 2, BigDecimal.ROUND_UP).multiply(BigDecimal.valueOf(100)) ;
         }
+        limitedDriving = limitedDriving.divide(BigDecimal.ONE, 2 ,BigDecimal.ROUND_UP) ;
         return limitedDriving ;
     }
 
@@ -250,6 +395,7 @@ public class VehicleL2 extends VehicleBase{
             maxenergytime = BigDecimal.valueOf(chargeMidSec).divide(BigDecimal.valueOf(chargeMidSoc), 2, BigDecimal.ROUND_UP)
                     .divide(BigDecimal.valueOf(36),2, BigDecimal.ROUND_UP);
         }
+        maxenergytime = maxenergytime.divide(BigDecimal.ONE, 2 ,BigDecimal.ROUND_UP) ;
         return maxenergytime ;
     }
 
@@ -264,6 +410,8 @@ public class VehicleL2 extends VehicleBase{
     private BigDecimal getMaxElectricPower(BigDecimal maxInChargerPower,BigDecimal maxOutChargerPower,String carType){
         BigDecimal power = maxInChargerPower.compareTo(maxOutChargerPower) == 1 ?
                 maxInChargerPower : maxOutChargerPower ;
+        /** 数据装换 */
+        power = power.divide(BigDecimal.ONE, 2 ,BigDecimal.ROUND_UP) ;
         return power ;
     }
 
@@ -299,6 +447,7 @@ public class VehicleL2 extends VehicleBase{
         if(dischargeMidSoc != 0){
             hundredskmusepower = BigDecimal.valueOf(dischargeMidSoc).divide(dischargeMidMileage, 2, BigDecimal.ROUND_UP).multiply(socTotalcapacity) ;
         }
+        hundredskmusepower = hundredskmusepower.divide(BigDecimal.ONE,2,BigDecimal.ROUND_UP) ;
         return hundredskmusepower ;
     }
 

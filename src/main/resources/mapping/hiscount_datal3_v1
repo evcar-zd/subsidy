@@ -1,0 +1,153 @@
+/*******建立索引********/
+PUT http://10.10.11.147:9200/hiscount_datal3_v1
+ {
+     "settings" : {
+         "index" : {
+             "max_result_window": "100000",
+             "number_of_shards": "5",
+             "number_of_replicas": "1"
+         }
+     }
+ }
+
+/*******建立类型********/
+PUT http://10.10.11.147:9200/hiscount_datal3_v1/hiscount_datal3/_mapping
+{
+    "properties": {
+        "id": {
+            "type": "string",
+            "index": "not_analyzed"
+        },
+        "tm": {
+             "type": "date",
+             "format": "yyyy-MM-dd"
+         },
+        "limitMileage": {
+            "properties": {
+                "normal": {
+                    "type": "integer"
+                },
+                "invalids": {
+                    "type": "integer"
+                },
+                "lowSide": {
+                    "type": "integer"
+                },
+                "highSide": {
+                    "type": "integer"
+                }
+            }
+        },
+        "avgDailyRunTime": {
+             "properties": {
+                 "normal": {
+                     "type": "integer"
+                 },
+                 "invalids": {
+                     "type": "integer"
+                 },
+                 "lowSide": {
+                     "type": "integer"
+                 },
+                 "highSide": {
+                     "type": "integer"
+                 }
+             }
+         },
+         "gpsNearNoData": {
+             "type": "integer"
+         },
+         "maxEnergyTime": {
+             "properties": {
+                 "normal": {
+                     "type": "integer"
+                 },
+                 "invalids": {
+                     "type": "integer"
+                 },
+                 "lowSide": {
+                     "type": "integer"
+                 },
+                 "highSide": {
+                     "type": "integer"
+                 }
+             }
+         },
+         "vehicleNum": {
+             "type": "integer"
+         },
+         "canNearNoData": {
+             "type": "integer"
+         },
+         "version": {
+             "type": "string",
+             "index": "not_analyzed"
+         },
+         "calcTime": {
+             "type": "date",
+             "format": "yyyy-MM-dd HH:mm:ss"
+         },
+         "canNormal": {
+             "type": "integer"
+         },
+         "gpsNormal": {
+             "type": "integer"
+         },
+         "canNoData": {
+             "type": "integer"
+         },
+         "hundredsKmusePower": {
+             "properties": {
+                 "normal": {
+                     "type": "integer"
+                 },
+                 "invalids": {
+                     "type": "integer"
+                 },
+                 "lowSide": {
+                     "type": "integer"
+                 },
+                 "highSide": {
+                     "type": "integer"
+                 }
+             }
+         },
+         "gpsNoData": {
+             "type": "integer"
+         },
+
+         "maxElectricPower": {
+             "properties": {
+                 "normal": {
+                     "type": "integer"
+                 },
+                 "invalids": {
+                     "type": "integer"
+                 },
+                 "lowSide": {
+                     "type": "integer"
+                 },
+                 "highSide": {
+                     "type": "integer"
+                 }
+             }
+         },
+         "mileage": {
+             "properties": {
+                 "normal": {
+                     "type": "integer"
+                 },
+                 "invalids": {
+                     "type": "integer"
+                 },
+                 "lowSide": {
+                     "type": "integer"
+                 },
+                 "highSide": {
+                     "type": "integer"
+                 }
+             }
+         }
+    }
+}
+

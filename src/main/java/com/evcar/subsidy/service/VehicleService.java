@@ -32,10 +32,16 @@ public class VehicleService {
      * @return
      */
     public static long getVehicleNum(){
-        Client client = ESTools.getClient() ;
-        SearchRequestBuilder search = client.prepareSearch(Constant.VEHICLE_INDEX).setTypes(Constant.VEHICLE_TYPE) ;
-        SearchResponse sr = search.get();//得到查询结果
-        return sr.getHits().getTotalHits();//读取数量
+        long size = 0L ;
+        try {
+            Client client = ESTools.getClient() ;
+            SearchRequestBuilder search = client.prepareSearch(Constant.VEHICLE_INDEX).setTypes(Constant.VEHICLE_TYPE) ;
+            SearchResponse sr = search.get();//得到查询结果
+            size = sr.getHits().getTotalHits() ;
+        }catch (Exception e){
+            s_logger.error("Connection is closed"+e.getMessage());
+        }
+        return size ;//读取数量
     }
 
     /**
@@ -43,22 +49,25 @@ public class VehicleService {
      * @return
      */
     public static List<Vehicle> getVehicleList() {
-
-        Client client = ESTools.getClient() ;
         List<Vehicle> list = new ArrayList<>() ;
-        SearchRequestBuilder search = client.prepareSearch(Constant.VEHICLE_INDEX).setTypes(Constant.VEHICLE_TYPE) ;
-        SearchResponse sr = search.get();//得到查询结果
-        long sizeNum = sr.getHits().getTotalHits();//读取数量
+        try{
+            Client client = ESTools.getClient() ;
+            SearchRequestBuilder search = client.prepareSearch(Constant.VEHICLE_INDEX).setTypes(Constant.VEHICLE_TYPE) ;
+            SearchResponse sr = search.get();//得到查询结果
+            long sizeNum = sr.getHits().getTotalHits();//读取数量
 
-        SortBuilder sortBuilder = SortBuilders.fieldSort("produceTime").order(SortOrder.ASC);
-        search = search.addSort(sortBuilder).setFrom(0).setSize((int)sizeNum);
-        sr = search.get();//得到查询结果
+            SortBuilder sortBuilder = SortBuilders.fieldSort("produceTime").order(SortOrder.ASC);
+            search = search.addSort(sortBuilder).setFrom(0).setSize((int)sizeNum);
+            sr = search.get();//得到查询结果
 
-        for(SearchHit hits:sr.getHits()){
-            String json = JacksonUtil.toJSon(hits.getSource()) ;
-            s_logger.debug(json);
-            Vehicle vehicle = JacksonUtil.readValue(json, Vehicle.class);
-            list.add(vehicle) ;
+            for(SearchHit hits:sr.getHits()){
+                String json = JacksonUtil.toJSon(hits.getSource()) ;
+                s_logger.debug(json);
+                Vehicle vehicle = JacksonUtil.readValue(json, Vehicle.class);
+                list.add(vehicle) ;
+            }
+        }catch (Exception e){
+            s_logger.error("Connection is closed"+e.getMessage());
         }
         s_logger.info("fetched {} vehicles", list.size());
         return list ;
@@ -69,23 +78,26 @@ public class VehicleService {
      * @return
      */
     public static List<Vehicle> getVehicleByPage(Integer currentPage , Integer pageSize) {
-
-        Client client = ESTools.getClient() ;
         List<Vehicle> list = new ArrayList<>() ;
-        SortBuilder sortBuilder = SortBuilders.fieldSort("produceTime").order(SortOrder.ASC);
-        SearchRequestBuilder search = client.prepareSearch(Constant.VEHICLE_INDEX)
-                .setTypes(Constant.VEHICLE_TYPE)
-                .addSort(sortBuilder)
-                .setFrom((currentPage-1)*pageSize)
-                .setSize(pageSize);
+        try {
+            Client client = ESTools.getClient() ;
+            SortBuilder sortBuilder = SortBuilders.fieldSort("produceTime").order(SortOrder.ASC);
+            SearchRequestBuilder search = client.prepareSearch(Constant.VEHICLE_INDEX)
+                    .setTypes(Constant.VEHICLE_TYPE)
+                    .addSort(sortBuilder)
+                    .setFrom((currentPage-1)*pageSize)
+                    .setSize(pageSize);
 
-        SearchResponse sr = search.get();//得到查询结果
+            SearchResponse sr = search.get();//得到查询结果
 
-        for(SearchHit hits:sr.getHits()){
-            String json = JacksonUtil.toJSon(hits.getSource()) ;
-            s_logger.debug(json);
-            Vehicle vehicle = JacksonUtil.readValue(json, Vehicle.class);
-            list.add(vehicle) ;
+            for(SearchHit hits:sr.getHits()){
+                String json = JacksonUtil.toJSon(hits.getSource()) ;
+                s_logger.debug(json);
+                Vehicle vehicle = JacksonUtil.readValue(json, Vehicle.class);
+                list.add(vehicle) ;
+            }
+        }catch (Exception e){
+            s_logger.error("Connection is closed"+e.getMessage());
         }
         s_logger.info("fetched {} vehicles", list.size());
         return list ;
@@ -97,18 +109,22 @@ public class VehicleService {
      * @return
      */
     public static Vehicle getVehicle(String vinCode){
-        Client client = ESTools.getClient() ;
-        QueryBuilder qb = new BoolQueryBuilder()
-                .must(QueryBuilders.matchQuery("vinCode",vinCode)) ;
-        SearchRequestBuilder search = client.prepareSearch(Constant.VEHICLE_INDEX)
-                .setTypes(Constant.VEHICLE_TYPE).setQuery(qb) ;
-        SearchResponse sr = search.get() ;
-
         Vehicle vehicle = null ;
-        for(SearchHit hits:sr.getHits()){
-            String json = JacksonUtil.toJSon(hits.getSource()) ;
-            vehicle = JacksonUtil.readValue(json, Vehicle.class);
-            break;
+        try{
+            Client client = ESTools.getClient() ;
+            QueryBuilder qb = new BoolQueryBuilder()
+                    .must(QueryBuilders.matchQuery("vinCode",vinCode)) ;
+            SearchRequestBuilder search = client.prepareSearch(Constant.VEHICLE_INDEX)
+                    .setTypes(Constant.VEHICLE_TYPE).setQuery(qb) ;
+            SearchResponse sr = search.get() ;
+
+            for(SearchHit hits:sr.getHits()){
+                String json = JacksonUtil.toJSon(hits.getSource()) ;
+                vehicle = JacksonUtil.readValue(json, Vehicle.class);
+                break;
+            }
+        }catch (Exception e){
+            s_logger.error("Connection is closed"+e.getMessage());
         }
         return vehicle ;
     }
