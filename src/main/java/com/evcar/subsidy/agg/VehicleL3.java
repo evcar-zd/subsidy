@@ -47,26 +47,26 @@ public class VehicleL3 extends VehicleBase {
             currentPage ++ ;
         }
 
-        monthCountData = new MonthCountData() ;
-        String id = Constant.LOGO + DateUtil.getDateStryyyyMMdd(endDate);     //根据时间生成
-        monthCountData.setId(id);
-        monthCountData.setTm(endDate);
-        Integer vehicleNum = 0 ;                //车辆数量
+        if (hisCountDataL2s.size() > 0 ){
+            monthCountData = new MonthCountData() ;
+            String id = Constant.LOGO + DateUtil.getDateStryyyyMMdd(endDate);     //根据时间生成
+            monthCountData.setId(id);
+            monthCountData.setTm(endDate);
+            Integer vehicleNum = 0 ;                //车辆数量
 
-        for (int i = 0 ; i < hisCountDataL2s.size() ; i++){
-            HisCountDataL2 hisCountDataL2 = hisCountDataL2s.get(i) ;
-            String vinCode = hisCountDataL2.getVinCode() ;
-            if (map.get(vinCode) != null ) continue;
-            getTarget2(hisCountDataL2) ;
-            vehicleNum ++ ;
-            map.put(vinCode,hisCountDataL2) ;
-        }
+            for (int i = 0 ; i < hisCountDataL2s.size() ; i++){
+                HisCountDataL2 hisCountDataL2 = hisCountDataL2s.get(i) ;
+                String vinCode = hisCountDataL2.getVinCode() ;
+                if (map.get(vinCode) != null ) continue;
+                getTarget2(hisCountDataL2) ;
+                vehicleNum ++ ;
+                map.put(vinCode,hisCountDataL2) ;
+            }
 
-        monthCountData.setCalcTime(new Date());
-        monthCountData.setVehicleNum(vehicleNum);
-        boolean execute = hisCountDataL2s.size() > 0 ? true : false ;
-        if (execute)
+            monthCountData.setCalcTime(new Date());
+            monthCountData.setVehicleNum(vehicleNum);
             this.saveL3(monthCountData);
+        }
     }
 
 
