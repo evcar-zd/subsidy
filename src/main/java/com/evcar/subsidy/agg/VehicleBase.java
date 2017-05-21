@@ -27,6 +27,8 @@ public class VehicleBase {
 
     protected List<HisCountDataL2> hisCountDataL2s ;
 
+    protected static OverlappedLoader s_loader = new OverlappedLoader();
+
     /**
      * 载入数L1据
      * @param vinCode
@@ -34,30 +36,12 @@ public class VehicleBase {
      * @param endDate
      */
     protected void load(String vinCode, Date startDate, Date endDate){
-        /** 查询历史整车和电机数据 */
-        long sizeNum = VehicleMotorService.getHisVehicleMotorNum(vinCode,startDate,endDate) ;
-        if (sizeNum > 0)
-            this.hisVehicleMotors = VehicleMotorService.getHisVehicleMotor(vinCode,startDate,endDate,sizeNum) ;
-
-        /** 查询BMS数据 */
-        long bmsNum = BmsDataService.getHisBmsDataNum(vinCode,startDate,endDate);
-        if (bmsNum > 0 )
-            this.bmsDatas = BmsDataService.getHisBmsData(vinCode,startDate,endDate,bmsNum) ;
-
-        /** 查询OBS数据 */
-        long obcNum = ObcDataService.getHisObcDataNum(vinCode,startDate,endDate);
-        if (bmsNum > 0 )
-            this.obcDatas = ObcDataService.getHisObcData(vinCode,startDate,endDate,obcNum) ;
-
-        /** 查询HVAC数据 */
-        long hvacNum = HvacDataService.getHvacDataNum(vinCode,startDate,endDate) ;
-        if (hvacNum > 0)
-            this.hvacDatas = HvacDataService.getHisHvacData(vinCode,startDate,endDate,hvacNum) ;
-
-        /** 获取GPS数据 */
-        long gpsCount = GpsDataService.getHisGpsDataNum(vinCode,startDate,endDate) ;
-        if (gpsCount > 0)
-            hisGpsDatas = GpsDataService.getHisGpsData(vinCode,startDate,endDate,gpsCount) ;
+        OverlappedData data = s_loader.load(vinCode);
+        this.bmsDatas = data.bmsDatas;
+        this.obcDatas = data.obcDatas;
+        this.hisVehicleMotors = data.hisVehicleMotors;
+        this.hisGpsDatas = data.hisGpsDatas;
+        this.hvacDatas = data.hvacDatas;
     }
 
     /**

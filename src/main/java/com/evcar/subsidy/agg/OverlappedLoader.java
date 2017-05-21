@@ -1,0 +1,140 @@
+package com.evcar.subsidy.agg;
+
+import com.evcar.subsidy.entity.*;
+import com.evcar.subsidy.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+
+/**
+ * 层叠式取数据
+ */
+public class OverlappedLoader {
+    private Map<String, OverlappedData> _cache = new HashMap<>();
+    private BlockingQueue<TaskFetch> _blockingVin = new ArrayBlockingQueue<>(10);
+    private AtomicBoolean _isRunning = new AtomicBoolean(false);
+    private List<Thread> listThreads = new ArrayList<>();
+    private Logger s_logger = LoggerFactory.getLogger(OverlappedLoader.class);
+
+    public void start()
+    {
+        for(int i=0;i<10;i++){
+            Thread worker = new Thread(()->{
+                try {
+                    while(true) {
+                        TaskFetch taskFetch = _blockingVin.take();
+                        if(taskFetch == null) return;
+
+                        cacheData(taskFetch.vin, taskFetch.start, taskFetch.end);
+                    }
+                }
+                catch(Exception ex){
+                    s_logger.error(ex.toString());
+                }
+            });
+            listThreads.add(worker);
+        }
+    }
+
+    public void stop()
+    {
+        for(int i=0;i<100;i++){
+            _blockingVin.add(null);
+        }
+    }
+
+    public void preFetch(String vin, Date startDate, Date endDate){
+        TaskFetch task = new TaskFetch();
+        task.vin = vin;
+        task.start = startDate;
+        task.end = endDate;
+        _blockingVin.add(task);
+
+        if(_isRunning.compareAndSet(false, true)){
+            start();
+        }
+    }
+
+    public OverlappedData load(String vinCode){
+        final int maxRetry = 1000; // 最多试这么多次了
+        int retry = 0;
+        // 从cache中找数据,如果没找到就等待
+            while(true) {
+                retry++;
+                if(retry > maxRetry) throw new RuntimeException("没取到数据!!!");
+
+                synchronized (_cache) {
+                    if (_cache.containsKey(vinCode)) {
+                        OverlappedData data = _cache.get(vinCode);
+                        _cache.remove(vinCode);
+                        return data;
+                    }
+                }
+
+                try {
+                    // 等100毫秒再试
+                    Thread.sleep(100);
+                }catch(Exception ex){
+                    s_logger.error(ex.toString());
+                }
+        }
+    }
+
+    private void cacheData(String vinCode, Date startDate, Date endDate){
+        // 取数据
+        OverlappedData data = new OverlappedData();
+
+        /** 查询历史整车和电机数据 */
+        long sizeNum = VehicleMotorService.getHisVehicleMotorNum(vinCode,startDate,endDate) ;
+        if (sizeNum > 0)
+            data.hisVehicleMotors = VehicleMotorService.getHisVehicleMotor(vinCode,startDate,endDate,sizeNum) ;
+
+        /** 查询BMS数据 */
+        long bmsNum = BmsDataService.getHisBmsDataNum(vinCode,startDate,endDate);
+        if (bmsNum > 0 )
+            data.bmsDatas = BmsDataService.getHisBmsData(vinCode,startDate,endDate,bmsNum) ;
+
+        /** 查询OBS数据 */
+        long obcNum = ObcDataService.getHisObcDataNum(vinCode,startDate,endDate);
+        if (bmsNum > 0 )
+            data.obcDatas = ObcDataService.getHisObcData(vinCode,startDate,endDate,obcNum) ;
+
+        /** 查询HVAC数据 */
+        long hvacNum = HvacDataService.getHvacDataNum(vinCode,startDate,endDate) ;
+        if (hvacNum > 0)
+            data.hvacDatas = HvacDataService.getHisHvacData(vinCode,startDate,endDate,hvacNum) ;
+
+        /** 获取GPS数据 */
+        long gpsCount = GpsDataService.getHisGpsDataNum(vinCode,startDate,endDate) ;
+        if (gpsCount > 0)
+            data.hisGpsDatas = GpsDataService.getHisGpsData(vinCode,startDate,endDate,gpsCount) ;
+
+        synchronized (_cache){
+            _cache.put(vinCode, data);
+        }
+    }
+}
+
+class TaskFetch{
+    public String vin;
+    public Date start;
+    public Date end;
+}
+
+
+class OverlappedData{
+    public List<BmsData> bmsDatas ;
+
+    public List<ObcData> obcDatas ;
+
+    public List<HisVehicleMotor> hisVehicleMotors ;
+
+    public List<HisGpsData> hisGpsDatas ;
+
+    public List<HvacData> hvacDatas ;
+}

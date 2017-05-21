@@ -50,13 +50,33 @@ public class Agg {
                 /** L2/L3执行时间 */
 //                Date month = DateUtil.getDate(start,monthDay-1) ;
 
+                int prgL1 = 0;
                 if(vehicleVos.size() > 0 ) {
                     try {
                         long startTimeL1 = System.currentTimeMillis() ;
                         s_logger.info("start L1 {} count", start);
-                        for (VehicleVo vehicleVo : vehicleVos){
+                        final int fetchSize = 5;
+                        for (int j=0;j<vehicleVos.size();j++){
+                            VehicleVo vehicleVo = vehicleVos.get(i);
                             VehicleL1 vehicleL1 = new VehicleL1() ;
+                            // pre fetch
+                            if(j == 0) {
+                                for (int k = j; k < j + fetchSize && k < vehicleVos.size(); k++) {
+                                    VehicleVo vvoFetch = vehicleVos.get(k);
+                                    vehicleL1.preFetch(vvoFetch.getVinCode(), start, end);
+                                }
+                            }
+                            else{
+                                if((j + fetchSize - 1) < vehicleVos.size()) {
+                                    VehicleVo vvoFetch = vehicleVos.get(j + fetchSize - 1);
+                                    vehicleL1.preFetch(vvoFetch.getVinCode(), start, end);
+                                }
+                            }
+
                             vehicleL1.calc(vehicleVo,start,end);
+                            prgL1++;
+                            if(prgL1 % 100 == 0)
+                                s_logger.info("L1 progress: {} / {}", prgL1, vehicleVos.size());
                         }
                         s_logger.info("end L1 cost {}", (System.currentTimeMillis()-startTimeL1));
                         Thread.sleep(200);

@@ -38,8 +38,11 @@ public class VehicleL1 extends VehicleBase{
      */
     protected void calc(VehicleVo vehicleVo, Date startDate , Date endDate){
         this.load(vehicleVo.getVinCode(),startDate,endDate);
-
         this.calcVehicle(vehicleVo,startDate,endDate);
+    }
+
+    public void preFetch(String vin, Date startDate, Date endDate){
+        s_loader.preFetch(vin, startDate, endDate);
     }
 
     /**
