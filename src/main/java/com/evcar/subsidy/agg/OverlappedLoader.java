@@ -67,6 +67,14 @@ public class OverlappedLoader {
         }
     }
 
+    public void asyncSave(HisCountData hisCountData){
+        TaskFetchAndSave taskSave = new TaskFetchAndSave();
+        taskSave.bFetch = false;
+        taskSave.tobeSaving = hisCountData;
+
+        _blockingVin.add(taskSave);
+    }
+
     public OverlappedData load(String vinCode){
         final int maxRetry = 1000; // 最多试这么多次了
         int retry = 0;

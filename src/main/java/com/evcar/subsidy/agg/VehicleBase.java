@@ -49,9 +49,7 @@ public class VehicleBase {
      * @param hisCountData
      */
     protected void save(HisCountData hisCountData){
-        TaskFetchAndSave taskSave = new TaskFetchAndSave();
-        taskSave.bFetch = false;
-        taskSave.tobeSaving = hisCountData;
+        s_loader.asyncSave(hisCountData);
     }
 
     /**
