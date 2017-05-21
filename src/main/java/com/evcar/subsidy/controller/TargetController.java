@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.evcar.subsidy.util.DateUtil.date;
+
 /**
  * Created by Kong on 2017/4/24.
  */
@@ -44,9 +46,7 @@ public class TargetController {
      */
     @RequestMapping(value = "/getLastTarget" ,method = RequestMethod.GET)
     public MonthCountData getLastTarget(){
-        Date date = new Date() ;
-        Date startDate = DateUtil.getDate(date,esBean.getMonthDay()) ;
-        List<MonthCountData> monthCountDatas = MonthCountDataService.getLastMonthCountData(startDate,date) ;
+        List<MonthCountData> monthCountDatas = MonthCountDataService.getLastMonthCountData();
         if (monthCountDatas.size() > 0){
             return monthCountDatas.get(0) ;
         }
@@ -55,18 +55,12 @@ public class TargetController {
 
     /**
      * 近期数据指标
+     * 近30天数据
      * @return
      */
     @RequestMapping(value = "/getTarget" ,method = RequestMethod.GET)
     public List<MonthCountData> getTarget(HttpServletRequest request){
-        Date date = new Date() ;
-        Date startDate = DateUtil.getDate(date,esBean.getMonthDay()) ;
-        Long months = MonthCountDataService.getMonthCountDataNumber(startDate,date) ;
-        List<MonthCountData> monthCountDatas = new ArrayList<>();
-        if (months > 0){
-            int number = Integer.valueOf(String.valueOf(months)) ;
-            monthCountDatas = MonthCountDataService.getMonthCountData(startDate,date,number) ;
-        }
+        List<MonthCountData> monthCountDatas = MonthCountDataService.getMonthCountData() ;
         return monthCountDatas ;
     }
 
@@ -74,14 +68,7 @@ public class TargetController {
     @RequestMapping(value = "/getTargetParams" ,method = RequestMethod.GET)
     public List<TargetVo> getTargetParams(HttpServletRequest request){
         String target = request.getParameter("target") ;
-        Date date = new Date() ;
-        Date startDate = DateUtil.getDate(date,esBean.getMonthDay()) ;
-        Long months = MonthCountDataService.getMonthCountDataNumber(startDate,date) ;
-        List<MonthCountData> monthCountDatas = new ArrayList<>();
-        if (months > 0){
-            int number = Integer.valueOf(String.valueOf(months)) ;
-            monthCountDatas = MonthCountDataService.getMonthCountData(startDate,date,number) ;
-        }
+        List<MonthCountData> monthCountDatas = MonthCountDataService.getMonthCountData() ;
 
         List<TargetVo> targetVos = new ArrayList<>() ;
         for (MonthCountData monthCountData : monthCountDatas){
@@ -104,7 +91,7 @@ public class TargetController {
                 targetNum = BigDecimal.valueOf(monthCountData.getHundredsKmusePower().getNormal()*100).divide(BigDecimal.valueOf(vehicleNum),2,BigDecimal.ROUND_UP);
             }
             targetVo.setTargetNum(targetNum);
-            targetVo.setCalcTime(monthCountData.getTm());
+            targetVo.setCalcTime(monthCountData.getTm().getTime());
             targetVos.add(targetVo);
         }
         return targetVos ;
@@ -148,6 +135,7 @@ public class TargetController {
                     if (monthDay == null || monthDay > 0 ) monthDay = esBean.getMonthDay() ;
 
                     List<String> vinCodes = new ArrayList<>() ;
+
 //                    vinCodes.add("LJU70W1ZXGG030024") ;
 //                    vinCodes.add("LJU70W1Z3GG083289") ;
 //                    vinCodes.add("LJU70W1Z2GG100275") ;

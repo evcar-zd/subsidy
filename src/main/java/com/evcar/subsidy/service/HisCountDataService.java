@@ -64,6 +64,7 @@ public class HisCountDataService {
                     .setSource(jsonObject).execute().get();
         } catch (Exception e) {
             s_logger.error("save hisCountData ERROR Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
     }
 
@@ -80,6 +81,7 @@ public class HisCountDataService {
             flag = deleteResponse.isFound() ;
         } catch (Exception e) {
             s_logger.error("delete hisCountData ERROR");
+            ESTools.connectionError();
         }
         return flag ;
     }
@@ -128,6 +130,7 @@ public class HisCountDataService {
             }
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
 //        s_logger.info("fetched {} hisCountData", list.size());
         return list ;
@@ -155,6 +158,7 @@ public class HisCountDataService {
             size = sr.getHits().getTotalHits() ;
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
         return size ;
     }
@@ -191,6 +195,7 @@ public class HisCountDataService {
             }
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
         return list ;
     }
@@ -217,6 +222,7 @@ public class HisCountDataService {
             size = sr.getHits().getTotalHits() ;
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
         return size ;
     }
@@ -250,6 +256,7 @@ public class HisCountDataService {
             }
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
         return list ;
     }
@@ -274,6 +281,7 @@ public class HisCountDataService {
             size = sr.getHits().getTotalHits() ;
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
         return size ;
     }
@@ -305,6 +313,7 @@ public class HisCountDataService {
             }
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
         return list ;
     }
@@ -318,18 +327,21 @@ public class HisCountDataService {
      */
     public static long getCanOrGps(String vinCode,int mark){
         long size = 0L ;
+        Client client = ESTools.getClient();
         try {
-            Client client = ESTools.getClient();
             String queryFlag = mark == 1 ? "gpsCount" : "canCount";
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode", vinCode))
                     .must(QueryBuilders.rangeQuery(queryFlag).gt(0));
             SearchRequestBuilder search = client.prepareSearch(HISCOUNT_DATA_INDEX)
-                    .setTypes(HISCOUNT_DATA_TYPE).setQuery(qb);
+                    .setTypes(HISCOUNT_DATA_TYPE).setQuery(qb)
+                    .setFrom(0)
+                    .setSize(1);
             SearchResponse sr = search.get();//得到查询结果
             size = sr.getHits().getTotalHits() ;
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
 
         return size ;
@@ -364,6 +376,7 @@ public class HisCountDataService {
             flag = indexResponse.isCreated() ;
         } catch (Exception e) {
             s_logger.error("save hisCountDataL2 ERROR");
+            ESTools.connectionError();
         }
         return flag ;
     }
@@ -380,6 +393,7 @@ public class HisCountDataService {
             flag = deleteResponse.isFound() ;
         } catch (Exception e) {
             s_logger.error("delete hisCountDataL2 ERROR");
+            ESTools.connectionError();
         }
         return flag ;
     }
@@ -420,6 +434,7 @@ public class HisCountDataService {
             }
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
         return list ;
     }
@@ -451,6 +466,7 @@ public class HisCountDataService {
             BulkResponse response = bulkRequest.get();
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
     }
 }

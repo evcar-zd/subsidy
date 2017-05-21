@@ -2,9 +2,12 @@ package com.evcar.subsidy.agg;
 
 import com.evcar.subsidy.entity.*;
 import com.evcar.subsidy.service.HisCountDataService;
+import com.evcar.subsidy.service.MonthCountDataService;
 import com.evcar.subsidy.util.Constant;
 import com.evcar.subsidy.util.CountUtil;
 import com.evcar.subsidy.util.DateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +21,8 @@ import java.util.*;
 @Component
 public class VehicleL3 extends VehicleBase {
 
+    private static Logger s_logger = LoggerFactory.getLogger(VehicleL3.class);
+
     private static ESBean esBean;
     @Autowired
     void setEsBean(ESBean value) { this.esBean = value;}
@@ -25,7 +30,7 @@ public class VehicleL3 extends VehicleBase {
     protected MonthCountData monthCountData ;
 
 
-    private static Integer MAX_QUERY_SIZE = 1000 ;
+    private static Integer MAX_QUERY_SIZE = 500 ;
     /**
      * L3计算
      * @param startDate
@@ -47,24 +52,26 @@ public class VehicleL3 extends VehicleBase {
             currentPage ++ ;
         }
 
-        monthCountData = new MonthCountData() ;
-        String id = Constant.LOGO + DateUtil.getDateStryyyyMMdd(endDate);     //根据时间生成
-        monthCountData.setId(id);
-        monthCountData.setTm(endDate);
-        Integer vehicleNum = 0 ;                //车辆数量
-        for (int i = 0 ; i < hisCountDataL2s.size() ; i++){
-            HisCountDataL2 hisCountDataL2 = hisCountDataL2s.get(i) ;
-            String vinCode = hisCountDataL2.getVinCode() ;
-            if (map.get(vinCode) != null ) continue;
-            getTarget2(hisCountDataL2) ;
-            vehicleNum ++ ;
-            map.put(vinCode,hisCountDataL2) ;
+        if (hisCountDataL2s.size() > 0 ){
+            monthCountData = new MonthCountData() ;
+            String id = Constant.LOGO + DateUtil.getDateStryyyyMMdd(endDate);     //根据时间生成
+            monthCountData.setId(id);
+            monthCountData.setTm(endDate);
+            Integer vehicleNum = 0 ;                //车辆数量
+
+            for (int i = 0 ; i < hisCountDataL2s.size() ; i++){
+                HisCountDataL2 hisCountDataL2 = hisCountDataL2s.get(i) ;
+                String vinCode = hisCountDataL2.getVinCode() ;
+                if (map.get(vinCode) != null ) continue;
+                getTarget2(hisCountDataL2) ;
+                vehicleNum ++ ;
+                map.put(vinCode,hisCountDataL2) ;
+            }
+
+            monthCountData.setCalcTime(new Date());
+            monthCountData.setVehicleNum(vehicleNum);
+            this.saveL3(monthCountData);
         }
-
-        monthCountData.setCalcTime(new Date());
-        monthCountData.setVehicleNum(vehicleNum);
-
-        this.saveL3(monthCountData);
     }
 
 
@@ -109,6 +116,7 @@ public class VehicleL3 extends VehicleBase {
         if (gpsNormal>0){
             gpsNormal ++ ;
         }
+        s_logger.info("count GPS start");
         if (gpsNormal == 0 ){
             if (this.getGpsL1(vinCode)){
                 gpsNearNoData ++ ;
@@ -116,6 +124,7 @@ public class VehicleL3 extends VehicleBase {
                 gpsNoData ++ ;
             }
         }
+        s_logger.info("count GPS end");
         if (canNormal == 0 ){
             if (this.getCanL1(vinCode)){
                 canNearNoData ++ ;
@@ -123,6 +132,7 @@ public class VehicleL3 extends VehicleBase {
                 canNoData ++ ;
             }
         }
+        s_logger.info("count can end");
 
 
 

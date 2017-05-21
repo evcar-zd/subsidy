@@ -10,7 +10,7 @@ import java.util.Date;
 public class TargetVo implements Serializable {
 
     private BigDecimal targetNum ;
-    private Date calcTime ;
+    private Long calcTime ;
 
     public TargetVo(){
 
@@ -24,11 +24,11 @@ public class TargetVo implements Serializable {
         this.targetNum = targetNum;
     }
 
-    public Date getCalcTime() {
+    public Long getCalcTime() {
         return calcTime;
     }
 
-    public void setCalcTime(Date calcTime) {
+    public void setCalcTime(Long calcTime) {
         this.calcTime = calcTime;
     }
 }
