@@ -1,6 +1,5 @@
 package com.evcar.subsidy.service;
 
-import com.evcar.subsidy.entity.BmsData;
 import com.evcar.subsidy.entity.ObcData;
 import com.evcar.subsidy.util.Constant;
 import com.evcar.subsidy.util.DateUtil;
@@ -49,6 +48,7 @@ public class ObcDataService {
             size = sr.getHits().getTotalHits() ;
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
         return size;//读取数量
     }
@@ -83,6 +83,7 @@ public class ObcDataService {
             }
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
         return list ;
     }

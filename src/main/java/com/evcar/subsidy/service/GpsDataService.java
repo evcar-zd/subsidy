@@ -54,6 +54,7 @@ public class GpsDataService {
             size = sr.getHits().getTotalHits();//读取数量
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
 
         return size ;
@@ -92,6 +93,7 @@ public class GpsDataService {
             }
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
 //        s_logger.info("fetched {} hisGpsData", list.size());
         return list ;

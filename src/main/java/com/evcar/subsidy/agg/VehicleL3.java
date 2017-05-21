@@ -2,9 +2,12 @@ package com.evcar.subsidy.agg;
 
 import com.evcar.subsidy.entity.*;
 import com.evcar.subsidy.service.HisCountDataService;
+import com.evcar.subsidy.service.MonthCountDataService;
 import com.evcar.subsidy.util.Constant;
 import com.evcar.subsidy.util.CountUtil;
 import com.evcar.subsidy.util.DateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +21,8 @@ import java.util.*;
 @Component
 public class VehicleL3 extends VehicleBase {
 
+    private static Logger s_logger = LoggerFactory.getLogger(VehicleL3.class);
+
     private static ESBean esBean;
     @Autowired
     void setEsBean(ESBean value) { this.esBean = value;}
@@ -25,7 +30,7 @@ public class VehicleL3 extends VehicleBase {
     protected MonthCountData monthCountData ;
 
 
-    private static Integer MAX_QUERY_SIZE = 1000 ;
+    private static Integer MAX_QUERY_SIZE = 500 ;
     /**
      * L3计算
      * @param startDate
@@ -111,6 +116,7 @@ public class VehicleL3 extends VehicleBase {
         if (gpsNormal>0){
             gpsNormal ++ ;
         }
+        s_logger.info("count GPS start");
         if (gpsNormal == 0 ){
             if (this.getGpsL1(vinCode)){
                 gpsNearNoData ++ ;
@@ -118,6 +124,7 @@ public class VehicleL3 extends VehicleBase {
                 gpsNoData ++ ;
             }
         }
+        s_logger.info("count GPS end");
         if (canNormal == 0 ){
             if (this.getCanL1(vinCode)){
                 canNearNoData ++ ;
@@ -125,6 +132,7 @@ public class VehicleL3 extends VehicleBase {
                 canNoData ++ ;
             }
         }
+        s_logger.info("count can end");
 
 
 

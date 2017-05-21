@@ -49,6 +49,7 @@ public class VehicleMotorService {
             size = sr.getHits().getTotalHits() ;
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
         return size ;//读取数量
 
@@ -85,6 +86,7 @@ public class VehicleMotorService {
             }
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
 //        s_logger.info("fetched {} hisVehicleMotor", list.size());
 
@@ -113,6 +115,7 @@ public class VehicleMotorService {
             size = sr.getHits().getTotalHits() ;
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
         return size ;//读取数量
     }

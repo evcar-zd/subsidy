@@ -70,6 +70,14 @@ public class ESTools {
         }
     }
 
-
-
+    /**
+     * 连接失败，等待3S
+     */
+    public static void connectionError(){
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+    }
 }

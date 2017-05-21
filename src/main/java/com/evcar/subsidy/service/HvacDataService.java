@@ -48,6 +48,7 @@ public class HvacDataService {
             size = sr.getHits().getTotalHits() ;
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
         return size ;
     }
@@ -82,6 +83,7 @@ public class HvacDataService {
             }
         }catch (Exception e){
             s_logger.error("Connection is closed"+e.getMessage());
+            ESTools.connectionError();
         }
         return list ;
     }

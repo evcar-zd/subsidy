@@ -54,7 +54,7 @@ public class MonthCountDataService {
             client.prepareIndex(Constant.HISCOUNT_DATAL3_INDEX,Constant.HISCOUNT_DATAL3_TYPE,monthCountData.getId())
                     .setSource(jsonObject).execute().get();
         } catch (Exception e) {
-            e.printStackTrace();
+            ESTools.connectionError();
             s_logger.error("save monthCountData ERROR");
         }
     }
@@ -71,6 +71,7 @@ public class MonthCountDataService {
             DeleteResponse deleteResponse = client.prepareDelete(Constant.HISCOUNT_DATAL3_INDEX,Constant.HISCOUNT_DATAL3_TYPE,id).execute().get() ;
             flag = deleteResponse.isFound() ;
         } catch (Exception e) {
+            ESTools.connectionError();
             s_logger.error("delete monthCountData ERROR");
         }
         return flag ;
@@ -89,24 +90,14 @@ public class MonthCountDataService {
 //            client.admin().indices().prepareDelete(Constant.HISCOUNT_DATAL3_INDEX).get();
 //    }
 
-    /**
-     * 查询计算数据
-     * @param startDate
-     * @param endDate
-     * @return
-     */
-    public static List<MonthCountData> getLastMonthCountData(Date startDate, Date endDate){
+    public static List<MonthCountData> getLastMonthCountData(){
         List<MonthCountData> list = new ArrayList<>() ;
         try{
             Client client = ESTools.getClient() ;
 
             SortBuilder sortBuilder = SortBuilders.fieldSort("calcTime").order(SortOrder.DESC);
-            QueryBuilder qb = new BoolQueryBuilder()
-                    .must(QueryBuilders.rangeQuery("calcTime")
-                            .from(startDate.getTime())
-                            .to(endDate.getTime()));
             SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATAL3_INDEX)
-                    .setTypes(Constant.HISCOUNT_DATAL3_TYPE).setQuery(qb).addSort(sortBuilder)
+                    .setTypes(Constant.HISCOUNT_DATAL3_TYPE).addSort(sortBuilder)
                     .setFrom(0)
                     .setSize(1);
             SearchResponse sr = search.get();//得到查询结果
@@ -116,33 +107,26 @@ public class MonthCountDataService {
                 list.add(monthCountData) ;
             }
         }catch (Exception e){
+            ESTools.connectionError();
             s_logger.error("Connection is closed"+e.getMessage());
         }
         return list ;
     }
 
-
     /**
      * 查询计算数据
-     * @param startDate
-     * @param endDate
-     * @param number
      * @return
      */
-    public static List<MonthCountData> getMonthCountData(Date startDate, Date endDate,Integer number){
+    public static List<MonthCountData> getMonthCountData(){
 
         List<MonthCountData> list = new ArrayList<>() ;
         try {
             Client client = ESTools.getClient() ;
             SortBuilder sortBuilder = SortBuilders.fieldSort("calcTime").order(SortOrder.DESC);
-            QueryBuilder qb = new BoolQueryBuilder()
-                    .must(QueryBuilders.rangeQuery("calcTime")
-                            .from(startDate.getTime())
-                            .to(endDate.getTime()));
             SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATAL3_INDEX)
-                    .setTypes(Constant.HISCOUNT_DATAL3_TYPE).setQuery(qb).addSort(sortBuilder)
+                    .setTypes(Constant.HISCOUNT_DATAL3_TYPE).addSort(sortBuilder)
                     .setFrom(0)
-                    .setSize(number);
+                    .setSize(30);
             SearchResponse sr = search.get();//得到查询结果
             for(SearchHit hits:sr.getHits()){
                 String json = JacksonUtil.toJSon(hits.getSource()) ;
@@ -150,34 +134,11 @@ public class MonthCountDataService {
                 list.add(monthCountData) ;
             }
         }catch (Exception e){
+            ESTools.connectionError();
             s_logger.error("Connection is closed"+e.getMessage());
         }
         return list ;
     }
 
-
-    /**
-     * 获取时间段的计算数据条数
-     * @param startDate
-     * @param endDate
-     * @return
-     */
-    public static Long getMonthCountDataNumber(Date startDate, Date endDate){
-        Long num = 0L;
-        try {
-            Client client = ESTools.getClient() ;
-            QueryBuilder qb = new BoolQueryBuilder()
-                    .must(QueryBuilders.rangeQuery("calcTime")
-                            .from(startDate.getTime())
-                            .to(endDate.getTime()));
-            SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATAL3_INDEX)
-                    .setTypes(Constant.HISCOUNT_DATAL3_TYPE).setQuery(qb);
-            SearchResponse sr = search.get();//得到查询结果
-            num = sr.getHits().getTotalHits() ;
-        } catch (Exception e){
-            s_logger.error("hiscount_datal3_v1 is nonentity");
-        }
-        return num ;
-    }
 
 }
