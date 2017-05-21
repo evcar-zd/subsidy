@@ -74,7 +74,9 @@ public class Constant {
     /**  指标常量  **/
     public static final int MILEAGE                     =   1 ;
     public static final int LIMITMILEAGE                =   2 ;
-    public static final int MAXENERGYTIME               =   3 ;
+    public static final int MAXENERGYTIME1              =   31 ;
+    public static final int MAXENERGYTIME2              =   32 ;
+    public static final int MAXENERGYTIME3              =   33 ;
     public static final int MAXELECTRICPOWER            =   4 ;
     public static final int AVGDAILYRUNTIME             =   5 ;
     public static final int HUNDREDSKMUSEPOWER          =   6 ;

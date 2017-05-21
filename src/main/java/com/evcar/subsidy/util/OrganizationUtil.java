@@ -73,6 +73,26 @@ public class OrganizationUtil {
     }
 
     /**
+     * 获取某段时间内的GpsNumber
+     * @param gpsDatas
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static int getGpsNumber(List<HisGpsData> gpsDatas, Date startDate, Date endDate){
+        List<HisGpsData> gpsDataList = new ArrayList<>() ;
+        if (gpsDatas != null && gpsDatas.size() > 0){
+            for (HisGpsData hisGpsData : gpsDatas){
+                Date collectTime = hisGpsData.getCollectTime() ;
+                if (collectTime.getTime()>= startDate.getTime() && collectTime.getTime() <= endDate.getTime()){
+                    gpsDataList.add(hisGpsData) ;
+                }
+            }
+        }
+        return gpsDataList.size() ;
+    }
+
+    /**
      * 获取某段时间内的BmsData
      * @param hvacDatas
      * @param startDate

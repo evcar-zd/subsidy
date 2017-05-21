@@ -41,8 +41,14 @@ public class CountUtil {
             case Constant.LIMITMILEAGE :
                 lgAndLt = new LgAndLt(esBeanObj.getLimitMileageMin(),esBeanObj.getLimitMileageMax()) ;
                 break;
-            case Constant.MAXENERGYTIME :
-                lgAndLt = new LgAndLt(esBeanObj.getEnergyTimeMin(),esBeanObj.getEnergyTimeMax()) ;
+            case Constant.MAXENERGYTIME1 :
+                lgAndLt = new LgAndLt(esBeanObj.getEnergyTimeMinModel1(),esBeanObj.getEnergyTimeMaxModel1()) ;
+                break;
+            case Constant.MAXENERGYTIME2 :
+                lgAndLt = new LgAndLt(esBeanObj.getEnergyTimeMinModel2(),esBeanObj.getEnergyTimeMaxModel2()) ;
+                break;
+            case Constant.MAXENERGYTIME3 :
+                lgAndLt = new LgAndLt(esBeanObj.getEnergyTimeMinModel3(),esBeanObj.getEnergyTimeMaxModel3()) ;
                 break;
             case Constant.MAXELECTRICPOWER :
                 lgAndLt = new LgAndLt(esBeanObj.getElectricPowerMin(),esBeanObj.getElectricPowerMax()) ;
@@ -123,9 +129,11 @@ public class CountUtil {
         return model ;
     }
 
-    public static BigDecimal CHARGE_MODEL1 = BigDecimal.valueOf(12) ;
-    public static BigDecimal CHARGE_MODEL2 = BigDecimal.valueOf(16) ;
 
+    public static BigDecimal CHARGE_MODEL1 = BigDecimal.valueOf(9) ;
+    public static BigDecimal CHARGE_MODELMIN2 = BigDecimal.valueOf(13) ;
+    public static BigDecimal CHARGE_MODELMAX2 = BigDecimal.valueOf(16) ;
+    public static BigDecimal CHARGE_MODEL3 = BigDecimal.valueOf(18) ;
     /**
      * 获取充电模式
      * @param alowableCurrent
@@ -133,13 +141,12 @@ public class CountUtil {
      */
     public static Integer getChargeModel(BigDecimal alowableCurrent){
         alowableCurrent = alowableCurrent == null ? BigDecimal.ZERO : alowableCurrent ;
-        int model = 1 ;
-
-        if (alowableCurrent.compareTo(CHARGE_MODEL1)== -1 ){
+        int model = 0 ;
+        if (alowableCurrent.compareTo(CHARGE_MODEL1) == 0 ){
             model = 1 ;
-        }else if(alowableCurrent.compareTo(CHARGE_MODEL1) == 1 && alowableCurrent.compareTo(CHARGE_MODEL2) == -1){
+        }else if(alowableCurrent.compareTo(CHARGE_MODELMIN2) != -1 && alowableCurrent.compareTo(CHARGE_MODELMAX2) != 1){
             model = 2 ;
-        }else if (alowableCurrent.compareTo(CHARGE_MODEL2) == 1){
+        }else if (alowableCurrent.compareTo(CHARGE_MODEL3) == 0){
             model = 3 ;
         }
         return model ;

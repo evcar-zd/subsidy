@@ -3,6 +3,7 @@ package com.evcar.subsidy.controller;
 import com.evcar.subsidy.TargetVo;
 import com.evcar.subsidy.agg.Agg;
 import com.evcar.subsidy.entity.ESBean;
+import com.evcar.subsidy.entity.HisCountData;
 import com.evcar.subsidy.entity.MonthCountData;
 import com.evcar.subsidy.service.HisCountDataService;
 import com.evcar.subsidy.service.MonthCountDataService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -117,37 +119,20 @@ public class TargetController {
      * @param endDate   为空。默认
      * @param monthDay
      * @param sign
-     * @param clearIndex
      */
     @RequestMapping(value = "/handCount" , method = RequestMethod.GET)
     public void HandCount(@RequestParam(value = "startDate" , required = false) String startDate,
                           @RequestParam(value = "endDate" , required = false) String endDate,
                           @RequestParam(value = "monthDay" , required = false) Integer monthDay,
-                          @RequestParam(value = "v" , required = false) String sign,
-                          @RequestParam(value = "clearIndex" ,required = false) String clearIndex){
+                          @RequestParam(value = "v" , required = false) String sign){
         try {
             String dateStr = DateUtil.getDateStryyyyMMdd(new Date()) ;
 
             if (REPEAT_REQUEST){
                 REPEAT_REQUEST = false ;
 
-                /** 是否删除全部索引重新建立数据 */
-                String deleteIndexL1 = "deleteL1" + dateStr ;
-                String deleteIndexL2 = "deleteL2" + dateStr ;
-                String deleteIndexAll = "deleteAll" + dateStr ;
-                if (clearIndex != null){
-                    if (clearIndex.equals(deleteIndexL1)){
-                        HisCountDataService.deleteByIndex();
-                    }else if(clearIndex.equals(deleteIndexL2)){
-                        HisCountDataService.deleteHisCountDataL2();
-                    }else if(clearIndex.equals(deleteIndexAll)){
-//                        HisCountDataService.deleteByIndex();
-//                        HisCountDataService.deleteHisCountDataL2();
-                        MonthCountDataService.deleteByIndex();
-                    }
-                }
-
-
+                System.out.println("启动数据服务");
+                long startRun = System.currentTimeMillis() ;
                 if (sign.equals(dateStr)){
                     int startDay = esBean.getStartDate() ;
                     int endDay = esBean.getEndDate() ;
@@ -156,7 +141,7 @@ public class TargetController {
                         if (!StringUtil.isEmpty(endDate)){
                             endDay = DateUtil.diffDate(DateUtil.parseDate(endDate),new Date());
                         }else{
-                            endDay = startDay + 1 ;
+                            endDay = startDay;
                         }
                     }
 
@@ -175,19 +160,13 @@ public class TargetController {
 //                    vinCodes.add("LJU70W1Z5GG083603") ;
 
                     Agg agg = new Agg() ;
-//                    agg.takeAgg(startDay,endDay,vinCodes);
-
-                    if (monthDay != null ){
-//                        Thread.sleep(2000);
-//                        agg.takeVehicleL2(startDay,endDay,monthDay,vinCodes);
-
-                        Thread.sleep(3000);
-                        agg.takeVehicleL3(startDay,endDay,monthDay,vinCodes);
-                    }
+                    agg.takeTarget(startDay,endDay,monthDay,vinCodes);
                 }
+
+                System.out.println("运行时长："+(System.currentTimeMillis() - startRun) );
             }
 
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             REPEAT_REQUEST = true ;

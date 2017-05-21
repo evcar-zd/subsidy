@@ -5,6 +5,8 @@ import com.evcar.subsidy.entity.Vehicle;
 import com.evcar.subsidy.entity.VehicleVo;
 import com.evcar.subsidy.service.VehicleService;
 import com.evcar.subsidy.util.DateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -20,6 +22,145 @@ import static com.evcar.subsidy.service.VehicleService.getVehicleNum;
  */
 @Component
 public class Agg {
+
+    private static Logger s_logger = LoggerFactory.getLogger(Agg.class);
+
+    /**
+     * 执行计算指标数据L1~L3
+     * @param startDay  前N天开始
+     * @param endDay    前N天结束
+     * @param monthDay  计算monthDay数据
+     * @param vinCodes
+     */
+    public void takeTarget(int startDay ,int endDay ,int monthDay,List<String> vinCodes){
+        int diff = startDay - endDay ;
+        diff = diff == 0 ? 1 : diff ;
+        if (diff > 0){
+            Date date = new Date() ;
+            Date startDate = DateUtil.getDate(date,startDay) ;
+//            Date endDate = DateUtil.getDate(date,endDay) ;
+            List<VehicleVo> vehicleVos = this.talkVehicle(vinCodes);
+
+            /**根据日期执行*/
+            for (int i = 0 ; i < diff ; i++){
+                /**
+                 * L1执行时间
+                 * */
+                Date start = DateUtil.getStartDate(startDate,i) ;
+                Date end = DateUtil.getEndDate(startDate,i) ;
+
+                /** L2/L3执行时间 */
+//                Date month = DateUtil.getDate(start,monthDay-1) ;
+
+                if(vehicleVos.size() > 0 ) {
+                    try {
+                        long startTimeL1 = System.currentTimeMillis() ;
+                        s_logger.info("start L1 {} count", start);
+                        for (VehicleVo vehicleVo : vehicleVos){
+                            VehicleL1 vehicleL1 = new VehicleL1() ;
+                            vehicleL1.calc(vehicleVo,start,end);
+                        }
+                        s_logger.info("end L1 cost {}", (System.currentTimeMillis()-startTimeL1));
+                        Thread.sleep(200);
+                        long startTimeL2 = System.currentTimeMillis() ;
+                        s_logger.info("start L2 {} count", start);
+                        for (VehicleVo vehicleVo : vehicleVos){
+                            /** L2计算 */
+                            VehicleL2 vehicleL2 = new VehicleL2() ;
+                            vehicleL2.calc(vehicleVo,start ,end ,monthDay);
+                        }
+                        s_logger.info("end L2 cost {}", (System.currentTimeMillis()-startTimeL2));
+                        Thread.sleep(2000);
+                        VehicleL3 vehicleL3 = new VehicleL3() ;
+                        vehicleL3.calcL3(start ,end );
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 多线程计算L1
+     * @param vehicleVos
+     * @param start
+     * @param end
+     */
+    private void threadL1(List<VehicleVo> vehicleVos , Date start, Date end){
+        System.out.println(start+"L1开始计算");
+        int groupNum = vehicleVos.size()/THREAD_SIZE ;
+        groupNum = vehicleVos.size()%THREAD_SIZE > 0 ? groupNum+1 : groupNum ;
+        for(int i = 0 ; i < groupNum ; i++ ){
+            ExecutorService executor = Executors.newScheduledThreadPool(THREAD_SIZE+10) ;
+            try {
+                for (int j = 0; j < THREAD_SIZE; j++) {
+                    int y = i*THREAD_SIZE + j ;
+                    executor.execute(() -> {
+                        if (y < vehicleVos.size()){
+                            VehicleVo vehicleVo = vehicleVos.get(y) ;
+                            VehicleL1 vehicleL1 = new VehicleL1() ;
+                            vehicleL1.calc(vehicleVo,start,end);
+                        }
+                    }) ;
+                }
+                executor.shutdown();
+                while (true) {
+                    if (executor.isTerminated()) {
+                        executor.shutdownNow() ;
+                        break;
+                    }
+                    Thread.sleep(200);
+                }
+            }catch (Exception e){
+                executor.shutdownNow() ;
+            }
+        }
+        System.out.println(start+"L1计算结束");
+    }
+
+
+    /**
+     * 多线程计算L2
+     * @param vehicleVos
+     * @param start
+     * @param end
+     * @param monthDay
+     */
+    private void threadL2(List<VehicleVo> vehicleVos ,Date start ,Date end ,int monthDay){
+        System.out.println(start+"L2开始计算");
+        if(vehicleVos.size() > 0 ) {
+            int groupNum = vehicleVos.size()/THREAD_SIZE ;
+            groupNum = vehicleVos.size()%THREAD_SIZE > 0 ? groupNum+1 : groupNum ;
+            for(int i = 0 ; i < groupNum ; i++ ){
+                ExecutorService executor = Executors.newScheduledThreadPool(THREAD_SIZE+20) ;
+                try {
+                    for (int j = 0; j < THREAD_SIZE; j++) {
+                        int y = i*THREAD_SIZE+j ;
+                        executor.execute(() -> {
+                            if (y < vehicleVos.size()){
+                                VehicleVo vehicleVo = vehicleVos.get(y) ;
+                                VehicleL2 vehicleL2 = new VehicleL2() ;
+                                vehicleL2.calc(vehicleVo,start ,end ,monthDay);
+                            }
+                        }) ;
+                    }
+                    executor.shutdown();
+                    while (true) {
+                        if (executor.isTerminated()) {
+                            executor.shutdownNow() ;
+                            break;
+                        }
+                        Thread.sleep(200);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    executor.shutdownNow() ;
+                }
+            }
+        }
+        System.out.println(start+"L2计算结束");
+    }
 
 
     /**
@@ -40,7 +181,9 @@ public class Agg {
      * @param vinCodes      车辆信息
      */
     public void takeAgg(int startDay, int endDay, List<String> vinCodes){
-        if (startDay - endDay > 0){
+        int diff = startDay - endDay ;
+        diff = diff == 0 ? 1 : diff ;
+        if (diff > 0){
             Date date = new Date() ;
             Date startDate = DateUtil.getDate(date,startDay) ;
             Date endDate = DateUtil.getDate(date,endDay) ;
@@ -54,6 +197,7 @@ public class Agg {
                 int groupNum = vehicleVos.size()/THREAD_SIZE ;
                 groupNum = vehicleVos.size()%THREAD_SIZE > 0 ? groupNum+1 : groupNum ;
                 for(int i = 0 ; i < groupNum ; i++ ){
+//                    long startTime = System.currentTimeMillis() ;
                     ExecutorService executor = Executors.newScheduledThreadPool(THREAD_SIZE+10) ;
                     try {
                         for (int j = 0; j < THREAD_SIZE; j++) {
@@ -70,8 +214,10 @@ public class Agg {
                         while (true) {
                             if (executor.isTerminated()) {
                                 executor.shutdownNow() ;
+//                                System.out.println(i+"ExecutorTime"+(System.currentTimeMillis()-startTime));
                                 break;
                             }
+                            Thread.sleep(200);
                         }
                     }catch (Exception e){
                         executor.shutdownNow() ;
@@ -124,6 +270,7 @@ public class Agg {
                             executor.shutdownNow() ;
                             break;
                         }
+                        Thread.sleep(200);
                     }
                 }catch (Exception e){
                     executor.shutdownNow() ;
@@ -148,10 +295,9 @@ public class Agg {
         Date startDate = DateUtil.getDate(date,startDay) ;
         Date endDate = DateUtil.getDate(date,endDay) ;
         int diffNum = DateUtil.diffDate(startDate,endDate) ;
-
+        diffNum = diffNum == 0 ? 1 : diffNum ;
         List<VehicleVo> vehicleVos = this.talkVehicle(vinCodes);
 
-        ExecutorService executor = Executors.newScheduledThreadPool(diffNum + 10) ;
         try {
             for (int i = 0 ; i < diffNum ;i++){
                 Date start = DateUtil.getStartDate(startDate,i) ;
@@ -160,20 +306,10 @@ public class Agg {
                 if (DateUtil.compare(end,endDate) || DateUtil.diffDate(end,endDate) == 0){
                     i = diffNum ;
                 }
-                executor.execute(() -> {
-                    VehicleL3 vehicleL3 = new VehicleL3() ;
-                    vehicleL3.calc(vehicleVos,start ,end );
-                }) ;
-            }
-            executor.shutdown();
-            while (true) {
-                if (executor.isTerminated()) {
-                    executor.shutdownNow() ;
-                    break;
-                }
+                VehicleL3 vehicleL3 = new VehicleL3() ;
+//                vehicleL3.calc(vehicleVos,start ,end );
             }
         }catch (Exception e){
-            executor.shutdownNow() ;
         }
     }
 
@@ -194,7 +330,6 @@ public class Agg {
             Integer currentPage = 1 ;
             Integer pageSize = MAX_SIZE ;
             for (int j = 0 ; j < groupNum ; j++ ) {
-                if (j == 1) break;
                 List<Vehicle> vehicleList = VehicleService.getVehicleByPage(currentPage, pageSize);
                 for (Vehicle vehicle : vehicleList){
                     if (vehicle == null) continue;

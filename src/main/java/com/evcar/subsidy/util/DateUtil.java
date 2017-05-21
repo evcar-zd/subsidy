@@ -17,6 +17,7 @@ public class DateUtil {
 
 	public static Calendar calendar = null;
 
+	public static String DATEFORMATYYYYMMDD = "yyyy-MM-dd" ;
 	/**
 	 * 功能描述：格式化日期
 	 * 
@@ -246,7 +247,21 @@ public class DateUtil {
 	}
 
 
-
+	/**
+	 * 格式化日期：
+	 * @param str
+	 * @return YYYY-MM—DD
+     */
+	private static Date formatDate(String str){
+		SimpleDateFormat dateFormat = new SimpleDateFormat(DATEFORMATYYYYMMDD) ;
+		Date date ;
+		try {
+			date = dateFormat.parse(str) ;
+		} catch (ParseException e) {
+			date = null ;
+		}
+		return date ;
+	}
 
 
 }

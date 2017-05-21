@@ -3,6 +3,7 @@ package com.evcar.subsidy.agg;
 import com.evcar.subsidy.GitVer;
 import com.evcar.subsidy.entity.*;
 import com.evcar.subsidy.service.*;
+import com.evcar.subsidy.util.DateUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -18,11 +19,13 @@ public class VehicleBase {
 
     protected List<HisVehicleMotor> hisVehicleMotors ;
 
-    protected Integer gpsCount ;
+    protected List<HisGpsData> hisGpsDatas ;
 
     protected List<HisCountData> hisCountDatas ;
 
     protected List<HvacData> hvacDatas ;
+
+    protected List<HisCountDataL2> hisCountDataL2s ;
 
     /**
      * 载入数L1据
@@ -52,7 +55,9 @@ public class VehicleBase {
             this.hvacDatas = HvacDataService.getHisHvacData(vinCode,startDate,endDate,hvacNum) ;
 
         /** 获取GPS数据 */
-        gpsCount = (int) GpsDataService.getHisGpsDataNum(vinCode,startDate,endDate) ;
+        long gpsCount = GpsDataService.getHisGpsDataNum(vinCode,startDate,endDate) ;
+        if (gpsCount > 0)
+            hisGpsDatas = GpsDataService.getHisGpsData(vinCode,startDate,endDate,gpsCount) ;
     }
 
     /**
@@ -74,6 +79,23 @@ public class VehicleBase {
     protected void loadL1(String vinCode, Date startDate, Date endDate){
         hisCountDatas = HisCountDataService.getHisCountData(vinCode,startDate,endDate) ;
     }
+
+
+    /**
+     * L1 取startDate前一天和endDate当天
+     * L2取endDate 前一天
+     * @param vinCode
+     * @param startDate
+     * @param endDate
+     */
+    protected void calcL2(String vinCode, Date startDate, Date endDate){
+
+        Date start = DateUtil.getStartDate(startDate,1) ;
+        hisCountDatas = HisCountDataService.getHisCountDataL1(start,endDate,vinCode) ;
+        Date end = DateUtil.getStartDate(endDate,1) ;
+        hisCountDataL2s = HisCountDataService.getHisCountDataL2(vinCode,end) ;
+    }
+
 
     /**
      * 保存L2数据
@@ -109,13 +131,13 @@ public class VehicleBase {
 
 
     protected boolean getCanL1(String vinCode){
-        List<HisCountData> hisCountDatas = HisCountDataService.getCanOrGps(vinCode,0);
-        return hisCountDatas.size() > 0 ? true : false ;
+        long size = HisCountDataService.getCanOrGps(vinCode,0);
+        return size > 0 ? true : false ;
     }
 
     protected boolean getGpsL1(String vinCode){
-        List<HisCountData> hisCountDatas = HisCountDataService.getCanOrGps(vinCode,1);
-        return hisCountDatas.size() > 0 ? true : false ;
+        long size = HisCountDataService.getCanOrGps(vinCode,1);
+        return size > 0 ? true : false ;
     }
 
 

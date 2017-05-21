@@ -27,21 +27,22 @@ public class JobExecute {
      * 每天凌晨执行任务
      * 执行每个任务等待5秒缓冲时间(否则会导致数据不全)
      */
-    @Scheduled(cron = "0 0 0 * * ?")
-    public void execute(){
-        Agg agg = new Agg() ;
-        agg.takeAgg(esBean.getStartDate(),esBean.getEndDate(),null);
+//    @Scheduled(cron = "0 0 0 * * ?")
+//    public void execute(){
+//        Agg agg = new Agg() ;
+//        agg.takeTarget(esBean.getStartDate(),esBean.getEndDate(),esBean.getMonthDay(),null);
+//        agg.takeAgg(esBean.getStartDate(),esBean.getEndDate(),null);
 
-        try {
-            Thread.sleep(5000);
-            agg.takeVehicleL2(esBean.getStartDate(),esBean.getEndDate(),esBean.getMonthDay(),null);
-            Thread.sleep(5000);
-            agg.takeVehicleL3(esBean.getStartDate(),esBean.getEndDate(),esBean.getMonthDay(),null);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(5000);
+//            agg.takeVehicleL2(esBean.getStartDate(),esBean.getEndDate(),esBean.getMonthDay(),null);
+//            Thread.sleep(5000);
+//            agg.takeVehicleL3(esBean.getStartDate(),esBean.getEndDate(),esBean.getMonthDay(),null);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
-        System.out.println("结束时间:"+ DateUtil.getDateStr());
-    }
+//        System.out.println("结束时间:"+ DateUtil.getDateStr());
+//    }
 
 }
