@@ -33,10 +33,9 @@ public class HvacDataService {
      * 查询历史HvacData数据NUM
      * @return
      */
-    public static Long getHvacDataNum(String vinCode, Date startDate, Date endDate){
+    public static Long getHvacDataNum(String vinCode, Date startDate, Date endDate, Client client){
         long size = 0L ;
         try {
-            Client client = ESTools.getClient();
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode", vinCode))
                     .must(QueryBuilders.rangeQuery("collectTime")
@@ -57,10 +56,9 @@ public class HvacDataService {
      * 查询历史HvacData数据
      * @return
      */
-    public static List<HvacData> getHisHvacData(String vinCode, Date startDate, Date endDate ,long sizeNum){
+    public static List<HvacData> getHisHvacData(String vinCode, Date startDate, Date endDate ,long sizeNum, Client client){
         List<HvacData> list = new ArrayList<>() ;
         try{
-            Client client = ESTools.getClient() ;
             SortBuilder sortBuilder = SortBuilders.fieldSort("collectTime").order(SortOrder.ASC);
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode",vinCode))

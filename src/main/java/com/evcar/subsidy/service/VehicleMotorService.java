@@ -34,10 +34,9 @@ public class VehicleMotorService {
      * 查询历史整车和电机数据
      * @return
      */
-    public static Long getHisVehicleMotorNum(String vinCode, Date startDate, Date endDate){
+    public static Long getHisVehicleMotorNum(String vinCode, Date startDate, Date endDate, Client client){
         long size = 0L;
         try {
-            Client client = ESTools.getClient() ;
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode",vinCode))
                     .must(QueryBuilders.rangeQuery("collectTime")
@@ -59,11 +58,10 @@ public class VehicleMotorService {
      * 查询历史整车和电机数据
      * @return
      */
-    public static List<HisVehicleMotor> getHisVehicleMotor(String vinCode, Date startDate, Date endDate,long sizeNum){
+    public static List<HisVehicleMotor> getHisVehicleMotor(String vinCode, Date startDate, Date endDate,long sizeNum, Client client){
 
         List<HisVehicleMotor> list = new ArrayList<>() ;
         try{
-            Client client = ESTools.getClient() ;
             SortBuilder sortBuilder = SortBuilders.fieldSort("collectTime").order(SortOrder.ASC);
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode",vinCode))

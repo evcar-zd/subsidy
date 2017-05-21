@@ -42,9 +42,9 @@ public class HisCountDataService {
      * @param hisCountData
      * @return
      */
-    public static void addHisCountData(HisCountData hisCountData){
+    public static void addHisCountData(HisCountData hisCountData, Client client){
         try {
-            Client client = ESTools.getClient() ;
+
             String jsonStr = JacksonUtil.toJSon(hisCountData) ;
             JSONObject jsonObject = JSONObject.parseObject(jsonStr) ;
             Date tm = jsonObject.getDate("tm") ;

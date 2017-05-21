@@ -36,10 +36,9 @@ public class GpsDataService {
      * @param endDate
      * @return
      */
-    public static long getHisGpsDataNum(String vinCode, Date startDate,Date endDate){
+    public static long getHisGpsDataNum(String vinCode, Date startDate,Date endDate, Client client){
         long size = 0L ;
         try{
-            Client client = ESTools.getClient() ;
             QueryBuilder qb = new BoolQueryBuilder() ;
             if (startDate != null && endDate != null ){
                 qb = new BoolQueryBuilder()
@@ -66,11 +65,10 @@ public class GpsDataService {
      * 查询历史GpsData数据
      * @return
      */
-    public static List<HisGpsData> getHisGpsData(String vinCode, Date startDate, Date endDate , long sizeNum){
+    public static List<HisGpsData> getHisGpsData(String vinCode, Date startDate, Date endDate , long sizeNum, Client client){
 
         List<HisGpsData> list = new ArrayList<>() ;
         try{
-            Client client = ESTools.getClient() ;
             SortBuilder sortBuilder = SortBuilders.fieldSort("collectTime").order(SortOrder.ASC);
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode",vinCode))

@@ -34,10 +34,9 @@ public class BmsDataService {
      * 查询历史BMS数据NUM
      * @return
      */
-    public static Long getHisBmsDataNum(String vinCode, Date startDate, Date endDate){
+    public static Long getHisBmsDataNum(String vinCode, Date startDate, Date endDate, Client client){
         long size = 0L ;
         try{
-            Client client = ESTools.getClient() ;
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode",vinCode))
                     .must(QueryBuilders.rangeQuery("collectTime")
@@ -59,11 +58,10 @@ public class BmsDataService {
      * 查询历史BMS数据
      * @return
      */
-    public static List<BmsData> getHisBmsData(String vinCode, Date startDate, Date endDate, long sizeNum){
+    public static List<BmsData> getHisBmsData(String vinCode, Date startDate, Date endDate, long sizeNum, Client client){
 
         List<BmsData> list = new ArrayList<>() ;
         try {
-            Client client = ESTools.getClient() ;
             SortBuilder sortBuilder = SortBuilders.fieldSort("collectTime").order(SortOrder.ASC);
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode",vinCode))

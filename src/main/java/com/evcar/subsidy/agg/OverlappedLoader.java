@@ -3,6 +3,8 @@ package com.evcar.subsidy.agg;
 import com.evcar.subsidy.GitVer;
 import com.evcar.subsidy.entity.*;
 import com.evcar.subsidy.service.*;
+import com.evcar.subsidy.util.ESTools;
+import org.elasticsearch.client.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,14 +29,16 @@ public class OverlappedLoader {
         for(int i=0;i<30;i++){
             Thread worker = new Thread(()->{
                 try {
+                    Client client = ESTools.getClient();
+
                     while(true) {
                         TaskFetchAndSave taskFetchSave = _blockingVin.take();
                         if(taskFetchSave == null) return;
 
                         if(taskFetchSave.bFetch)
-                            cacheData(taskFetchSave.vin, taskFetchSave.start, taskFetchSave.end);
+                            cacheData(taskFetchSave.vin, taskFetchSave.start, taskFetchSave.end, client);
                         else
-                            save(taskFetchSave.tobeSaving);
+                            save(taskFetchSave.tobeSaving, client);
 
                     }
                 }
@@ -101,44 +105,44 @@ public class OverlappedLoader {
         }
     }
 
-    private void cacheData(String vinCode, Date startDate, Date endDate){
+    private void cacheData(String vinCode, Date startDate, Date endDate, Client client){
         // 取数据
         OverlappedData data = new OverlappedData();
 
         /** 查询历史整车和电机数据 */
-        long sizeNum = VehicleMotorService.getHisVehicleMotorNum(vinCode,startDate,endDate) ;
+        long sizeNum = VehicleMotorService.getHisVehicleMotorNum(vinCode,startDate,endDate, client) ;
         if (sizeNum > 0)
-            data.hisVehicleMotors = VehicleMotorService.getHisVehicleMotor(vinCode,startDate,endDate,sizeNum) ;
+            data.hisVehicleMotors = VehicleMotorService.getHisVehicleMotor(vinCode,startDate,endDate,sizeNum, client) ;
 
         /** 查询BMS数据 */
-        long bmsNum = BmsDataService.getHisBmsDataNum(vinCode,startDate,endDate);
+        long bmsNum = BmsDataService.getHisBmsDataNum(vinCode,startDate,endDate, client);
         if (bmsNum > 0 )
-            data.bmsDatas = BmsDataService.getHisBmsData(vinCode,startDate,endDate,bmsNum) ;
+            data.bmsDatas = BmsDataService.getHisBmsData(vinCode,startDate,endDate,bmsNum, client) ;
 
         /** 查询OBS数据 */
-        long obcNum = ObcDataService.getHisObcDataNum(vinCode,startDate,endDate);
+        long obcNum = ObcDataService.getHisObcDataNum(vinCode,startDate,endDate, client);
         if (bmsNum > 0 )
-            data.obcDatas = ObcDataService.getHisObcData(vinCode,startDate,endDate,obcNum) ;
+            data.obcDatas = ObcDataService.getHisObcData(vinCode,startDate,endDate,obcNum, client) ;
 
         /** 查询HVAC数据 */
-        long hvacNum = HvacDataService.getHvacDataNum(vinCode,startDate,endDate) ;
+        long hvacNum = HvacDataService.getHvacDataNum(vinCode,startDate,endDate, client) ;
         if (hvacNum > 0)
-            data.hvacDatas = HvacDataService.getHisHvacData(vinCode,startDate,endDate,hvacNum) ;
+            data.hvacDatas = HvacDataService.getHisHvacData(vinCode,startDate,endDate,hvacNum, client) ;
 
         /** 获取GPS数据 */
-        long gpsCount = GpsDataService.getHisGpsDataNum(vinCode,startDate,endDate) ;
+        long gpsCount = GpsDataService.getHisGpsDataNum(vinCode,startDate,endDate, client) ;
         if (gpsCount > 0)
-            data.hisGpsDatas = GpsDataService.getHisGpsData(vinCode,startDate,endDate,gpsCount) ;
+            data.hisGpsDatas = GpsDataService.getHisGpsData(vinCode,startDate,endDate,gpsCount, client) ;
 
         synchronized (_cache){
             _cache.put(vinCode, data);
         }
     }
 
-    private void save(HisCountData data){
+    private void save(HisCountData data, Client client){
         GitVer gitVer = new GitVer() ;
         data.setVersion(gitVer.getVersion());
-        HisCountDataService.addHisCountData(data);
+        HisCountDataService.addHisCountData(data, client);
     }
 }
 

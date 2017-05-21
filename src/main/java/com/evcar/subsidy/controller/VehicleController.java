@@ -28,7 +28,6 @@ public class VehicleController {
      */
     @RequestMapping(value = "/getVehicleNum", method = RequestMethod.GET)
     public Long getVehicleNum(){
-        HisCountDataService.addHisCountData(new HisCountData());
         return VehicleService.getVehicleNum() ;
     }
 
