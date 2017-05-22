@@ -116,25 +116,20 @@ public class VehicleL3 extends VehicleBase {
         if (gpsNormal>0){
             gpsNormal ++ ;
         }
-        s_logger.info("count GPS start");
         if (gpsNormal == 0 ){
-            if (this.getGpsL1(vinCode)){
+            if (hisCountDataL2.getGpshisCount() > 0 ){
                 gpsNearNoData ++ ;
             }else{
                 gpsNoData ++ ;
             }
         }
-        s_logger.info("count GPS end");
         if (canNormal == 0 ){
-            if (this.getCanL1(vinCode)){
+            if (hisCountDataL2.getCanhisCount() > 0){
                 canNearNoData ++ ;
             }else{
                 canNoData ++ ;
             }
         }
-        s_logger.info("count can end");
-
-
 
         /**1.车辆累计行驶里程*/
         mileage = this.getMileage(mileage,mileageTarget,carType,mileageNumber);

@@ -40,16 +40,22 @@ public class VehicleL2 extends VehicleBase{
     protected void calc(VehicleVo vehicleVo, Date startDate , Date endDate, int monthDay) {
         String vinCode = vehicleVo.getVinCode() ;
         /** 获取 startDate 前 monthDay的数据*/
-        Date start = DateUtil.getDate(startDate,monthDay) ;
-        this.calcL2(vinCode,start,startDate) ;
+        this.loadL1(vinCode,startDate,endDate,monthDay);
 
         boolean endResult =  this.calcVehicleL2One() ;
-
         if (!endResult){
-            /** 获取L1前monthDay的数据 */
-            this.loadL1(vinCode,start,endDate);
             this.calcVehicleL2(vehicleVo,startDate, endDate, monthDay);
         }
+    }
+
+
+    public void preFetch(String vin, Date startDate, Date endDate , Integer monthDay){
+        loaderL2.preFetch(vin, startDate, endDate,monthDay);
+    }
+
+
+    public void stopQueue(){
+        loaderL2.stop();
     }
 
     /***
@@ -58,13 +64,14 @@ public class VehicleL2 extends VehicleBase{
      * @return
      */
     private boolean calcVehicleL2One(){
-        if (this.hisCountDatas.size() != 2 && this.hisCountDataL2s.size() != 1){
+        if (this.hisCountDatasL1.size() != 2 && this.hisCountDataL2s.size() != 1){
             return false ;
         }else {
             try{
-                HisCountData hisCountData1 = this.hisCountDatas.get(0) ;
-                HisCountData hisCountData2 = this.hisCountDatas.get(1) ;
+                HisCountData hisCountData1 = this.hisCountDatasL1.get(0) ;
+                HisCountData hisCountData2 = this.hisCountDatasL1.get(1) ;
                 HisCountDataL2 hisCountDataL2 = this.hisCountDataL2s.get(0) ;
+
 
                 Date endDate = hisCountData2.getTm() ;
                 Date startDate = hisCountData1.getTm() ;
@@ -81,6 +88,8 @@ public class VehicleL2 extends VehicleBase{
                 this.hisCountData.setCarType(carType);
                 this.hisCountData.setVeDeliveredDate(veDeliveredDate);
                 this.hisCountData.setReleaseTime(releaseTime);
+                this.hisCountData.setGpshisCount(Integer.valueOf(String.valueOf(this.gpshisCount)));
+                this.hisCountData.setCanhisCount(Integer.valueOf(String.valueOf(this.canhisCount)));
 
                 /**GPS数据条数*/
                 Integer gpsCount = hisCountDataL2.getGpsCount() - hisCountData1.getGpsCount() + hisCountData2.getGpsCount() ;
@@ -208,6 +217,8 @@ public class VehicleL2 extends VehicleBase{
         this.hisCountData.setCarType(carType);
         this.hisCountData.setVeDeliveredDate(veDeliveredDate);
         this.hisCountData.setReleaseTime(releaseTime);
+        this.hisCountData.setGpshisCount(Integer.valueOf(String.valueOf(this.gpshisCount)));
+        this.hisCountData.setCanhisCount(Integer.valueOf(String.valueOf(this.canhisCount)));
 
         Integer gpsCount = 0 ;                                  //GPS数据条数
         Integer canCount = 0 ;                                  //CAN数据条数

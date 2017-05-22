@@ -3,10 +3,7 @@ package com.evcar.subsidy.service;
 import com.alibaba.fastjson.JSONObject;
 import com.evcar.subsidy.entity.HisCountData;
 import com.evcar.subsidy.entity.HisCountDataL2;
-import com.evcar.subsidy.util.Constant;
-import com.evcar.subsidy.util.DateUtil;
-import com.evcar.subsidy.util.ESTools;
-import com.evcar.subsidy.util.JacksonUtil;
+import com.evcar.subsidy.util.*;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -106,17 +103,16 @@ public class HisCountDataService {
      * @param endDate
      * @return
      */
-    public static List<HisCountData> getHisCountData(String vinCode ,Date startDate, Date endDate){
+    public static List<HisCountData> getHisCountData(String vinCode ,Date startDate, Date endDate,Client client){
         List<HisCountData> list = new ArrayList<>() ;
         try{
             Long size = getHisCountDataNumber(vinCode,startDate,endDate);
-            Client client = ESTools.getClient() ;
             SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.ASC);
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode",vinCode))
                     .must(QueryBuilders.rangeQuery("tm")
-                            .from(DateUtil.dateToStr(startDate,DateUtil.DATEFORMATYYYYMMDD))
-                            .to(DateUtil.dateToStr(endDate,DateUtil.DATEFORMATYYYYMMDD)));
+                            .from(ZonedDateTimeUtil.dateToStr(startDate))
+                            .to(ZonedDateTimeUtil.dateToStr(endDate)));
             SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATA_INDEX)
                     .setTypes(Constant.HISCOUNT_DATA_TYPE).setQuery(qb).addSort(sortBuilder)
                     .setFrom(0)
@@ -129,7 +125,7 @@ public class HisCountDataService {
                 list.add(hisCountData) ;
             }
         }catch (Exception e){
-            s_logger.error("Connection is closed"+e.getMessage());
+            s_logger.error("getHisCountData Connection is closed"+e.getMessage());
             ESTools.connectionError();
         }
 //        s_logger.info("fetched {} hisCountData", list.size());
@@ -157,7 +153,7 @@ public class HisCountDataService {
             SearchResponse sr = search.get();//得到查询结果
             size = sr.getHits().getTotalHits() ;
         }catch (Exception e){
-            s_logger.error("Connection is closed"+e.getMessage());
+            s_logger.error("getHisCountDataNumber Connection is closed"+e.getMessage());
             ESTools.connectionError();
         }
         return size ;
@@ -194,7 +190,7 @@ public class HisCountDataService {
                 list.add(hisCountData) ;
             }
         }catch (Exception e){
-            s_logger.error("Connection is closed"+e.getMessage());
+            s_logger.error("getHisCountDataL2 Connection is closed"+e.getMessage());
             ESTools.connectionError();
         }
         return list ;
@@ -221,7 +217,7 @@ public class HisCountDataService {
             SearchResponse sr = search.get();//得到查询结果
             size = sr.getHits().getTotalHits() ;
         }catch (Exception e){
-            s_logger.error("Connection is closed"+e.getMessage());
+            s_logger.error("getHisCountDataNumberL2 Connection is closed"+e.getMessage());
             ESTools.connectionError();
         }
         return size ;
@@ -255,7 +251,7 @@ public class HisCountDataService {
                 list.add(hisCountData);
             }
         }catch (Exception e){
-            s_logger.error("Connection is closed"+e.getMessage());
+            s_logger.error("getHisCountDataL2 Connection is closed"+e.getMessage());
             ESTools.connectionError();
         }
         return list ;
@@ -280,7 +276,7 @@ public class HisCountDataService {
             SearchResponse sr = search.get();//得到查询结果
             size = sr.getHits().getTotalHits() ;
         }catch (Exception e){
-            s_logger.error("Connection is closed"+e.getMessage());
+            s_logger.error("getHisCountDataNumberL2 Connection is closed"+e.getMessage());
             ESTools.connectionError();
         }
         return size ;
@@ -292,14 +288,13 @@ public class HisCountDataService {
      * @param date
      * @return
      */
-    public static List<HisCountDataL2> getHisCountDataL2(String vinCode ,Date date){
+    public static List<HisCountDataL2> getHisCountDataL2(String vinCode ,Date date,Client client){
         List<HisCountDataL2> list = new ArrayList<>() ;
         try {
-            Client client = ESTools.getClient();
             SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.ASC);
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode", vinCode))
-                    .must(QueryBuilders.matchQuery("tm", DateUtil.dateToStr(date, DateUtil.DATEFORMATYYYYMMDD)));
+                    .must(QueryBuilders.matchQuery("tm", ZonedDateTimeUtil.dateToStr(date)));
             SearchRequestBuilder search = client.prepareSearch(HISCOUNT_DATAL2_INDEX)
                     .setTypes(HISCOUNT_DATAL2_TYPE).setQuery(qb).addSort(sortBuilder)
                     .setFrom(0)
@@ -312,7 +307,8 @@ public class HisCountDataService {
                 list.add(hisCountData);
             }
         }catch (Exception e){
-            s_logger.error("Connection is closed"+e.getMessage());
+            e.printStackTrace();
+            s_logger.error("getHisCountDataL2 Connection is closed"+e.getMessage());
             ESTools.connectionError();
         }
         return list ;
@@ -325,22 +321,19 @@ public class HisCountDataService {
      * @param mark  标志， 0   can,  1 gps
      * @return
      */
-    public static long getCanOrGps(String vinCode,int mark){
+    public static long getCanOrGps(String vinCode,int mark,Client client){
         long size = 0L ;
-        Client client = ESTools.getClient();
         try {
             String queryFlag = mark == 1 ? "gpsCount" : "canCount";
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode", vinCode))
                     .must(QueryBuilders.rangeQuery(queryFlag).gt(0));
             SearchRequestBuilder search = client.prepareSearch(HISCOUNT_DATA_INDEX)
-                    .setTypes(HISCOUNT_DATA_TYPE).setQuery(qb)
-                    .setFrom(0)
-                    .setSize(1);
+                    .setTypes(HISCOUNT_DATA_TYPE).setQuery(qb);
             SearchResponse sr = search.get();//得到查询结果
             size = sr.getHits().getTotalHits() ;
         }catch (Exception e){
-            s_logger.error("Connection is closed"+e.getMessage());
+            s_logger.error("getCanOrGps Connection is closed"+e.getMessage());
             ESTools.connectionError();
         }
 
@@ -352,10 +345,9 @@ public class HisCountDataService {
      * @param hisCountData
      * @return
      */
-    public static boolean addHisCountDataL2(HisCountDataL2 hisCountData){
+    public static boolean addHisCountDataL2(HisCountDataL2 hisCountData,Client client){
         boolean flag = false ;
         try {
-            Client client = ESTools.getClient() ;
             String jsonStr = JacksonUtil.toJSon(hisCountData) ;
             JSONObject jsonObject = JSONObject.parseObject(jsonStr) ;
             Date tm = jsonObject.getDate("tm") ;
@@ -375,7 +367,7 @@ public class HisCountDataService {
                     .setSource(jsonObject).execute().get();
             flag = indexResponse.isCreated() ;
         } catch (Exception e) {
-            s_logger.error("save hisCountDataL2 ERROR");
+            s_logger.error("addHisCountDataL2 save hisCountDataL2 ERROR");
             ESTools.connectionError();
         }
         return flag ;
@@ -410,16 +402,15 @@ public class HisCountDataService {
 //            client.admin().indices().prepareDelete(HISCOUNT_DATAL2_INDEX).get();
 //    }
 
-    public static List<HisCountData> getHisCountDataL1(Date startDate,Date endDate,String vinCode){
+    public static List<HisCountData> getHisCountDataL1(Date startDate,Date endDate,String vinCode, Client client){
         List<HisCountData> list = new ArrayList<>() ;
         try {
-            Client client = ESTools.getClient();
             SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.ASC);
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode", vinCode))
                     .must(QueryBuilders.boolQuery()
-                            .should(QueryBuilders.matchQuery("tm", DateUtil.dateToStr(startDate, DateUtil.DATEFORMATYYYYMMDD)))
-                            .should(QueryBuilders.matchQuery("tm", DateUtil.dateToStr(endDate, DateUtil.DATEFORMATYYYYMMDD)))
+                            .should(QueryBuilders.matchQuery("tm", ZonedDateTimeUtil.dateToStr(startDate)))
+                            .should(QueryBuilders.matchQuery("tm", ZonedDateTimeUtil.dateToStr(endDate)))
                     );
             SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATA_INDEX)
                     .setTypes(Constant.HISCOUNT_DATA_TYPE).setQuery(qb).addSort(sortBuilder)
@@ -433,7 +424,7 @@ public class HisCountDataService {
                 list.add(hisCountData);
             }
         }catch (Exception e){
-            s_logger.error("Connection is closed"+e.getMessage());
+            s_logger.error("getHisCountDataL1 Connection is closed"+e.getMessage());
             ESTools.connectionError();
         }
         return list ;
