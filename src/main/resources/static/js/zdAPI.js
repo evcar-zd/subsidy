@@ -19,7 +19,6 @@
         return $.get('/api/getLastTarget');
     }
 
-    // 模拟数据
     zdAPI.prototype.fetchTargetObj = function (data,type) {
         var value = new Object();
         if(type==1){
@@ -62,7 +61,6 @@
         return value ;
     }
 
-    // 摸拟数据
     zdAPI.prototype.fetchHistory = function (data) {
         var model = [];
         for (var i = 0; i < data.length; i++) {
@@ -110,17 +108,23 @@
         });
     }
 
-    // 摸拟数据
-//    zdAPI.prototype.fetchX1History = function () {
-//        var data = [];
-//
-//        // 随机产生模拟数据
-//        for (var i = 0; i < 30; i++) {
-//            data.push({ tm: new Date(2017, 3, i), v: Math.ceil(Math.random()*100) });;
-//        }
-//
-//        return Promise.resolve(data);
-//    }
+    zdAPI.prototype.fetchSegments = function(target){
+        // 模拟数据
+        var listX = [];
+
+        var value = 50;
+        for(var i=0;i<100;i++){
+            var delta = Math.random() * 10;
+            var sign = Math.random() > 0.5 ? 1 : -1;
+            value += (delta * sign);
+            if(value > 100.0) value = 100.0;
+            else if(value < 0.0) value = 0.0;
+
+            listX.push({ x: i, y: value });
+        }
+
+        return Promise.resolve(listX);
+    }
 
     return new zdAPI();
 });
