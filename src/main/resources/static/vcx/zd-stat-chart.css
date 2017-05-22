@@ -6,7 +6,13 @@
     stroke-width: 1.0px;
 }
 
-.zd-stat-chart > svg path:hover {
-    stroke: darkblue;
-    stroke-width: 3px !important;
+.zd-seg-chart>svg path{
+    stroke: steelblue;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    stroke-width: 1.0px;
+}
+
+.d3area{
+    fill: lightblue;
 }
