@@ -95,7 +95,7 @@ public class MonthCountDataService {
         try{
             Client client = ESTools.getClient() ;
 
-            SortBuilder sortBuilder = SortBuilders.fieldSort("calcTime").order(SortOrder.DESC);
+            SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.DESC);
             SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATAL3_INDEX)
                     .setTypes(Constant.HISCOUNT_DATAL3_TYPE).addSort(sortBuilder)
                     .setFrom(0)
@@ -122,7 +122,7 @@ public class MonthCountDataService {
         List<MonthCountData> list = new ArrayList<>() ;
         try {
             Client client = ESTools.getClient() ;
-            SortBuilder sortBuilder = SortBuilders.fieldSort("calcTime").order(SortOrder.DESC);
+            SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.DESC);
             SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATAL3_INDEX)
                     .setTypes(Constant.HISCOUNT_DATAL3_TYPE).addSort(sortBuilder)
                     .setFrom(0)
