@@ -18,6 +18,8 @@ public class HisCountDataL2 implements Serializable {
     private Date releaseTime ;                  //下线日期
     private Integer gpsCount ;                  //GPS数据条数
     private Integer canCount ;                  //CAN数据条数
+    private Integer gpshisCount ;               //GPS历史数据条数
+    private Integer canhisCount ;               //CAN历史数据条数
     private BigDecimal mileageTotal ;           //总里程
     private Integer chargeMidSoc1 ;             //近似线性中段充电SOC - Model1
     private Long chargeMidSec1 ;                //近似线性中段充电时间(单位：S) - Model1
@@ -108,6 +110,22 @@ public class HisCountDataL2 implements Serializable {
 
     public void setCanCount(Integer canCount) {
         this.canCount = canCount;
+    }
+
+    public Integer getGpshisCount() {
+        return gpshisCount;
+    }
+
+    public void setGpshisCount(Integer gpshisCount) {
+        this.gpshisCount = gpshisCount;
+    }
+
+    public Integer getCanhisCount() {
+        return canhisCount;
+    }
+
+    public void setCanhisCount(Integer canhisCount) {
+        this.canhisCount = canhisCount;
     }
 
     public BigDecimal getMileageTotal() {

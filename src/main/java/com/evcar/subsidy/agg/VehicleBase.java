@@ -25,9 +25,16 @@ public class VehicleBase {
 
     protected List<HvacData> hvacDatas ;
 
+    protected List<HisCountData> hisCountDatasL1 ;
+
     protected List<HisCountDataL2> hisCountDataL2s ;
 
+    protected Long canhisCount ;
+    protected Long gpshisCount ;
+
     protected static OverlappedLoader s_loader = new OverlappedLoader();
+
+    protected static OverlappedLoaderL2 loaderL2 = new OverlappedLoaderL2();
 
     /**
      * 载入数L1据
@@ -36,7 +43,7 @@ public class VehicleBase {
      * @param endDate
      */
     protected void load(String vinCode, Date startDate, Date endDate){
-        OverlappedData data = s_loader.load(vinCode);
+        OverlappedData data = s_loader.load(vinCode, startDate, endDate);
         this.bmsDatas = data.bmsDatas;
         this.obcDatas = data.obcDatas;
         this.hisVehicleMotors = data.hisVehicleMotors;
@@ -58,24 +65,14 @@ public class VehicleBase {
      * @param startDate
      * @param endDate
      */
-    protected void loadL1(String vinCode, Date startDate, Date endDate){
-        hisCountDatas = HisCountDataService.getHisCountData(vinCode,startDate,endDate) ;
-    }
+    protected void loadL1(String vinCode, Date startDate,Date endDate,Integer monthDay){
+        OverlappedDateL2 data = loaderL2.load(vinCode, startDate, endDate, monthDay) ;
 
-
-    /**
-     * L1 取startDate前一天和endDate当天
-     * L2取endDate 前一天
-     * @param vinCode
-     * @param startDate
-     * @param endDate
-     */
-    protected void calcL2(String vinCode, Date startDate, Date endDate){
-
-        Date start = DateUtil.getStartDate(startDate,1) ;
-        hisCountDatas = HisCountDataService.getHisCountDataL1(start,endDate,vinCode) ;
-        Date end = DateUtil.getStartDate(endDate,1) ;
-        hisCountDataL2s = HisCountDataService.getHisCountDataL2(vinCode,end) ;
+        this.hisCountDatasL1 = data.hisCountDatasL1 ;
+        this.hisCountDataL2s = data.hisCountDataL2s ;
+        this.hisCountDatas = data.hisCountDatas ;
+        this.canhisCount = data.canhisCount ;
+        this.gpshisCount = data.gpshisCount ;
     }
 
 
@@ -84,9 +81,7 @@ public class VehicleBase {
      * @param hisCountData
      */
     protected void saveL2(HisCountDataL2 hisCountData){
-        GitVer gitVer = new GitVer() ;
-        hisCountData.setVersion(gitVer.getVersion());
-        HisCountDataService.addHisCountDataL2(hisCountData) ;
+        loaderL2.asyncSave(hisCountData);
     }
 
 
@@ -109,17 +104,6 @@ public class VehicleBase {
      */
     protected List<HisCountDataL2> loadL2(String vinCode,Date startDate ,Date endDate){
         return HisCountDataService.getHisCountDataL2(vinCode,startDate,endDate) ;
-    }
-
-
-    protected boolean getCanL1(String vinCode){
-        long size = HisCountDataService.getCanOrGps(vinCode,0);
-        return size > 0 ? true : false ;
-    }
-
-    protected boolean getGpsL1(String vinCode){
-        long size = HisCountDataService.getCanOrGps(vinCode,1);
-        return size > 0 ? true : false ;
     }
 
 

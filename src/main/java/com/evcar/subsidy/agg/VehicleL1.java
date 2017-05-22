@@ -45,6 +45,10 @@ public class VehicleL1 extends VehicleBase{
         s_loader.preFetch(vin, startDate, endDate);
     }
 
+    public void stopQueue(){
+        s_loader.stop();
+    }
+
     /**
      * 获取startDate到endDate的Motors、BMS、OBC等数据处理
      * 支持一天到多天的数据处理
@@ -277,7 +281,7 @@ public class VehicleL1 extends VehicleBase{
                     boolean execute = true ;
                     for (int i = 0 ; i < hvacDatas.size() ; i++){
                         HvacData hvacData = hvacDatas.get(i) ;
-                        if (hvacData.getRunStatus() != 0) {
+                        if (hvacData.getRunStatus() != null && hvacData.getRunStatus() != 0) {
                             execute = false ;
                             break;
                         }

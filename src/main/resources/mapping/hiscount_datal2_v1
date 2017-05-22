@@ -43,6 +43,12 @@ PUT http://10.10.11.147:9200/hiscount_datal2_v1/hiscount_datal2/_mapping
  			"canCount": {
                  "type": "integer"
              },
+            "gpsNoData": {
+                 "type": "integer"
+             },
+            "canNoData": {
+                 "type": "integer"
+            },
  			"mileageTotal": {
                  "type": "float"
              },
