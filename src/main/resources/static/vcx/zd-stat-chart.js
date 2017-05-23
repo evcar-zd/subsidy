@@ -66,7 +66,8 @@
                     .domain([0, d3.max(values, function (d) { return d.v*1.2 ; })])
                     .range([height - margin, 0]);
 
-                var axisX = d3.axisBottom(fnScaleX);
+                var tmF = d3.timeFormat("%m月%d日");
+                var axisX = d3.axisBottom(fnScaleX).tickFormat(function(date){ return tmF(date); });
                 svg.append("g")
                     .attr("transform", "translate(0," + (height - margin) + ")")
                     .call(axisX);
