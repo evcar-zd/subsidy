@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/site.css">
 </head>
-
 <body>
     <div id="app" class="container-fluid">
         <div class="row">
@@ -34,6 +33,55 @@
         <div class="row">
             <div class="col-xs-12">
                 <zd-stat-chart></zd-stat-chart>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <table class="table">
+                    <tr class="info">
+                        <th style="min-width:150px">指标</th>
+                        <th>正常范围</th>
+                        <th>说明</th>
+                    </tr>
+                    <tr>
+                        <td>累计行驶里程(km)</td>
+                        <td><=220</td>
+                        <td>30日平均行驶里程,0km视为无效值</td>
+                    </tr>
+                    <tr>
+                        <td>满电续航里程(km)</td>
+                        <td>
+                            155~180<br>
+                            161~180(SMA7001BEV60)<br>
+                            161~180(JL7001BEV34)
+                        </td>
+                        <td>30日行驶放电用SOC在30%~80%之间数据的测算值,排除掉行驶距离过短(<3km)或放电量过少(<3%)的数据</td>
+                    </tr>
+                    <tr>
+                        <td>一次充满电所用最少时间(h)</td>
+                        <td>
+                            12.8~15.5(模式1)<br>
+                            7.5~10.5(模式2)<br>
+                            6.2~7.6(模式3)
+                        </td>
+                        <td>模式1最大充电电流9A,模式2在13A~16A之间,模式3最大充电电流18A.30日充电SOC在30%~80%之间的数据测算</td>
+                    </tr>
+                    <tr>
+                        <td>最大充电功率(W)</td>
+                        <td>1300~3400</td>
+                        <td>30日最大值</td>
+                    </tr>
+                    <tr>
+                        <td>平均单日运行时间(h)</td>
+                        <td><=5</td>
+                        <td>30日平均值</td>
+                    </tr>
+                    <tr>
+                        <td>百公里耗电(kWh)</td>
+                        <td>9~11</td>
+                        <td>30日行驶放电用SOC在30%~80%之间数据的测算值,排除掉行驶距离过短(<3km)或放电量过少(<3%)的数据</td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>

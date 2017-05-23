@@ -8,13 +8,13 @@
             this.selected = 'totalCount' ;
 
             this.options = {
-                totalCount: '车辆总数' ,
-                totalMileage: '累计行驶里程(km)' ,
-                limitMileage: '续驶里程' ,
-                maxEnergyTime: '一次充满电所用最少时间',
-                maxElectricPower: '最大充电功率',
-                avgDailyRunTime: '平均单日运行时间',
-                hundredsKmusePower: '百公里耗电'
+                totalCount: '车辆总数(辆)' ,
+                totalMileage: '累计行驶里程-正常占比(%)' ,
+                limitMileage: '续驶里程-正常占比(%)' ,
+                maxEnergyTime: '一次充满电所用最少时间-正常占比(%)',
+                maxElectricPower: '最大充电功率-正常占比(%)',
+                avgDailyRunTime: '平均单日运行时间-正常占比(%)',
+                hundredsKmusePower: '百公里耗电-正常占比(%)'
             };
         }
         return VisualModel;

@@ -4,7 +4,7 @@
         <div class="col-xs-6 col-xs-offset-0">
             <form class="form-inline">
                 <div class="form-group">
-                    <label>选择指标:</label>
+                    <label>历史变化:</label>
                     <select id="target" v-model="selected" class="form-control" @change="changeTarget" >
                         <option v-for="(v, k) in options" v-bind:value="k">
                             {{ v }}
@@ -23,6 +23,7 @@
         </div>
     </div>
     <div class="row">
+        <div class="col-xs-12">最后一天数据分布</div>
         <div class="col-xs-12">
             <div v-bind:id="sid" class="zd-seg-chart row">
                 <link rel="stylesheet" href="vcx/zd-stat-chart.css" />
