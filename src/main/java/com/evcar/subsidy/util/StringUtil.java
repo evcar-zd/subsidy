@@ -47,4 +47,18 @@ public class StringUtil {
         str = null ;
     }
 
+    /**
+     * 获得文件后缀,null表示无后缀,如返回doc 或 xls等
+     * @param str
+     * @return
+     */
+    public static String getSuffix(String str) {
+        int index = str.lastIndexOf(".");
+        if (index != -1) {
+            String suffix = str.substring(index + 1);
+            return suffix;
+        } else {
+            return null;
+        }
+    }
 }
