@@ -1,6 +1,7 @@
 package com.evcar.subsidy.agg;
 
 import com.evcar.subsidy.entity.*;
+import com.evcar.subsidy.util.Constant;
 import com.evcar.subsidy.util.DateUtil;
 import com.evcar.subsidy.util.OrganizationUtil;
 import com.evcar.subsidy.util.ZonedDateTimeUtil;
@@ -449,12 +450,15 @@ public class VehicleL2 extends VehicleBase{
         /** 获取配置文件中的电池组总容量 */
         EsBeanObj esBeanObj = esBean.getTarget().get(carType) ;
         BigDecimal socTotalcapacity = BigDecimal.ZERO ;
+        if (esBeanObj == null){
+            esBeanObj = esBean.getTarget().get(Constant.DEFAULT) ;
+        }
         if (esBeanObj != null){
-            socTotalcapacity = esBean.getTarget().get(carType).getSocTotalcapacity() ;
+            socTotalcapacity = esBeanObj.getSocTotalcapacity() ;
         }
         BigDecimal hundredskmusepower = BigDecimal.ZERO ;
         if(dischargeMidMileage.compareTo(BigDecimal.ZERO) == 1){
-            hundredskmusepower = BigDecimal.valueOf(dischargeMidSoc).divide(dischargeMidMileage, 2, BigDecimal.ROUND_UP).multiply(socTotalcapacity) ;
+            hundredskmusepower = BigDecimal.valueOf(dischargeMidSoc).multiply(socTotalcapacity).divide(dischargeMidMileage, 2, BigDecimal.ROUND_UP) ;
         }
         hundredskmusepower = hundredskmusepower.divide(BigDecimal.ONE,2,BigDecimal.ROUND_UP) ;
         return hundredskmusepower ;
