@@ -1,4 +1,4 @@
-﻿define(['vue', 'text!./zd-stat-chart.html', '../js/zdAPI', 'd3'], function (Vue, template, zdAPI, d3) {
+﻿define(['vue', 'text!./zd-stat-chart.html', 'zdApi', 'd3'], function (Vue, template, zdAPI, d3) {
     var VisualModel = (function () {
         function VisualModel() {
             var xid = Math.random().toString().substr(2, 6);

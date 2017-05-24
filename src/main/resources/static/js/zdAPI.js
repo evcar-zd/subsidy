@@ -5,16 +5,6 @@
         this.listX = {} ;
     }
 
-    // 获取车辆总数
-    zdAPI.prototype.fetchTotalCarCount = function () {
-        return $.get('/api/getVehicleNum');
-    }
-
-    // 获取指标数
-    zdAPI.prototype.monthTargetData = function () {
-        return $.get('/api/getTarget');
-    }
-
     // 获取最新一条指标数
     zdAPI.prototype.monthLastTargetData = function () {
         return $.get('/api/getLastTarget');

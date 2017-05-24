@@ -22,6 +22,8 @@ elasticsearch:
     endDate : 1
     monthDay : 30
 
+    offlineMode : false
+
     target :
       SMA7001BEV18 :
         mileageMin : 0
