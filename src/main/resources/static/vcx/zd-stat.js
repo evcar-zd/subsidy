@@ -1,4 +1,4 @@
-﻿define(['vue', 'text!./zd-stat.html', '../js/zdAPI'], function (Vue, template, zdAPI) {
+﻿define(['vue', 'text!./zd-stat.html', 'zdApi'], function (Vue, template, zdAPI) {
 
     var VisualModel = (function () {
         function VisualModel() {

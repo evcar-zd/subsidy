@@ -26,6 +26,7 @@ public class ESBean {
     private Integer endDate ;
     private Integer monthDay ;
     private Map<String,EsBeanObj> target ;
+    private Boolean offlineMode ;       //ES离线模式 false-在线。true-离线
 
     public ESBean(){
     }
@@ -120,5 +121,13 @@ public class ESBean {
 
     public void setTarget(Map<String, EsBeanObj> target) {
         this.target = target;
+    }
+
+    public Boolean getOfflineMode() {
+        return offlineMode;
+    }
+
+    public void setOfflineMode(Boolean offlineMode) {
+        this.offlineMode = offlineMode;
     }
 }
