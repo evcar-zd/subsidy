@@ -66,7 +66,7 @@
                     .domain([0, d3.max(values, function (d) { return d.v*1.2 ; })])
                     .range([height - margin, 0]);
 
-                var tmF = d3.timeFormat("%m月%d日");
+                var tmF = d3.timeFormat("%-m-%d");
                 var axisX = d3.axisBottom(fnScaleX).tickFormat(function(date){ return tmF(date); });
                 svg.append("g")
                     .attr("transform", "translate(0," + (height - margin) + ")")
@@ -87,7 +87,7 @@
                     .attr("d", fnLine);
             },
             renderS: function(values){
-
+                var _this = this;
                 var holder = d3.select("#" + this.sid);
                 var width = parseInt(holder.style("width"))-20;
                 var height = width * 0.6;
@@ -102,8 +102,19 @@
                     .domain(d3.extent(values, function (d) { return d.x; }))
                     .range([margin, width]);
 
+                // 更好的Y轴范围
                 var fnScaleY = d3.scaleLinear()
-                    .domain([0, d3.max(values, function (d) { return d.y*1.2 ; })])
+                    .domain([0, d3.max(values, function (d) {
+                        if(_this.selected == 'maxEnergyTime')
+                            if(d.x < 1.0) return 0;
+                        else if(_this.selected == 'limitMileage')
+                            if(d.x < 10.0) return 0;
+                        else if(_this.selected == 'hundredsKmusePower')
+                            if(d.x < 1.0) return 0;
+                        else if(_this.selected == 'maxElectricPower')
+                            if(d.x < 100.0) return 0;
+                        return d.y*1.2 ;
+                    })])
                     .range([height - margin, 0]);
 
                 var axisX = d3.axisBottom(fnScaleX);
