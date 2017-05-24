@@ -126,7 +126,6 @@ public class VehicleL1 extends VehicleBase{
     /** 当充电前时长大于30分钟，则不取该值，避免大的误差 */
     public static final Integer MAX_TIME = 1800 ;
 
-    public static final Integer MIN_SIZE = 3 ;
     /**
      * 计算BMS数据
      * 近似线性中段充电SOC
@@ -150,7 +149,7 @@ public class VehicleL1 extends VehicleBase{
                 if (beforeBmsData != null){
                     if (bmsData.getSoc() != null && bmsData.getSoc() <= esBean.getMaxSoc() && bmsData.getSoc() >= esBean.getMinSoc()){
                         /** 只用取充电数据 */
-                        if (bmsData.getBatteryGroupStatus() == 3){
+                        if (bmsData.getBatteryGroupStatus() != null && bmsData.getBatteryGroupStatus() == 3){
 
                             Integer soc = bmsData.getSoc() - beforeBmsData.getSoc() ;
                             /** 是否选取该值 */
@@ -162,10 +161,6 @@ public class VehicleL1 extends VehicleBase{
                                 if(time > MAX_TIME){
                                     if (beforeBmsData.getBatteryGroupStatus()!=3 ){
                                         choose = false ;
-                                    }
-                                    if (choose && soc > 0){
-                                        choose = BigDecimal.valueOf(MAX_TIME).divide(BigDecimal.valueOf(MIN_SIZE),2,BigDecimal.ROUND_UP)
-                                            .compareTo(BigDecimal.valueOf(time).divide(BigDecimal.valueOf(soc),2,BigDecimal.ROUND_UP)) == 1 ;
                                     }
                                 }
 
@@ -204,10 +199,11 @@ public class VehicleL1 extends VehicleBase{
                             }
                         }
                     }
+                    int maxDisCharge = 300 ;
                     /** 放电总时长 */
                     if(bmsData.getCollectTime() != null && beforeBmsData.getCollectTime() != null) {
                         Long time = DateUtil.getSeconds(beforeBmsData.getCollectTime(), bmsData.getCollectTime());
-                        dischargeTotalSec += (time > 0 && bmsData.getBatteryGroupStatus() == 1) ? time : 0 ;
+                        dischargeTotalSec += (time <= maxDisCharge && time > 0 && bmsData.getBatteryGroupStatus() != null && bmsData.getBatteryGroupStatus() == 1) ? time : 0 ;
                     }
 
                 }
@@ -319,7 +315,7 @@ public class VehicleL1 extends VehicleBase{
                 }
                 beforeVehicleMotor = vehicleMotor ;
                 /** CAN数据条数计算 */
-                canCount += vehicleMotor.getMileage()!=null && vehicleMotor.getMileage().compareTo(BigDecimal.ZERO)==1 ? 1 : 0 ;
+                canCount++;
             }
 
             /** 最后线性SOC、近线性里程处理*/
@@ -327,18 +323,12 @@ public class VehicleL1 extends VehicleBase{
                 dischargeMidSoc += lineSoc ;
                 dischargeMidMileage = dischargeMidMileage.add(lineMileage) ;
             }
-
-            /** 总里程算法 去空*/
-            int mileageNum = hisVehicleMotors != null ? hisVehicleMotors.size() - 1 : -1;
-            while (mileageNum >= 0 ){
-                if (mileageTotal == null){
-                    mileageTotal = hisVehicleMotors.get(mileageNum).getMileage() ;
-                }
-                if (mileageTotal != null) break;
-                mileageNum -- ;
-            }
         }
 
+        /** 总里程算法 去空*/
+        if (this.lastMileages != null && this.lastMileages.size() != 0){
+            mileageTotal = this.lastMileages.get(0).getMileage() ;
+        }
         mileageTotal = mileageTotal == null ? BigDecimal.ZERO : mileageTotal ;
 
         this.hisCountData.setCanCount(canCount);

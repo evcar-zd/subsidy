@@ -3,7 +3,9 @@ package com.evcar.subsidy.agg;
 import com.evcar.subsidy.GitVer;
 import com.evcar.subsidy.entity.HisCountData;
 import com.evcar.subsidy.entity.HisCountDataL2;
+import com.evcar.subsidy.service.GpsDataService;
 import com.evcar.subsidy.service.HisCountDataService;
+import com.evcar.subsidy.service.VehicleMotorService;
 import com.evcar.subsidy.util.ESTools;
 import com.evcar.subsidy.util.ZonedDateTimeUtil;
 import org.elasticsearch.client.Client;
@@ -23,7 +25,7 @@ public class OverlappedLoaderL2 {
 
     private Logger s_logger = LoggerFactory.getLogger(OverlappedLoaderL2.class);
 
-    private static Integer THREAD_SIZE = 30;
+    private static Integer THREAD_SIZE = 5;
     private static Integer BLOCKINGQUEUE_SIZE = 100 ;
 
     private Map<String, OverlappedDateL2> _cache = new HashMap<>();
@@ -118,19 +120,20 @@ public class OverlappedLoaderL2 {
     }
 
     public OverlappedDateL2 load(String vinCode, Date startDate,Date endDate,Integer monthDay){
-        final int maxRetry = 1000; // 最多试这么多次了
+        final int maxRetry = 500; // 最多试这么多次了
         int retry = 0;
         // 从cache中找数据,如果没找到就等待
         int tryNumber = 0 ;
         while(true) {
             retry++;
             if(retry > maxRetry){
-                if (tryNumber == 2) return new OverlappedDateL2(false);
-
-                cacheData(vinCode, startDate, endDate,monthDay, null);
                 tryNumber ++ ;
+                if (tryNumber == 2) return new OverlappedDateL2(false);
                 s_logger.info("retry {} number & vinCode {}",tryNumber,vinCode);
                 retry = 0 ;
+            }
+            if (retry % 200 == 0){
+                cacheData(vinCode, startDate, endDate,monthDay, null);
             }
             synchronized (_cache) {
                 if (_cache.containsKey(vinCode)) {
@@ -150,20 +153,20 @@ public class OverlappedLoaderL2 {
     }
 
     public void cacheData(String vinCode, Date startDate, Date endDate, int monthDay , Client client){
+
+
         if (client == null ) client = ESTools.getClient() ;
         OverlappedDateL2 data = new OverlappedDateL2() ;
         /** 获取 startDate 前 monthDay的数据*/
         Date startDate2 = ZonedDateTimeUtil.getDate(startDate,monthDay) ;
-        Date start = ZonedDateTimeUtil.getStartDate(startDate,1) ;
-        Date end = ZonedDateTimeUtil.getStartDate(startDate2,1) ;
-
-        data.hisCountDatasL1 = HisCountDataService.getHisCountDataL1(start,startDate2,vinCode,client) ;
-        data.hisCountDataL2s = HisCountDataService.getHisCountDataL2(vinCode,end,client) ;
+        Date start = ZonedDateTimeUtil.getDate(startDate,1) ;
+        Date end = ZonedDateTimeUtil.getDate(startDate2,1) ;
+        data.hisCountDatasL1 = HisCountDataService.getHisCountDataL1(end,startDate,vinCode,client) ;
+        data.hisCountDataL2s = HisCountDataService.getHisCountDataL2(vinCode,start,client) ;
         /** 获取L1前monthDay的数据 */
-        data.hisCountDatas = HisCountDataService.getHisCountData(vinCode,startDate,endDate,client) ;
-
-        data.canhisCount = HisCountDataService.getCanOrGps(vinCode,0,client);
-        data.gpshisCount = HisCountDataService.getCanOrGps(vinCode,1,client);
+        data.hisCountDatas = HisCountDataService.getHisCountData(vinCode,startDate2,endDate,client) ;
+        data.canhisCount = VehicleMotorService.getCanNumber(vinCode,endDate,client);
+        data.gpshisCount = GpsDataService.getGpsNumber(vinCode,endDate,client);
 
         synchronized (_cache){
             _cache.put(vinCode, data);

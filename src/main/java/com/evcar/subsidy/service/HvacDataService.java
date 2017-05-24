@@ -1,10 +1,7 @@
 package com.evcar.subsidy.service;
 
 import com.evcar.subsidy.entity.HvacData;
-import com.evcar.subsidy.util.Constant;
-import com.evcar.subsidy.util.DateUtil;
-import com.evcar.subsidy.util.ESTools;
-import com.evcar.subsidy.util.JacksonUtil;
+import com.evcar.subsidy.util.*;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -39,8 +36,8 @@ public class HvacDataService {
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode", vinCode))
                     .must(QueryBuilders.rangeQuery("collectTime")
-                            .from(DateUtil.format(startDate))
-                            .to(DateUtil.format(endDate)));
+                            .from(ZonedDateTimeUtil.format(startDate))
+                            .to(ZonedDateTimeUtil.format(endDate)));
             SearchRequestBuilder search = client.prepareSearch(Constant.HIS_HVAC_INDEX).
                     setTypes(Constant.HIS_HVAC_TYPE).setQuery(qb);
             SearchResponse sr = search.get();//得到查询结果
@@ -63,8 +60,8 @@ public class HvacDataService {
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode",vinCode))
                     .must(QueryBuilders.rangeQuery("collectTime")
-                            .from(DateUtil.format(startDate))
-                            .to(DateUtil.format(endDate)));
+                            .from(ZonedDateTimeUtil.format(startDate))
+                            .to(ZonedDateTimeUtil.format(endDate)));
             SearchRequestBuilder search = client.prepareSearch(Constant.HIS_HVAC_INDEX).
                     setTypes(Constant.HIS_HVAC_TYPE)
                     .addSort(sortBuilder)

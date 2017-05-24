@@ -50,8 +50,7 @@ public class SegStat {
 }
 
 
-class Segment
-{
+class Segment {
     // 区段中值
     protected float _fMidValue;
     // 区段范围
@@ -73,23 +72,11 @@ class Segment
     }
 
     // 这个方法支持多线程并行运行
-    public void stat(float fValue)
-    {
+    public void stat(float fValue) {
         if(fValue >= _fMin && fValue <= _fMax)
             _nCount.incrementAndGet();
     }
 
     public float getMidValue(){ return this._fMidValue; }
     public int getCount(){ return this._nCount.get(); }
-}
-
-class SegmentResult
-{
-    public float MidValue;
-    public int Count;
-
-    public SegmentResult(float fMidValue, int count){
-        MidValue = fMidValue;
-        Count = count;
-    }
 }

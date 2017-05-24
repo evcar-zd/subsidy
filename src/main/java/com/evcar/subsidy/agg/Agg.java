@@ -9,9 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.evcar.subsidy.service.VehicleService.getVehicleNum;
 
@@ -79,8 +77,8 @@ public class Agg {
                                 s_logger.info("L1 progress: {} / {}", prgL1, vehicleVos.size());
                         }
                         s_logger.info("end L1 cost {}", (System.currentTimeMillis()-startTimeL1));
-                        vehicleL1.stopQueue();
                         Thread.sleep(5000);
+                        vehicleL1.stopQueue();
                         long startTimeL2 = System.currentTimeMillis() ;
                         s_logger.info("start L2 {} count", start);
                         VehicleL2 vehicleL2 = new VehicleL2() ;
@@ -106,8 +104,8 @@ public class Agg {
                                 s_logger.info("L2 progress: {} / {}", prgL2, vehicleVos.size());
                         }
                         s_logger.info("end L2 cost {}", (System.currentTimeMillis()-startTimeL2));
-                        vehicleL2.stopQueue() ;
                         Thread.sleep(5000);
+//                        vehicleL2.stopQueue() ;
                         VehicleL3 vehicleL3 = new VehicleL3() ;
                         vehicleL3.calcL3(start ,end );
                     } catch (InterruptedException e) {
@@ -130,7 +128,7 @@ public class Agg {
      * @return
      */
     private List<VehicleVo> talkVehicle(List<String> vinCodes){
-        List<VehicleVo> vehicleVos = new ArrayList<>() ;
+        Map<String,VehicleVo> map = new HashMap<>();
         if (vinCodes == null || vinCodes.size() == 0){
             /** 车辆分组--避免数据辆过大 */
             Long vehicleNum = getVehicleNum() ;
@@ -144,18 +142,25 @@ public class Agg {
                 for (Vehicle vehicle : vehicleList){
                     if (vehicle == null) continue;
                     VehicleVo vehicleVo = new VehicleVo(vehicle.getVinCode(),vehicle.getCarType() ,vehicle.getVeDeliveredDate(),vehicle.getReleaseTime()) ;
-                    vehicleVos.add(vehicleVo) ;
+                    map.put(vehicleVo.getVinCode(),vehicleVo) ;
                 }
                 currentPage ++ ;
             }
+
         }else{
             for (String vinCode : vinCodes){
                 Vehicle vehicle = VehicleService.getVehicle(vinCode) ;
                 if (vehicle == null) continue;
                 VehicleVo vehicleVo = new VehicleVo(vehicle.getVinCode(),vehicle.getCarType() ,vehicle.getVeDeliveredDate(),vehicle.getReleaseTime()) ;
-                vehicleVos.add(vehicleVo) ;
+                map.put(vehicleVo.getVinCode(),vehicleVo) ;
             }
         }
+
+        List<VehicleVo> vehicleVos = new ArrayList<>() ;
+        for (Map.Entry<String, VehicleVo> entry : map.entrySet()) {
+            vehicleVos.add(entry.getValue()) ;
+        }
+
         return vehicleVos ;
     }
 

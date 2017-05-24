@@ -1,16 +1,13 @@
 package com.evcar.subsidy.service;
 
 import com.evcar.subsidy.entity.HisGpsData;
-import com.evcar.subsidy.util.Constant;
-import com.evcar.subsidy.util.DateUtil;
 import com.evcar.subsidy.util.ESTools;
 import com.evcar.subsidy.util.JacksonUtil;
+import com.evcar.subsidy.util.ZonedDateTimeUtil;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -21,6 +18,9 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.evcar.subsidy.util.Constant.HISGPS_INDEX;
+import static com.evcar.subsidy.util.Constant.HISGPS_TYPE;
 
 /**
  * Created by Kong on 2017/4/24.
@@ -44,11 +44,11 @@ public class GpsDataService {
                 qb = new BoolQueryBuilder()
                         .must(QueryBuilders.matchQuery("vinCode",vinCode))
                         .must(QueryBuilders.rangeQuery("collectTime")
-                                .from(DateUtil.format(startDate))
-                                .to(DateUtil.format(endDate)));
+                                .from(ZonedDateTimeUtil.format(startDate))
+                                .to(ZonedDateTimeUtil.format(endDate)));
             }
-            SearchRequestBuilder search = client.prepareSearch(Constant.HISGPS_INDEX)
-                    .setTypes(Constant.HISGPS_TYPE).setQuery(qb) ;
+            SearchRequestBuilder search = client.prepareSearch(HISGPS_INDEX)
+                    .setTypes(HISGPS_TYPE).setQuery(qb) ;
             SearchResponse sr = search.get();//得到查询结果
             size = sr.getHits().getTotalHits();//读取数量
         }catch (Exception e){
@@ -73,10 +73,10 @@ public class GpsDataService {
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode",vinCode))
                     .must(QueryBuilders.rangeQuery("collectTime")
-                            .from(DateUtil.format(startDate))
-                            .to(DateUtil.format(endDate)));
-            SearchRequestBuilder search = client.prepareSearch(Constant.HISGPS_INDEX).
-                    setTypes(Constant.HISGPS_TYPE)
+                            .from(ZonedDateTimeUtil.format(startDate))
+                            .to(ZonedDateTimeUtil.format(endDate)));
+            SearchRequestBuilder search = client.prepareSearch(HISGPS_INDEX).
+                    setTypes(HISGPS_TYPE)
                     .addSort(sortBuilder)
                     .setQuery(qb)
                     .setFrom(0)
@@ -96,4 +96,32 @@ public class GpsDataService {
 //        s_logger.info("fetched {} hisGpsData", list.size());
         return list ;
     }
+
+
+    /**
+     * 查询从前是否有GPS数据
+     * @param vinCode
+     * @return
+     */
+    public static long getGpsNumber(String vinCode,Date endDate ,Client client){
+        long size = 0L ;
+        try {
+            QueryBuilder qb = new BoolQueryBuilder()
+                    .must(QueryBuilders.matchQuery("vinCode", vinCode))
+                    .must(QueryBuilders.rangeQuery("collectTime")
+                            .lte(ZonedDateTimeUtil.format(endDate)));
+
+            SearchRequestBuilder search = client.prepareSearch(HISGPS_INDEX)
+                    .setTypes(HISGPS_TYPE).setQuery(qb)
+                    .setSize(0)
+                    .setTerminateAfter(1);
+            SearchResponse sr = search.get();//得到查询结果
+            size = sr.getHits().getTotalHits() ;
+        }catch (Exception e){
+            s_logger.error("getCanOrGps Connection is closed"+e.getMessage());
+            ESTools.connectionError();
+        }
+        return size ;
+    }
+
 }

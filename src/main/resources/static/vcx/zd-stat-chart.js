@@ -51,7 +51,7 @@
                 var holder = d3.select("#" + this.id);
                 var width = parseInt(holder.style("width"))-20;
                 var height = width * 0.6;
-                var margin = 35;
+                var margin = 45 ;
 
                 var svg = holder.select("svg");
                 svg.attr("width", width).attr("height", height);
@@ -91,7 +91,7 @@
                 var holder = d3.select("#" + this.sid);
                 var width = parseInt(holder.style("width"))-20;
                 var height = width * 0.6;
-                var margin = 35;
+                var margin = 45;
 
                 var svg = holder.select("svg");
                 svg.attr("width", width).attr("height", height);
