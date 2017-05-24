@@ -2,11 +2,9 @@ package com.evcar.subsidy.controller;
 
 import com.evcar.subsidy.TargetVo;
 import com.evcar.subsidy.agg.Agg;
-import com.evcar.subsidy.agg.SegStat;
 import com.evcar.subsidy.agg.SegmentResult;
 import com.evcar.subsidy.agg.VehicleL3;
 import com.evcar.subsidy.entity.ESBean;
-import com.evcar.subsidy.entity.HisCountData;
 import com.evcar.subsidy.entity.HisCountDataL2;
 import com.evcar.subsidy.entity.MonthCountData;
 import com.evcar.subsidy.service.HisCountDataService;
@@ -24,11 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static com.evcar.subsidy.service.MonthCountDataService.getLastMonthCountData;
-import static com.evcar.subsidy.util.DateUtil.date;
 
 /**
  * Created by Kong on 2017/4/24.
@@ -206,6 +205,18 @@ public class TargetController {
         } finally {
             REPEAT_REQUEST = true ;
         }
+    }
+
+
+    /**
+     * 检查是否是离线模式
+     * @return
+     */
+    @RequestMapping(value = "/getOfflineMode" , method = RequestMethod.GET)
+    public Boolean getOfflineMode(){
+        Boolean offlineMode = esBean.getOfflineMode() ;
+        if (offlineMode == null)offlineMode = false ;
+        return offlineMode ;
     }
 
 }

@@ -3,25 +3,28 @@
 var App = (function () {
 
     function App() {
+        this.cfg = {
+           paths: {
+               text: "/lib/text/text",
+               bluebird: "/lib/bluebird/js.browser/bluebird.min",
+               jquery: "/lib/jquery/dist/jquery.min",
+               bootstrap: "/lib/bootstrap/dist/js/bootstrap.min",
+               vue: "/lib/vue/dist/vue.min",
+               'vue-router': "/lib/vue-router/dist/vue-router.min",
+               d3: "/lib/d3/d3.min" ,
+               zdApi : "./zdAPI"
+           },
+           shim: {
+               bootstrap: {
+                   deps: ['jquery']
+               }
+           }
+        };
     }
 
     App.prototype.config = function () {
-        requirejs.config({
-            paths: {
-                text: "/lib/text/text",
-                bluebird: "/lib/bluebird/js.browser/bluebird.min",
-                jquery: "/lib/jquery/dist/jquery.min",
-                bootstrap: "/lib/bootstrap/dist/js/bootstrap.min",
-                vue: "/lib/vue/dist/vue.min",
-                'vue-router': "/lib/vue-router/dist/vue-router.min",
-                d3: "/lib/d3/d3.min"
-            },
-            shim: {
-                bootstrap: {
-                    deps: ['jquery']
-                }
-            }
-        });
+        var _this = this ;
+        requirejs.config(_this.cfg);
     };
 
     App.prototype.run = function () {
@@ -40,21 +43,28 @@ var App = (function () {
     };
 
     App.prototype.startApp = function () {
+        var _this = this ;
         requirejs(['jquery', 'bootstrap', 'vue'], function ($, b, Vue) {
             // application
             var app = new Vue({
                 data: { title: "知豆纯电动汽车" }
             });
 
-            // global vcx modules
-            requirejs([
-                '../vcx/zd-car-count',
-                '../vcx/zd-stat',
-                '../vcx/zd-stat-chart'
-            ], function () {
-                app.$mount('#app');
-                console.info("ready!");
-            });
+            $.get("/api/getOfflineMode").then(function(data){
+                if(data){
+                    _this.cfg.paths.zdApi = './d521' ;
+                    requirejs.config(_this.cfg);
+                }
+                // global vcx modules
+                requirejs([
+                    '../vcx/zd-car-count',
+                    '../vcx/zd-stat',
+                    '../vcx/zd-stat-chart'
+                ], function () {
+                    app.$mount('#app');
+                    console.info("ready!");
+                });
+            })
         });
     }
 

@@ -1,4 +1,4 @@
-﻿define(['vue', 'text!./zd-car-count.html', '../js/zdAPI'], function (Vue, template, zdAPI) {
+﻿define(['vue', 'text!./zd-car-count.html', 'zdApi'], function (Vue, template, zdAPI) {
 
     var VisualModel = (function () {
         function VisualModel() {
@@ -13,14 +13,6 @@
 
         VisualModel.prototype.fetch = function () {
             var _this = this;
-            // 所有车辆数目
-//            zdAPI.fetchTotalCarCount().then(function (count) {
-//                _this.total = count;
-//            }, function (jqXHR, text) {
-//                _this.total = text;
-//            });
-
-
             zdAPI.monthLastTargetData().then(function (data) {
                 _this.canNormal = data.canNormal ;
                 _this.canNearNoData = data.canNearNoData ;
