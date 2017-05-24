@@ -37,8 +37,7 @@ public class JobExecute {
      * 每天凌晨执行任务
      * 执行每个任务等待5秒缓冲时间(否则会导致数据不全)
      */
-//    @Scheduled(cron = "21 16 2 * * ?")
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "21 16 2 * * ?")
     public void execute(){
         s_logger.info("启动数据服务");
         try {
