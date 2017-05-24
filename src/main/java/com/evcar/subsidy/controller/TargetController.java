@@ -2,13 +2,18 @@ package com.evcar.subsidy.controller;
 
 import com.evcar.subsidy.TargetVo;
 import com.evcar.subsidy.agg.Agg;
+import com.evcar.subsidy.agg.SegStat;
+import com.evcar.subsidy.agg.SegmentResult;
+import com.evcar.subsidy.agg.VehicleL3;
 import com.evcar.subsidy.entity.ESBean;
 import com.evcar.subsidy.entity.HisCountData;
+import com.evcar.subsidy.entity.HisCountDataL2;
 import com.evcar.subsidy.entity.MonthCountData;
 import com.evcar.subsidy.service.HisCountDataService;
 import com.evcar.subsidy.service.MonthCountDataService;
 import com.evcar.subsidy.util.DateUtil;
 import com.evcar.subsidy.util.StringUtil;
+import com.evcar.subsidy.util.ZonedDateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+import static com.evcar.subsidy.service.MonthCountDataService.getLastMonthCountData;
 import static com.evcar.subsidy.util.DateUtil.date;
 
 /**
@@ -46,7 +50,7 @@ public class TargetController {
      */
     @RequestMapping(value = "/getLastTarget" ,method = RequestMethod.GET)
     public MonthCountData getLastTarget(){
-        List<MonthCountData> monthCountDatas = MonthCountDataService.getLastMonthCountData();
+        List<MonthCountData> monthCountDatas = getLastMonthCountData();
         if (monthCountDatas.size() > 0){
             return monthCountDatas.get(0) ;
         }
@@ -96,6 +100,49 @@ public class TargetController {
         }
         return targetVos ;
     }
+
+    private static Integer MAX_QUERY_SIZE = 500 ;
+
+    @RequestMapping(value = "/getTargetSteps" ,method = RequestMethod.GET)
+    public List<SegmentResult> getTargetSteps(HttpServletRequest request){
+        String target = request.getParameter("target") ;
+
+        Map<String,List<SegmentResult>> map = VehicleL3.map ;
+
+        List<SegmentResult> segmentResults = map.get(target) ;
+        if (segmentResults == null){
+            List<MonthCountData> lastMonthCountData =  MonthCountDataService.getLastMonthCountData() ;
+            if (lastMonthCountData.size() > 0){
+                MonthCountData monthCountData = lastMonthCountData.get(0) ;
+                Date tm = monthCountData.getTm() ;
+                Date startDate = ZonedDateTimeUtil.getStartDate(tm,0);
+                Date endDate = ZonedDateTimeUtil.getEndDate(tm,0);
+                List<HisCountDataL2> hisCountDataL2s = new ArrayList<>() ;
+                Long size = HisCountDataService.getHisCountDataNumberL2(startDate,endDate);
+                Integer num = Integer.valueOf(String.valueOf(size)) ;
+                int groupNum = num/MAX_QUERY_SIZE ;
+                groupNum = num%MAX_QUERY_SIZE > 0 ? groupNum+1 : groupNum ;
+                Integer currentPage = 1 ;
+                Integer pageSize = MAX_QUERY_SIZE ;
+                for (int j = 0 ; j < groupNum ; j++ ) {
+                    List<HisCountDataL2> result = HisCountDataService.getHisCountDataL2(startDate,endDate,currentPage,pageSize) ;
+                    hisCountDataL2s.addAll(result) ;
+                    currentPage ++ ;
+                }
+
+                if (hisCountDataL2s.size() > 0){
+                    VehicleL3.getTargetStep(hisCountDataL2s) ;
+                    segmentResults = VehicleL3.map.get(target) ;
+                }
+            }
+        }
+        if (segmentResults == null){
+            segmentResults = new ArrayList<>() ;
+        }
+
+        return segmentResults ;
+    }
+
 
     /** 避免重复请求 */
     public static Boolean REPEAT_REQUEST = true ;

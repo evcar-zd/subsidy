@@ -1,8 +1,10 @@
 package com.evcar.subsidy.agg;
 
-import com.evcar.subsidy.entity.*;
+import com.evcar.subsidy.entity.ESBean;
+import com.evcar.subsidy.entity.HisCountDataL2;
+import com.evcar.subsidy.entity.MonthCountData;
+import com.evcar.subsidy.entity.Statistical;
 import com.evcar.subsidy.service.HisCountDataService;
-import com.evcar.subsidy.service.MonthCountDataService;
 import com.evcar.subsidy.util.Constant;
 import com.evcar.subsidy.util.CountUtil;
 import com.evcar.subsidy.util.DateUtil;
@@ -21,6 +23,8 @@ import java.util.*;
 @Component
 public class VehicleL3 extends VehicleBase {
 
+    public static Map<String,List<SegmentResult>> map = new HashMap<>() ;
+
     private static Logger s_logger = LoggerFactory.getLogger(VehicleL3.class);
 
     private static ESBean esBean;
@@ -37,7 +41,7 @@ public class VehicleL3 extends VehicleBase {
      * @param endDate
      */
     public void calcL3(Date startDate, Date endDate){
-        Map<String,HisCountDataL2> map = new HashMap<>() ;
+//        Map<String,HisCountDataL2> map = new HashMap<>() ;
 
         List<HisCountDataL2> hisCountDataL2s = new ArrayList<>() ;
         Long size = HisCountDataService.getHisCountDataNumberL2(startDate,endDate);
@@ -57,21 +61,91 @@ public class VehicleL3 extends VehicleBase {
             String id = Constant.LOGO + DateUtil.getDateStryyyyMMdd(endDate);     //根据时间生成
             monthCountData.setId(id);
             monthCountData.setTm(endDate);
-            Integer vehicleNum = 0 ;                //车辆数量
+
 
             for (int i = 0 ; i < hisCountDataL2s.size() ; i++){
                 HisCountDataL2 hisCountDataL2 = hisCountDataL2s.get(i) ;
-                String vinCode = hisCountDataL2.getVinCode() ;
-                if (map.get(vinCode) != null ) continue;
+//                String vinCode = hisCountDataL2.getVinCode() ;
+//                if (map.get(vinCode) != null ) continue;
                 getTarget2(hisCountDataL2) ;
-                vehicleNum ++ ;
-                map.put(vinCode,hisCountDataL2) ;
+//                map.put(vinCode,hisCountDataL2) ;
             }
 
+            /**计算每项指标的分布统计*/
+            getTargetStep(hisCountDataL2s);
+
             monthCountData.setCalcTime(new Date());
-            monthCountData.setVehicleNum(vehicleNum);
+            monthCountData.setVehicleNum(hisCountDataL2s.size());
             this.saveL3(monthCountData);
         }
+    }
+
+
+    /**
+     * 计算每项指标的分布统计
+     * @param hisCountDataL2s
+     */
+    public static void getTargetStep(List<HisCountDataL2> hisCountDataL2s){
+
+        //车辆累积行驶里程
+        SegStat mileageSegStat = new SegStat() ;
+        mileageSegStat.config(0,300,10,10);
+        //续驶里程
+        SegStat limitMileageSegStat = new SegStat() ;
+        limitMileageSegStat.config(0,300,10,10);
+        //一次充满电所用最少时间
+        SegStat maxEnergyTimeSegStat = new SegStat() ;
+        maxEnergyTimeSegStat.config(0,16,0.5f,0.5f);
+        //最大充电功率
+        SegStat maxElectricPowerSegStat = new SegStat() ;
+        maxElectricPowerSegStat.config(0,4000,100,100);
+        //平均单日运行时间
+        SegStat avgDailyRunTimeSegStat = new SegStat() ;
+        avgDailyRunTimeSegStat.config(0,10,0.5f,0.5f);
+        //百公里耗电
+        SegStat hundredsKmusePowerSegStat = new SegStat() ;
+        hundredsKmusePowerSegStat.config(0,20,1,1);
+        if (hisCountDataL2s.size() > 0 ){
+            for (HisCountDataL2 hisCountDataL2 : hisCountDataL2s){
+                String carType = hisCountDataL2.getCarType() ;
+                mileageSegStat.stat(hisCountDataL2.getMileage().floatValue());
+                limitMileageSegStat.stat(hisCountDataL2.getLimitMileage().floatValue());
+
+                BigDecimal maxEnergyTime = BigDecimal.ZERO ;
+
+                BigDecimal maxEnergyTime1 = hisCountDataL2.getMaxEnergyTime1() ;
+                int targetNum1 = CountUtil.targeVerify(carType,maxEnergyTime1,Constant.MAXENERGYTIME1) ;
+                BigDecimal maxEnergyTime2 = hisCountDataL2.getMaxEnergyTime2() ;
+                int targetNum2 = CountUtil.targeVerify(carType,maxEnergyTime2,Constant.MAXENERGYTIME2) ;
+                BigDecimal maxEnergyTime3 = hisCountDataL2.getMaxEnergyTime3() ;
+                int targetNum3 = CountUtil.targeVerify(carType,maxEnergyTime3,Constant.MAXENERGYTIME2) ;
+                if (targetNum1 == 1 || targetNum2 == 1 || targetNum3 == 1){
+                    if (targetNum1 == 1) maxEnergyTime = maxEnergyTime1 ;
+                    if (targetNum2 == 1) maxEnergyTime = maxEnergyTime2 ;
+                    if (targetNum3 == 1) maxEnergyTime = maxEnergyTime3 ;
+                }else if (targetNum1 == 0 || targetNum2 == 0 || targetNum3 == 0){
+                    if (targetNum1 == 0) maxEnergyTime = maxEnergyTime1 ;
+                    if (targetNum2 == 0) maxEnergyTime = maxEnergyTime2 ;
+                    if (targetNum3 == 0) maxEnergyTime = maxEnergyTime3 ;
+                }else if (targetNum1 == 2 || targetNum2 == 2 || targetNum3 == 2){
+                    if (targetNum1 == 2) maxEnergyTime = maxEnergyTime1 ;
+                    if (targetNum2 == 2) maxEnergyTime = maxEnergyTime2 ;
+                    if (targetNum3 == 2) maxEnergyTime = maxEnergyTime3 ;
+                }
+                maxEnergyTimeSegStat.stat(maxEnergyTime.floatValue());
+
+                maxElectricPowerSegStat.stat(hisCountDataL2.getMaxElectricPower().floatValue());
+                avgDailyRunTimeSegStat.stat(hisCountDataL2.getAvgDailyRunTime().floatValue());
+                hundredsKmusePowerSegStat.stat(hisCountDataL2.getHundredsKmusePower().floatValue());
+            }
+        }
+
+        map.put("totalMileage",mileageSegStat.getResult()) ;
+        map.put("limitMileage",limitMileageSegStat.getResult()) ;
+        map.put("maxEnergyTime",maxEnergyTimeSegStat.getResult()) ;
+        map.put("maxElectricPower",maxElectricPowerSegStat.getResult()) ;
+        map.put("avgDailyRunTime",avgDailyRunTimeSegStat.getResult()) ;
+        map.put("hundredsKmusePower",hundredsKmusePowerSegStat.getResult()) ;
     }
 
 
@@ -147,7 +221,7 @@ public class VehicleL3 extends VehicleBase {
 
 
         if (canNormal > 0 ) monthCountData.setCanNormal(monthCountData.getCanNormal()+1) ;
-        if (canNearNoData > 0 ) monthCountData.setCanNearNoData(monthCountData.getGpsNearNoData()+1);
+        if (canNearNoData > 0 ) monthCountData.setCanNearNoData(monthCountData.getCanNearNoData()+1);
         if (canNoData > 0 ) monthCountData.setCanNoData(monthCountData.getCanNoData()+1);
         if (gpsNormal > 0 ) monthCountData.setGpsNormal(monthCountData.getGpsNormal()+1);
         if (gpsNearNoData > 0 ) monthCountData.setGpsNearNoData(monthCountData.getGpsNearNoData()+1);
@@ -280,12 +354,8 @@ public class VehicleL3 extends VehicleBase {
      * @return
      */
     private Statistical getAvgDailyRunTime(Statistical avgDailyRunTime,BigDecimal avgDailyRunTimeTarget,String carType,int diffNum){
-        if (avgDailyRunTimeTarget.compareTo(BigDecimal.ZERO) == 0 ){
-            avgDailyRunTime.setInvalids(avgDailyRunTime.getInvalids() + 1);
-        }else{
-            avgDailyRunTimeTarget = avgDailyRunTimeTarget.divide(BigDecimal.valueOf(diffNum),2,BigDecimal.ROUND_UP ) ;
-            avgDailyRunTime = CountUtil.getTarget(avgDailyRunTime,carType,avgDailyRunTimeTarget,Constant.AVGDAILYRUNTIME) ;
-        }
+        avgDailyRunTimeTarget = avgDailyRunTimeTarget.divide(BigDecimal.valueOf(diffNum),2,BigDecimal.ROUND_UP ) ;
+        avgDailyRunTime = CountUtil.getTarget(avgDailyRunTime,carType,avgDailyRunTimeTarget,Constant.AVGDAILYRUNTIME) ;
         return avgDailyRunTime ;
     }
 

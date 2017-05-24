@@ -316,6 +316,64 @@ public class HisCountDataService {
 
 
     /**
+     * 获取最后一天L2数据条数
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static Long getLastHisCountDataNumberL2(Date startDate, Date endDate){
+        long size = 0L ;
+        try {
+            Client client = ESTools.getClient() ;
+            QueryBuilder qb = new BoolQueryBuilder()
+                    .must(QueryBuilders.rangeQuery("tm")
+                            .from(DateUtil.dateToStr(startDate,DateUtil.DATEFORMATYYYYMMDD))
+                            .to(DateUtil.dateToStr(endDate,DateUtil.DATEFORMATYYYYMMDD)));
+            SearchRequestBuilder search = client.prepareSearch(HISCOUNT_DATAL2_INDEX)
+                    .setTypes(HISCOUNT_DATAL2_TYPE).setQuery(qb);
+            SearchResponse sr = search.get();//得到查询结果
+            size = sr.getHits().getTotalHits() ;
+        }catch (Exception e){
+            s_logger.error("getHisCountDataNumberL2 Connection is closed"+e.getMessage());
+            ESTools.connectionError();
+        }
+        return size ;
+    }
+
+    /**
+     * 最后一天L2数据
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static List<HisCountDataL2> getLastHisCountDataL2(Date startDate, Date endDate,Integer currentPage , Integer pageSize){
+        List<HisCountDataL2> list = new ArrayList<>() ;
+        try {
+            Client client = ESTools.getClient();
+            SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.ASC);
+            QueryBuilder qb = new BoolQueryBuilder()
+                    .must(QueryBuilders.rangeQuery("tm")
+                            .from(DateUtil.dateToStr(startDate, DateUtil.DATEFORMATYYYYMMDD))
+                            .to(DateUtil.dateToStr(endDate, DateUtil.DATEFORMATYYYYMMDD)));
+            SearchRequestBuilder search = client.prepareSearch(HISCOUNT_DATAL2_INDEX)
+                    .setTypes(HISCOUNT_DATAL2_TYPE).setQuery(qb).addSort(sortBuilder)
+                    .setFrom((currentPage - 1) * pageSize)
+                    .setSize(pageSize);
+            SearchResponse sr = search.get();//得到查询结果
+            for (SearchHit hits : sr.getHits()) {
+                String json = JacksonUtil.toJSon(hits.getSource());
+                s_logger.debug(json);
+                HisCountDataL2 hisCountData = JacksonUtil.readValue(json, HisCountDataL2.class);
+                list.add(hisCountData);
+            }
+        }catch (Exception e){
+            s_logger.error("getHisCountDataL2 Connection is closed"+e.getMessage());
+            ESTools.connectionError();
+        }
+        return list ;
+    }
+
+    /**
      * 查询计L1是否有CAN数据或者GPS数据
      * @param vinCode
      * @param mark  标志， 0   can,  1 gps

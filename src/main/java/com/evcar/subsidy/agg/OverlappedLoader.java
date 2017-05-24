@@ -4,6 +4,7 @@ import com.evcar.subsidy.GitVer;
 import com.evcar.subsidy.entity.*;
 import com.evcar.subsidy.service.*;
 import com.evcar.subsidy.util.ESTools;
+import com.evcar.subsidy.util.ZonedDateTimeUtil;
 import org.elasticsearch.client.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ import static java.lang.Thread.currentThread;
 public class OverlappedLoader {
 
     private static int BLOCKING_QUEUE_SIZE = 100 ;
-    private static int THREAD_SIZE = 30 ;
+    private static int THREAD_SIZE = 5 ;
 
     private Map<String, OverlappedData> _cache = new HashMap<>();
     private BlockingQueue<TaskFetchAndSave> _blockingVin = new ArrayBlockingQueue<>(BLOCKING_QUEUE_SIZE);
@@ -120,15 +121,16 @@ public class OverlappedLoader {
         while(true) {
             retry++;
             if(retry > maxRetry){
+                tryNumber ++ ;
                 if (tryNumber == 2){
                     return new OverlappedData(false);
                 }
-                cacheData(vinCode, startDate, endDate, null) ;
                 retry = 0 ;
-                tryNumber ++ ;
                 s_logger.info("retry {} number & vinCode {}",tryNumber,vinCode);
             }
-
+            if (retry % 200 == 0){
+                cacheData(vinCode, startDate, endDate, null) ;
+            }
             synchronized (_cache) {
                 if (_cache.containsKey(vinCode)) {
                     OverlappedData data = _cache.get(vinCode);
@@ -177,6 +179,8 @@ public class OverlappedLoader {
         if (gpsCount > 0)
             data.hisGpsDatas = GpsDataService.getHisGpsData(vinCode,startDate,endDate,gpsCount, client) ;
 
+        data.lastMileages = VehicleMotorService.getMaxMileage(vinCode,endDate,client) ;
+
         synchronized (_cache){
             _cache.put(vinCode, data);
         }
@@ -218,6 +222,7 @@ class OverlappedData{
 
     public List<HvacData> hvacDatas ;
 
+    public List<HisVehicleMotor> lastMileages ;
 
     public OverlappedData(){
 
@@ -226,14 +231,12 @@ class OverlappedData{
     /** 执行2次不成功，继续往下执行 */
     public OverlappedData(Boolean endResult){
         if (!endResult){
-
+            bmsDatas = new ArrayList<>() ;
+            obcDatas = new ArrayList<>() ;
+            hisVehicleMotors = new ArrayList<>() ;
+            hisGpsDatas = new ArrayList<>() ;
+            hvacDatas = new ArrayList<>() ;
         }
-        bmsDatas = new ArrayList<>() ;
-        obcDatas = new ArrayList<>() ;
-        hisVehicleMotors = new ArrayList<>() ;
-        hisGpsDatas = new ArrayList<>() ;
-        hvacDatas = new ArrayList<>() ;
-
     }
 
 }

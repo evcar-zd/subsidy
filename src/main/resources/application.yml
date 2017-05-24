@@ -121,3 +121,21 @@ elasticsearch:
         hundredsPowerMin : 10.29
         hundredsPowerMax : 11.05
         socTotalcapacity : 17.76
+      DEFAULT :
+        mileageMin : 0
+        mileageMax : 220
+        limitMileageMin : 155
+        limitMileageMax : 180
+        energyTimeMinModel1 : 12.8
+        energyTimeMaxModel1 : 15.5
+        energyTimeMinModel2 : 7.5
+        energyTimeMaxModel2 : 10.5
+        energyTimeMinModel3 : 6.2
+        energyTimeMaxModel3 : 7.6
+        electricPowerMin : 1300
+        electricPowerMax : 3400
+        avgDailyRunTimeMin : 0
+        avgDailyRunTimeMax : 5
+        hundredsPowerMin : 9
+        hundredsPowerMax : 11
+        socTotalcapacity : 17.76

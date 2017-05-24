@@ -19,6 +19,8 @@ public class VehicleBase {
 
     protected List<HisVehicleMotor> hisVehicleMotors ;
 
+    protected List<HisVehicleMotor> lastMileages ;
+
     protected List<HisGpsData> hisGpsDatas ;
 
     protected List<HisCountData> hisCountDatas ;
@@ -49,6 +51,7 @@ public class VehicleBase {
         this.hisVehicleMotors = data.hisVehicleMotors;
         this.hisGpsDatas = data.hisGpsDatas;
         this.hvacDatas = data.hvacDatas;
+        this.lastMileages = data.lastMileages ;
     }
 
     /**

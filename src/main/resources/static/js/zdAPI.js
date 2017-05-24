@@ -2,6 +2,7 @@
 
     function zdAPI() {
         this.data = {};
+        this.listX = {} ;
     }
 
     // 获取车辆总数
@@ -109,21 +110,25 @@
     }
 
     zdAPI.prototype.fetchSegments = function(target){
-        // 模拟数据
-        var listX = [];
-
-        var value = 50;
-        for(var i=0;i<100;i++){
-            var delta = Math.random() * 10;
-            var sign = Math.random() > 0.5 ? 1 : -1;
-            value += (delta * sign);
-            if(value > 100.0) value = 100.0;
-            else if(value < 0.0) value = 0.0;
-
-            listX.push({ x: i, y: value });
+        var _this = this ;
+        if(target == 'totalCount'){
+            return Promise.resolve([{ x: 0, y: 0 },{ x: 100, y: 0 }]);
         }
+        if(_this.listX[target]){
+            return Promise.resolve(_this.listX[target]) ;
+        }
+        return $.get('/api/getTargetSteps',{target:target}).then(function(data){
+            var model = [] ;
+            for(var i in data){
+                var value = new Object();
+                value.x = data[i].MidValue;
+                value.y = data[i].Count ;
+                model.push(value);
+            }
+            _this.listX[target] = model ;
+            return model;
+        });
 
-        return Promise.resolve(listX);
     }
 
     return new zdAPI();

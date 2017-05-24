@@ -10,6 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.evcar.subsidy.util.Constant.AVGDAILYRUNTIME;
+import static javafx.scene.input.KeyCode.K;
 
 /**
  * 计算共用类
@@ -23,6 +28,7 @@ public class CountUtil {
     void setEsBean(ESBean value) { this.esBean = value;}
 
     private static Logger s_logger = LoggerFactory.getLogger(CountUtil.class);
+
     /**
      * 单个验证
      * @param carType   车类型
@@ -31,7 +37,12 @@ public class CountUtil {
      * @return
      */
     public static Integer targeVerify(String carType,BigDecimal num ,Integer targeType){
+        /** 与车型无关 */
         EsBeanObj esBeanObj = esBean.getTarget().get(carType) ;
+        if (esBeanObj == null) {
+            esBeanObj = esBean.getTarget().get(Constant.DEFAULT) ;
+        }
+
         if (esBeanObj == null) return -2 ;
         LgAndLt lgAndLt = null;
         switch (targeType){
@@ -53,7 +64,7 @@ public class CountUtil {
             case Constant.MAXELECTRICPOWER :
                 lgAndLt = new LgAndLt(esBeanObj.getElectricPowerMin(),esBeanObj.getElectricPowerMax()) ;
                 break;
-            case Constant.AVGDAILYRUNTIME :
+            case AVGDAILYRUNTIME :
                 lgAndLt = new LgAndLt(esBeanObj.getAvgDailyRunTimeMin(),esBeanObj.getAvgDailyRunTimeMax()) ;
                 break;
             case Constant.HUNDREDSKMUSEPOWER :

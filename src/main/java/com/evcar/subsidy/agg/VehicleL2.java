@@ -3,6 +3,7 @@ package com.evcar.subsidy.agg;
 import com.evcar.subsidy.entity.*;
 import com.evcar.subsidy.util.DateUtil;
 import com.evcar.subsidy.util.OrganizationUtil;
+import com.evcar.subsidy.util.ZonedDateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,9 @@ public class VehicleL2 extends VehicleBase{
         /** 获取 startDate 前 monthDay的数据*/
         this.loadL1(vinCode,startDate,endDate,monthDay);
 
-        boolean endResult =  this.calcVehicleL2One() ;
+//        boolean endResult =  this.calcVehicleL2One() ;
+        /** 方式一不稳定，暂时去掉 */
+        boolean endResult = false ;
         if (!endResult){
             this.calcVehicleL2(vehicleVo,startDate, endDate, monthDay);
         }
@@ -76,7 +79,7 @@ public class VehicleL2 extends VehicleBase{
                 Date endDate = hisCountData2.getTm() ;
                 Date startDate = hisCountData1.getTm() ;
                 String vinCode = hisCountData2.getVinCode() ;
-                String id = vinCode + DateUtil.getDateStryyyyMMdd(endDate);
+                String id = vinCode + ZonedDateTimeUtil.getDateStryyyyMMdd(endDate);
                 String carType = hisCountData2.getCarType() ;
                 Date veDeliveredDate = hisCountData2.getVeDeliveredDate() ;
                 Date releaseTime = hisCountData2.getReleaseTime() ;
@@ -172,20 +175,15 @@ public class VehicleL2 extends VehicleBase{
         int diffNum = DateUtil.diffDate(startDate,endDate) ;
         diffNum = diffNum == 0 ? 1 : diffNum ;
         for (int i = 0 ; i < diffNum ;i++){
-            Date start = DateUtil.getStartDate(startDate,i) ;
-            Date end = DateUtil.getEndDate(startDate,monthDay-1) ;
-            /** 当不满足monthDay天数时，执行最后一次 */
-            if (DateUtil.compare(end,endDate) || DateUtil.diffDate(end,endDate) == 0){
-                i = diffNum ;
-                end = DateUtil.getEndDate(endDate) ;
-            }
-
+            Date start = ZonedDateTimeUtil.getStartDate(startDate,i) ;
+            Date startDate2 = ZonedDateTimeUtil.getDate(start,monthDay) ;
+            Date end = ZonedDateTimeUtil.getEndDate(endDate,i) ;
             /**
              * 数据处理，避免多次请求
              */
-            List<HisCountData> hisCountDatas = OrganizationUtil.getHisCountData(this.hisCountDatas,start,end);
+            List<HisCountData> hisCountDatas = OrganizationUtil.getHisCountData(this.hisCountDatas,startDate2,end);
 
-            this.calcTargetL2(vehicleVo,start,end,hisCountDatas);
+            this.calcTargetL2(vehicleVo,startDate2,end,hisCountDatas);
 
             this.saveL2(this.hisCountData);
         }
@@ -205,7 +203,7 @@ public class VehicleL2 extends VehicleBase{
     private void calcTargetL2(VehicleVo vehicleVo,Date startDate ,Date endDate,List<HisCountData> hisCountDatas){
 
         String vinCode = vehicleVo.getVinCode() ;
-        String id = vinCode + DateUtil.getDateStryyyyMMdd(endDate);
+        String id = vinCode + ZonedDateTimeUtil.getDateStryyyyMMdd(endDate);
         String carType = vehicleVo.getCarType() ;
         Date veDeliveredDate = vehicleVo.getVeDeliveredDate() ;
         Date releaseTime = vehicleVo.getReleaseTime() ;
@@ -280,8 +278,8 @@ public class VehicleL2 extends VehicleBase{
         maxOutChargerPower = maxOutChargerPower.divide(BigDecimal.ONE,2 , BigDecimal.ROUND_UP) ;
         mileageTotal = mileageTotal.divide(BigDecimal.ONE,2 , BigDecimal.ROUND_UP) ;
         /** 平均单日运行时间 */
-        int diffNum = DateUtil.diffDate(startDate,endDate)+ 1 ;
-        dischargeTotalSec = dischargeTotalSec / diffNum ;
+        if (hisSize > 0)
+            dischargeTotalSec = BigDecimal.valueOf(dischargeTotalSec).divide(BigDecimal.valueOf(hisSize),2,BigDecimal.ROUND_UP).longValue() ;
 
         this.hisCountData.setGpsCount(gpsCount);
         this.hisCountData.setCanCount(canCount);
@@ -455,7 +453,7 @@ public class VehicleL2 extends VehicleBase{
             socTotalcapacity = esBean.getTarget().get(carType).getSocTotalcapacity() ;
         }
         BigDecimal hundredskmusepower = BigDecimal.ZERO ;
-        if(dischargeMidSoc != 0){
+        if(dischargeMidMileage.compareTo(BigDecimal.ZERO) == 1){
             hundredskmusepower = BigDecimal.valueOf(dischargeMidSoc).divide(dischargeMidMileage, 2, BigDecimal.ROUND_UP).multiply(socTotalcapacity) ;
         }
         hundredskmusepower = hundredskmusepower.divide(BigDecimal.ONE,2,BigDecimal.ROUND_UP) ;
