@@ -172,7 +172,7 @@ public class TargetController {
                     if (!StringUtil.isEmpty(startDate)){
                         startDay = DateUtil.diffDate(DateUtil.parseDate(startDate),new Date());
                         if (!StringUtil.isEmpty(endDate)){
-                            endDay = DateUtil.diffDate(DateUtil.parseDate(endDate),new Date());
+                            endDay = DateUtil.diffDate(DateUtil.parseDate(endDate),new Date())-1;
                         }else{
                             endDay = startDay;
                         }
@@ -196,14 +196,12 @@ public class TargetController {
                     Agg agg = new Agg() ;
                     agg.takeTarget(startDay,endDay,monthDay,vinCodes);
                 }
-
                 System.out.println("运行时长："+(System.currentTimeMillis() - startRun) );
+                REPEAT_REQUEST = true ;
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
             REPEAT_REQUEST = true ;
+            e.printStackTrace();
         }
     }
 
