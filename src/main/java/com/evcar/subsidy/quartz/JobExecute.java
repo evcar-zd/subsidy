@@ -54,7 +54,7 @@ public class JobExecute {
                 startDay = DateUtil.diffDate(lastDate,new Date()) ;
                 /** 最多只计算三十天前的数据 */
                 if (startDay > 30){
-                    startDay = 30+startDay ;
+                    startDay = 32 ;
                 }
             }
             Agg agg = new Agg() ;
