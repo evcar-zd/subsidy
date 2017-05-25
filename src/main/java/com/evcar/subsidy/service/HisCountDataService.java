@@ -518,4 +518,45 @@ public class HisCountDataService {
             ESTools.connectionError();
         }
     }
+
+    /**
+     *
+     * 获取l2数量
+     */
+    public static long getVehicleL2Num(){
+        Client client = ESTools.getClient() ;
+        SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATAL2_INDEX).setTypes(Constant.HISCOUNT_DATAL2_TYPE) ;
+        SearchResponse sr = search.get();//得到查询结果
+        return sr.getHits().getTotalHits();//读取数量
+    }
+
+
+    /**
+     *
+     * 获取l2详细信息
+     */
+    public static List<HisCountDataL2> getVehicleL2(Date startday,Date endDate,String vinCode){
+        Client client = ESTools.getClient() ;
+        List<HisCountDataL2> list = new ArrayList<>() ;
+        QueryBuilder qb = new BoolQueryBuilder()
+                .must(QueryBuilders.matchQuery("vinCode",vinCode))
+                .must(QueryBuilders.rangeQuery("tm")
+                        .from(startday.getTime())
+                        .to(endDate.getTime()));
+        SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATAL2_INDEX).setTypes(Constant.HISCOUNT_DATAL2_TYPE).setQuery(qb) ;
+        SearchResponse sr = search.get();//得到查询结果
+        long sizeNum = sr.getHits().getTotalHits();//读取数量
+
+        SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.DESC);
+        search = search.addSort(sortBuilder).setFrom(0).setSize((int)sizeNum);
+        sr = search.get();//得到查询结果
+
+        for(SearchHit hits:sr.getHits()){
+            String json = JacksonUtil.toJSon(hits.getSource());
+            HisCountDataL2 hisCountData = JacksonUtil.readValue(json, HisCountDataL2.class);
+            list.add(hisCountData);
+        }
+        s_logger.info("fetched {}HisCountData", list.size());
+        return list ;
+    }
 }
