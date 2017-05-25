@@ -58,8 +58,10 @@
 
                 svg.selectAll("*").remove();
 
+                var extX = d3.extent(values, function (d) { return d.tm; }) ;
+                extX[1] = new Date(extX[1].getTime()+1000*3600*24) ;
                 var fnScaleX = d3.scaleTime()
-                    .domain(d3.extent(values, function (d) { return d.tm; }))
+                    .domain(extX)
                     .range([margin, width]);
 
                 var fnScaleY = d3.scaleLinear()
@@ -105,14 +107,18 @@
                 // 更好的Y轴范围
                 var fnScaleY = d3.scaleLinear()
                     .domain([0, d3.max(values, function (d) {
-                        if(_this.selected == 'maxEnergyTime')
+                        if(_this.selected == 'maxEnergyTime'){
                             if(d.x < 1.0) return 0;
-                        else if(_this.selected == 'limitMileage')
+                        }
+                        else if(_this.selected == 'limitMileage'){
                             if(d.x < 10.0) return 0;
-                        else if(_this.selected == 'hundredsKmusePower')
+                        }
+                        else if(_this.selected == 'hundredsKmusePower'){
                             if(d.x < 1.0) return 0;
-                        else if(_this.selected == 'maxElectricPower')
+                        }
+                        else if(_this.selected == 'maxElectricPower'){
                             if(d.x < 100.0) return 0;
+                        }
                         return d.y*1.2 ;
                     })])
                     .range([height - margin, 0]);
