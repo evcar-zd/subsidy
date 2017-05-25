@@ -10,10 +10,7 @@ import com.evcar.subsidy.poi.ExcelUtil;
 import com.evcar.subsidy.service.BmsDataService;
 import com.evcar.subsidy.service.HisCountDataService;
 import com.evcar.subsidy.service.ObcDataService;
-import com.evcar.subsidy.util.DateUtil;
-import com.evcar.subsidy.util.ESTools;
-import com.evcar.subsidy.util.JacksonUtil;
-import com.evcar.subsidy.util.StringUtil;
+import com.evcar.subsidy.util.*;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -150,6 +147,8 @@ public class PrintController {
 
                   for (HisCountDataL2 hisCountDataL2 : hisCountDataL2s) {
                         map = JacksonUtil.transBean2Map(hisCountDataL2);
+                        Date tm = (Date) map.get("tm");
+                        map.put("tm",ZonedDateTimeUtil.dateToStr(tm)) ;
                         list1.add(map);
             }
             }

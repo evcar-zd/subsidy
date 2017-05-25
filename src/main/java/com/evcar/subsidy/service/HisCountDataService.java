@@ -413,13 +413,13 @@ public class HisCountDataService {
             Date releaseTime = jsonObject.getDate("releaseTime") ;
             Date calcTime = jsonObject.getDate("calcTime") ;
             if (tm != null )
-                jsonObject.put("tm", DateUtil.dateToStr(tm,DateUtil.DATEFORMATYYYYMMDD)) ;
+                jsonObject.put("tm", ZonedDateTimeUtil.dateToStr(tm)) ;
             if (veDeliveredDate != null )
-                jsonObject.put("veDeliveredDate", DateUtil.dateToStr(veDeliveredDate,DateUtil.DATEFORMATYYYYMMDD)) ;
+                jsonObject.put("veDeliveredDate", ZonedDateTimeUtil.dateToStr(veDeliveredDate)) ;
             if (releaseTime != null )
-                jsonObject.put("releaseTime", DateUtil.dateToStr(releaseTime,DateUtil.DATEFORMATYYYYMMDD)) ;
+                jsonObject.put("releaseTime", ZonedDateTimeUtil.dateToStr(releaseTime)) ;
             if (calcTime != null )
-                jsonObject.put("calcTime", DateUtil.format(calcTime)) ;
+                jsonObject.put("calcTime", ZonedDateTimeUtil.format(calcTime)) ;
 
             IndexResponse indexResponse = client.prepareIndex(HISCOUNT_DATAL2_INDEX, HISCOUNT_DATAL2_TYPE,hisCountData.getId())
                     .setSource(jsonObject).execute().get();
@@ -541,8 +541,8 @@ public class HisCountDataService {
         QueryBuilder qb = new BoolQueryBuilder()
                 .must(QueryBuilders.matchQuery("vinCode",vinCode))
                 .must(QueryBuilders.rangeQuery("tm")
-                        .from(startday.getTime())
-                        .to(endDate.getTime()));
+                        .from(ZonedDateTimeUtil.dateToStr(startday))
+                        .to(ZonedDateTimeUtil.dateToStr(endDate)));
         SearchRequestBuilder search = client.prepareSearch(Constant.HISCOUNT_DATAL2_INDEX).setTypes(Constant.HISCOUNT_DATAL2_TYPE).setQuery(qb) ;
         SearchResponse sr = search.get();//得到查询结果
         long sizeNum = sr.getHits().getTotalHits();//读取数量
