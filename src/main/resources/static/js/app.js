@@ -12,7 +12,8 @@ var App = (function () {
                vue: "/lib/vue/dist/vue.min",
                'vue-router': "/lib/vue-router/dist/vue-router.min",
                d3: "/lib/d3/d3.min" ,
-               zdApi : "./zdAPI"
+               zdApi : "./zdAPI",
+               page : "./pageService"
            },
            shim: {
                bootstrap: {
@@ -59,7 +60,8 @@ var App = (function () {
                 requirejs([
                     '../vcx/zd-car-count',
                     '../vcx/zd-stat',
-                    '../vcx/zd-stat-chart'
+                    '../vcx/zd-stat-chart',
+                    '../vcx/zd-stat-list'
                 ], function () {
                     app.$mount('#app');
                     console.info("ready!");

@@ -24,3 +24,9 @@ body{
         z-index: -1;
     }
 }
+
+#vinList .active{
+    cursor: not-allowed;
+    background-color: #989898;
+    color: white;
+}

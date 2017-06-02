@@ -10,6 +10,10 @@
         return $.get('/api/getLastTarget');
     }
 
+    zdAPI.prototype.getVechicleInfo = function (param) {
+        return $.get('/api/getVechicleInfo',param);
+    }
+
     zdAPI.prototype.fetchTargetObj = function (data,type) {
         var value = new Object();
         if(type==1){
@@ -121,5 +125,20 @@
 
     }
 
+    zdAPI.prototype.getDetail = function(){
+        $("#totalTarget").hide();
+        $("#avgTarget").hide();
+        $("#count").hide();
+        $("#vehicleInfo").hide();
+        $("#vinList").show();
+    }
+
+    zdAPI.prototype.getTarget = function(){
+        $("#totalTarget").show();
+        $("#avgTarget").show();
+        $("#count").show();
+        $("#vehicleInfo").show();
+        $("#vinList").hide();
+    }
     return new zdAPI();
 });

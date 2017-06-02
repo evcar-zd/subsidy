@@ -1,6 +1,5 @@
 package com.evcar.subsidy;
 
-import com.evcar.subsidy.util.Constant;
 import com.evcar.subsidy.util.ESTools;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -10,9 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {

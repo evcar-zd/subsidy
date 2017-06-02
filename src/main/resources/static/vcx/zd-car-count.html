@@ -12,15 +12,15 @@
         <tbody>
             <tr>
                 <td class="text-center">CAN</td>
-                <td v-text="canNormal" class="text-center"></td>
-                <td v-text="canNearNoData" class="text-center"></td>
-                <td v-text="canNoData" class="text-center"></td>
+                <td v-text="canNormal" v-on:click="getCanDetail(1)" class="text-center" style="color: #337ab7;cursor: pointer;"></td>
+                <td v-text="canNearNoData" v-on:click="getCanDetail(0)" class="text-center" style="color: #337ab7;cursor: pointer;"></td>
+                <td v-text="canNoData" v-on:click="getCanDetail(-1)" class="text-center" style="color: #337ab7;cursor: pointer;"></td>
             </tr>
             <tr>
                 <td class="text-center">GPS</td>
-                <td v-text="gpsNormal" class="text-center"></td>
-                <td v-text="gpsNearNoData" class="text-center"></td>
-                <td v-text="gpsNoData" class="text-center"></td>
+                <td v-text="gpsNormal" v-on:click="getGpsDetail(1)" class="text-center" style="color: #337ab7;cursor: pointer;"></td>
+                <td v-text="gpsNearNoData" v-on:click="getGpsDetail(1)" class="text-center" style="color: #337ab7;cursor: pointer;"></td>
+                <td v-text="gpsNoData" v-on:click="getGpsDetail(1)" class="text-center" style="color: #337ab7;cursor: pointer;"></td>
             </tr>
             <tr>
                 <td class="text-center">合计</td>

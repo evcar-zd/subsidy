@@ -131,4 +131,21 @@ public class OrganizationUtil {
         }
         return hisCountDataList ;
     }
+
+
+    public static List<com.evcar.subsidy.vo.VehicleVo> getVehicleVo(List<HisCountDataL2> hisCountDataL2s){
+        List<com.evcar.subsidy.vo.VehicleVo> vehicleVos = new ArrayList<>() ;
+        for (int i = 0 ; i < hisCountDataL2s.size() ; i++){
+            HisCountDataL2 hisCountDataL2 = hisCountDataL2s.get(i) ;
+            com.evcar.subsidy.vo.VehicleVo vehicleVo = new com.evcar.subsidy.vo.VehicleVo() ;
+            vehicleVo.setId(hisCountDataL2.getId());
+            vehicleVo.setCarType(hisCountDataL2.getCarType());
+            vehicleVo.setVinCode(hisCountDataL2.getVinCode());
+            vehicleVo.setTm(hisCountDataL2.getTm());
+            vehicleVo.setReleaseTime(hisCountDataL2.getReleaseTime());
+            vehicleVo.setVeDeliveredDate(hisCountDataL2.getVeDeliveredDate());
+            vehicleVos.add(vehicleVo) ;
+        }
+        return vehicleVos ;
+    }
 }

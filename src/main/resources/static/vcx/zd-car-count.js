@@ -1,5 +1,4 @@
 ﻿define(['vue', 'text!./zd-car-count.html', 'zdApi'], function (Vue, template, zdAPI) {
-
     var VisualModel = (function () {
         function VisualModel() {
             this.total = "loading...";
@@ -14,6 +13,7 @@
         VisualModel.prototype.fetch = function () {
             var _this = this;
             zdAPI.monthLastTargetData().then(function (data) {
+                $("#tm").val(data.tm);
                 _this.canNormal = data.canNormal ;
                 _this.canNearNoData = data.canNearNoData ;
                 _this.canNoData = data.canNoData ;
@@ -37,6 +37,20 @@
             var vm = new VisualModel();
             vm.fetch();
             return vm;
+        },
+        methods:{
+            getCanDetail:function(info){
+                $("#target").val("can");
+                $("#mark").val(info)
+                zdAPI.getDetail();
+                this.$root.searchPaginator && this.$root.searchPaginator._load() ;
+            },
+            getGpsDetail:function(info){
+                $("#target").val("gps");
+                $("#mark").val(info)
+                zdAPI.getDetail();
+                this.$root.searchPaginator && this.$root.searchPaginator._load() ;
+            }
         }
     });
 
