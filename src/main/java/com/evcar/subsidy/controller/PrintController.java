@@ -146,6 +146,7 @@ public class PrintController {
                  fields = new String[]{"id", "tm", "vinCode", "carType", "veDeliveredDate", "gpsCount", "canCount","gpshisCount","canhisCount","mileageTotal","chargeMidSoc1","chargeMidSec1","chargeMidSoc2","chargeMidSec2","chargeMidSoc3","chargeMidSec3","dischargeTotalSec","maxInChargerPower","maxOutChargerPower","dischargeMidSoc","dischargeMidMileage","calcTime","version","mileage","limitMileage","maxEnergyTime1","maxEnergyTime2","maxEnergyTime3","maxElectricPower","avgDailyRunTime","hundredsKmusePower"};
 
                   for (HisCountDataL2 hisCountDataL2 : hisCountDataL2s) {
+                      //改变导出的日期格式
                         map = JacksonUtil.transBean2Map(hisCountDataL2);
                         Date tm = (Date) map.get("tm");
                         map.put("tm",ZonedDateTimeUtil.dateToStr(tm)) ;
