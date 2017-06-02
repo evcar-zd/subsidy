@@ -1,10 +1,7 @@
 package com.evcar.subsidy.agg;
 
 import com.evcar.subsidy.entity.*;
-import com.evcar.subsidy.util.Constant;
-import com.evcar.subsidy.util.DateUtil;
-import com.evcar.subsidy.util.OrganizationUtil;
-import com.evcar.subsidy.util.ZonedDateTimeUtil;
+import com.evcar.subsidy.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -346,6 +343,20 @@ public class VehicleL2 extends VehicleBase{
         this.hisCountData.setMaxElectricPower(maxElectricPower);
         this.hisCountData.setAvgDailyRunTime(avgDailyRunTime);
         this.hisCountData.setHundredsKmusePower(hundredsKmusePower);
+
+        int canCount = this.hisCountData.getCanCount() ;
+        int canhisCount = this.hisCountData.getCanhisCount() ;
+        int gpsCount = this.hisCountData.getGpsCount() ;
+        int gpshisCount = this.hisCountData.getGpshisCount() ;
+        this.hisCountData.setCanMark(getCanMark(canCount,canhisCount));
+        this.hisCountData.setGpsMark(getGpsMark(gpsCount,gpshisCount));
+        this.hisCountData.setMileageMark(getMileageMark(mileage,carType));
+        this.hisCountData.setLimitMileageMark(getLimitMileageMark(limitMileage,carType));
+        this.hisCountData.setMaxEnergyTimeMark(getMaxEnergyTimeMark(carType,maxEnergyTime1,maxEnergyTime2,maxEnergyTime3));
+        this.hisCountData.setMaxElectricPowerMark(getMaxElectricPowerMark(maxElectricPower,carType));
+        this.hisCountData.setAvgDailyRunTimeMark(getAvgDailyRunTimeMark(avgDailyRunTime,carType));
+        this.hisCountData.setHundredsKmusePowerMark(getHundredsKmusePowerMark(hundredsKmusePower,carType));
+
     }
 
 
@@ -462,6 +473,133 @@ public class VehicleL2 extends VehicleBase{
         }
         hundredskmusepower = hundredskmusepower.divide(BigDecimal.ONE,2,BigDecimal.ROUND_UP) ;
         return hundredskmusepower ;
+    }
+
+    /**
+     * 0 近期无数据, 1 正常, -1 无数据
+     * 验证Can
+     * @param canCount
+     * @param canhisCount
+     * @return
+     */
+    private int getCanMark(Integer canCount,Integer canhisCount){
+        int canMark = -1 ;
+        if (canCount > 0){
+            canMark = 1 ;
+        }else if(canhisCount > 0){
+            canMark = 0 ;
+        }
+        return canMark ;
+    }
+
+    /**
+     * 0 近期无数据, 1 正常, -1 无数据
+     * 验证Can
+     * @param gpsCount
+     * @param gpshisCount
+     * @return
+     */
+    private int getGpsMark(Integer gpsCount,Integer gpshisCount){
+        int gpsMark = -1 ;
+        if (gpsCount > 0){
+            gpsMark = 1 ;
+        }else if(gpshisCount > 0){
+            gpsMark = 0 ;
+        }
+        return gpsMark ;
+    }
+
+    /**
+     * 验证行驶里程
+     * @param mileage
+     * @param carType
+     * @return 是否正常标注
+     */
+    private int getMileageMark(BigDecimal mileage, String carType){
+        int mileageMark = -1 ;
+        if (mileage.compareTo(BigDecimal.ZERO) != 0){
+            mileageMark = CountUtil.targeVerify(carType,mileage,Constant.MILEAGE) ;
+        }
+        return mileageMark ;
+    }
+
+    /**
+     * 验证续驶里程
+     * @param limitMileage
+     * @param carType
+     * @return 是否正常标注
+     */
+    private int getLimitMileageMark(BigDecimal limitMileage,String carType){
+        int limitMileageMark = -1 ;
+        if (limitMileage.compareTo(BigDecimal.ZERO) != 0 ){
+            limitMileageMark = CountUtil.targeVerify(carType,limitMileage,Constant.LIMITMILEAGE) ;
+        }
+        return limitMileageMark ;
+    }
+
+    /**
+     * 验证一次充满电所用最少时间
+     * @param carType
+     * @param maxEnergyTime1
+     * @param maxEnergyTime2
+     * @param maxEnergyTime3
+     * @return 是否正常标注
+     */
+    private int getMaxEnergyTimeMark(String carType,BigDecimal maxEnergyTime1,BigDecimal maxEnergyTime2,BigDecimal maxEnergyTime3){
+        int maxEnergyTimeMark = -1 ;
+        if (maxEnergyTime1.compareTo(BigDecimal.ZERO) != 0 || maxEnergyTime2.compareTo(BigDecimal.ZERO) != 0
+                || maxEnergyTime3.compareTo(BigDecimal.ZERO) != 0){
+            int maxEnergyTimeMark1 = CountUtil.targeVerify(carType,maxEnergyTime1,Constant.MAXENERGYTIME1) ;
+            int maxEnergyTimeMark2 = CountUtil.targeVerify(carType,maxEnergyTime2,Constant.MAXENERGYTIME2) ;
+            int maxEnergyTimeMark3 = CountUtil.targeVerify(carType,maxEnergyTime3,Constant.MAXENERGYTIME3) ;
+            if (maxEnergyTimeMark1 == 1 || maxEnergyTimeMark2 == 1 || maxEnergyTimeMark3 == 1){
+                maxEnergyTimeMark = 1 ;
+            }else if (maxEnergyTimeMark1 == 0 || maxEnergyTimeMark2 == 0 || maxEnergyTimeMark3 == 0){
+                maxEnergyTimeMark = 0 ;
+            }else if (maxEnergyTimeMark1 == 2 || maxEnergyTimeMark2 == 2 || maxEnergyTimeMark3 == 2){
+                maxEnergyTimeMark = 2 ;
+            }
+        }
+        return maxEnergyTimeMark ;
+    }
+
+    /**
+     * 验证最大充电功率
+     * @param maxChargerPower
+     * @param carType
+     * @return 是否正常标注
+     */
+    private int getMaxElectricPowerMark(BigDecimal maxChargerPower,String carType){
+        int maxElectricPowerMark = -1 ;
+        if (maxChargerPower.compareTo(BigDecimal.ZERO) != 0 ){
+            maxElectricPowerMark = CountUtil.targeVerify(carType,maxChargerPower,Constant.MAXELECTRICPOWER) ;
+        }
+        return maxElectricPowerMark ;
+    }
+
+
+    /**
+     * 验证平均单日运行时间
+     * @param avgDailyRunTime
+     * @param carType
+     * @return 是否正常标注
+     */
+    private int getAvgDailyRunTimeMark(BigDecimal avgDailyRunTime,String carType){
+        return CountUtil.targeVerify(carType,avgDailyRunTime,Constant.AVGDAILYRUNTIME) ;
+    }
+
+    /**
+     * 验证百公里耗电
+     * @param hundredskmusepower
+     * @param carType
+     * @return 是否正常标注
+     */
+    private int getHundredsKmusePowerMark(BigDecimal hundredskmusepower,String carType){
+        int hundredskmusepowerMark = -1 ;
+        if (hundredskmusepower.compareTo(BigDecimal.ZERO) != 0 ){
+            hundredskmusepowerMark = CountUtil.targeVerify(carType,hundredskmusepower,Constant.HUNDREDSKMUSEPOWER) ;
+        }
+        return hundredskmusepowerMark ;
     }
 
 }

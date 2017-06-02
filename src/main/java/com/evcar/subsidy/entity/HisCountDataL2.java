@@ -43,6 +43,14 @@ public class HisCountDataL2 implements Serializable {
     private BigDecimal avgDailyRunTime ;        //平均单日运行时间
     private BigDecimal hundredsKmusePower ;     //百公里耗电
 
+    private Integer canMark ;                   //Can标注 0 近期无数据, 1 正常, -1 无数据
+    private Integer gpsMark ;                   //GPS标注 0 近期无数据, 1 正常, -1 无数据
+    private Integer mileageMark ;               //里程标注 -1 无效, 0 偏低, 1 正常, 2 偏高
+    private Integer limitMileageMark ;          //续驶里程标注 -1 无效, 0 偏低, 1 正常, 2 偏高
+    private Integer maxEnergyTimeMark ;         //满电最少时间标注 -1 无效, 0 偏低, 1 正常, 2 偏高
+    private Integer maxElectricPowerMark ;      //最大充电功率标注 -1 无效, 0 偏低, 1 正常, 2 偏高
+    private Integer avgDailyRunTimeMark ;       //平均单日运行时间标注 -1 无效, 0 偏低, 1 正常, 2 偏高
+    private Integer hundredsKmusePowerMark ;    //百公里耗电标注 -1 无效, 0 偏低, 1 正常, 2 偏高
 
     public HisCountDataL2(){
 
@@ -302,5 +310,69 @@ public class HisCountDataL2 implements Serializable {
 
     public void setHundredsKmusePower(BigDecimal hundredsKmusePower) {
         this.hundredsKmusePower = hundredsKmusePower;
+    }
+
+    public Integer getCanMark() {
+        return canMark;
+    }
+
+    public void setCanMark(Integer canMark) {
+        this.canMark = canMark;
+    }
+
+    public Integer getGpsMark() {
+        return gpsMark;
+    }
+
+    public void setGpsMark(Integer gpsMark) {
+        this.gpsMark = gpsMark;
+    }
+
+    public Integer getMileageMark() {
+        return mileageMark;
+    }
+
+    public void setMileageMark(Integer mileageMark) {
+        this.mileageMark = mileageMark;
+    }
+
+    public Integer getLimitMileageMark() {
+        return limitMileageMark;
+    }
+
+    public void setLimitMileageMark(Integer limitMileageMark) {
+        this.limitMileageMark = limitMileageMark;
+    }
+
+    public Integer getMaxEnergyTimeMark() {
+        return maxEnergyTimeMark;
+    }
+
+    public void setMaxEnergyTimeMark(Integer maxEnergyTimeMark) {
+        this.maxEnergyTimeMark = maxEnergyTimeMark;
+    }
+
+    public Integer getMaxElectricPowerMark() {
+        return maxElectricPowerMark;
+    }
+
+    public void setMaxElectricPowerMark(Integer maxElectricPowerMark) {
+        this.maxElectricPowerMark = maxElectricPowerMark;
+    }
+
+    public Integer getAvgDailyRunTimeMark() {
+        return avgDailyRunTimeMark;
+    }
+
+    public void setAvgDailyRunTimeMark(Integer avgDailyRunTimeMark) {
+        this.avgDailyRunTimeMark = avgDailyRunTimeMark;
+    }
+
+    public Integer getHundredsKmusePowerMark() {
+        return hundredsKmusePowerMark;
+    }
+
+    public void setHundredsKmusePowerMark(Integer hundredsKmusePowerMark) {
+        this.hundredsKmusePowerMark = hundredsKmusePowerMark;
     }
 }

@@ -12,12 +12,12 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="x in stat">
+            <tr v-for="(x ,index) in stat">
                 <td class="text-center">{{x.name}}</td>
-                <td class="text-center">{{x.good}}</td>
-                <td class="text-center">{{x.lo}}</td>
-                <td class="text-center">{{x.hi}}</td>
-                <td class="text-center">{{x.na}}</td>
+                <td class="text-center"><a v-on:click="getDetail(1,index)">{{x.good}}</a></td>
+                <td class="text-center"><a v-on:click="getDetail(0,index)">{{x.lo}}</a></td>
+                <td class="text-center"><a v-on:click="getDetail(2,index)">{{x.hi}}</a></td>
+                <td class="text-center"><a v-on:click="getDetail(-1,index)">{{x.na}}</a></td>
                 <td class="text-center">{{x.good+x.lo+x.hi+x.na}}</td>
             </tr>
         </tbody>

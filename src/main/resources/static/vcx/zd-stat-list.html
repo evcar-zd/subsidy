@@ -1,0 +1,45 @@
+﻿<div class="table-responsive">
+    <a v-on:click="getTarget"><<-返回</a>
+    <table class="table table-bordered table-condensed">
+        <caption>车辆信息</caption>
+        <thead>
+        <tr class="info">
+            <th class="text-center">VIN码</th>
+            <th class="text-center">车型</th>
+            <th class="text-center">交车日期</th>
+            <th class="text-center">下线日期</th>
+            <th class="text-center">数据时间</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(item, index) in searchPaginator.object.content">
+            <td class="text-center">{{item.vinCode}}</td>
+            <td class="text-center">{{item.carType}}</td>
+            <td class="text-center">{{item.veDeliveredDate | dateFormat}}</td>
+            <td class="text-center">{{item.releaseTime | dateFormat}}</td>
+            <td class="text-center">{{item.tm | dateFormat}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <ul class="pagination pull-right">
+        <li>
+            <a @click="searchPaginator.previous()"
+               :class="{'disabled': searchPaginator.page.currentPage==1}"
+               v-show="searchPaginator.hasPrevious()">上一页
+            </a>
+        </li>
+        <li>
+            <a :class="{'active': searchPaginator.page.currentPage==i}"
+               v-for="i in searchPaginator.pages"
+               @click="searchPaginator.go(i)">{{i}}</a>
+        </li>
+        <li>
+            <a :class="{'disabled': searchPaginator.page.currentPage==searchPaginator.page.totalPage}"
+               @click="searchPaginator.next()"
+               v-show="searchPaginator.hasNext()">下一页</a>
+        </li>
+        <li>
+            <span>共{{searchPaginator.page.totalResult}}条数据</span>
+        </li>
+    </ul>
+</div>

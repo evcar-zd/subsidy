@@ -137,7 +137,26 @@ define([], function () {
             _this.listX[target] = model ;
             return model;
         });
+    }
 
+    zdAPI.prototype.getVechicleInfo = function (param) {
+        return $.get('/api/getVechicleInfo',param);
+    }
+
+    zdAPI.prototype.getDetail = function(){
+        $("#totalTarget").hide();
+        $("#avgTarget").hide();
+        $("#count").hide();
+        $("#vehicleInfo").hide();
+        $("#vinList").show();
+    }
+
+    zdAPI.prototype.getTarget = function(){
+        $("#totalTarget").show();
+        $("#avgTarget").show();
+        $("#count").show();
+        $("#vehicleInfo").show();
+        $("#vinList").hide();
     }
 
     return new zdAPI();

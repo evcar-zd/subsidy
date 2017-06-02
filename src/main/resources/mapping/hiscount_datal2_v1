@@ -120,3 +120,33 @@ PUT http://10.10.11.147:9200/hiscount_datal2_v1/hiscount_datal2/_mapping
          }
  }
 
+
+PUT http://10.10.11.147:9200/hiscount_datal2_v1/hiscount_datal2/_mapping
+{
+    "properties": {
+        "canMark":{
+            "type": "integer"
+        },
+        "gpsMark":{
+            "type": "integer"
+        },
+        "mileageMark":{
+            "type": "integer"
+        },
+        "limitMileageMark":{
+            "type": "integer"
+        },
+        "maxEnergyTimeMark":{
+            "type": "integer"
+        },
+        "maxElectricPowerMark":{
+            "type": "integer"
+        },
+        "avgDailyRunTimeMark":{
+            "type": "integer"
+        },
+        "hundredsKmusePowerMark":{
+            "type": "integer"
+        }
+    }
+}

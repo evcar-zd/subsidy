@@ -12,6 +12,7 @@ import com.evcar.subsidy.service.MonthCountDataService;
 import com.evcar.subsidy.util.DateUtil;
 import com.evcar.subsidy.util.StringUtil;
 import com.evcar.subsidy.util.ZonedDateTimeUtil;
+import com.evcar.subsidy.vo.PageResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -217,4 +218,51 @@ public class TargetController {
         return offlineMode ;
     }
 
+    /**
+     * 车辆信息
+     * @return
+     */
+    @RequestMapping(value = "/getVechicleInfo",method = RequestMethod.GET)
+    public PageResult getVechicleInfo(@RequestParam(value = "tm",required = false)String tm,
+                                      @RequestParam(value = "mark",required = false)Integer mark,
+                                      @RequestParam(value = "target",required = false)String target,
+                                      @RequestParam(value = "currentPage",required = false)Integer currentPage,
+                                      @RequestParam(value = "pageSize",required = false)Integer pageSize){
+
+        if (StringUtil.isEmpty(tm) || StringUtil.isEmpty(target) || mark == null){
+            return new PageResult();
+        }
+
+        currentPage = currentPage == null ? 1 : currentPage ;
+        pageSize = pageSize == null ? 10 : pageSize ;
+
+        PageResult pageResult = new PageResult() ;
+        try{
+            Long timetimeStamp = Long.valueOf(tm) ;
+            Date date = new Date(timetimeStamp) ;
+            pageResult = HisCountDataService.getLastHisCountDataL2(date,target, mark, currentPage , pageSize) ;
+        }catch (Exception e){
+            s_logger.error("日期转换错误");
+        }
+
+//        long total = 32L ;
+//        List<VehicleVo> voList = new ArrayList<>() ;
+//        for (int i=0 ; i<10;i++){
+//            VehicleVo vehicleVo = new VehicleVo();
+//            Integer num = MathUtil.randomMax10(6);
+//            String id = "ZD"+num ;
+//            String carType = "type"+num ;
+//            String vinCode = "Vin"+num ;
+//            vehicleVo.setId(id);
+//            vehicleVo.setCarType(carType);
+//            vehicleVo.setVinCode(vinCode);
+//            vehicleVo.setTm(new Date());
+//            vehicleVo.setReleaseTime(new Date());
+//            vehicleVo.setVeDeliveredDate(new Date());
+//            voList.add(vehicleVo) ;
+//        }
+//        pageResult = new PageResult(voList,currentPage,total) ;
+
+        return  pageResult ;
+    }
 }

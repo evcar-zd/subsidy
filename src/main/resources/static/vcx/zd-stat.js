@@ -58,6 +58,26 @@
             vm.fetch();
             
             return vm;
+        },
+        methods:{
+            getDetail:function(info,index){
+                if(index == 0){
+                    $("#target").val("totalMileage");
+                }else if(index == 1){
+                    $("#target").val("limitMileage");
+                }else if(index == 2){
+                    $("#target").val("maxEnergyTime");
+                }else if(index == 3){
+                    $("#target").val("maxElectricPower");
+                }else if(index == 4){
+                    $("#target").val("avgDailyRunTime");
+                }else if(index == 5){
+                    $("#target").val("hundredsKmusePower");
+                }
+                $("#mark").val(info)
+                zdAPI.getDetail();
+                this.$root.searchPaginator && this.$root.searchPaginator._load() ;
+            }
         }
     });
 

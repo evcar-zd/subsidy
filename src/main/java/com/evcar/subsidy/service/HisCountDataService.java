@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.evcar.subsidy.entity.HisCountData;
 import com.evcar.subsidy.entity.HisCountDataL2;
 import com.evcar.subsidy.util.*;
+import com.evcar.subsidy.vo.PageResult;
+import com.evcar.subsidy.vo.VehicleVo;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -558,5 +560,60 @@ public class HisCountDataService {
         }
         s_logger.info("fetched {}HisCountData", list.size());
         return list ;
+    }
+
+    /**
+     * 指标数据
+     * @param tm
+     * @return
+     */
+    public static PageResult getLastHisCountDataL2(Date tm, String target, Integer mark, Integer currentPage , Integer pageSize){
+
+        List<HisCountDataL2> list = new ArrayList<>() ;
+        long count = 0 ;
+        try {
+            Client client = ESTools.getClient();
+            BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.matchQuery("tm",ZonedDateTimeUtil.dateToStr(tm)));
+            QueryBuilder qb = null;
+            if("can".equals(target)){
+                qb = boolQueryBuilder.must(QueryBuilders.matchQuery("canMark",mark));
+            }else if("gps".equals(target)){
+                qb = boolQueryBuilder.must(QueryBuilders.matchQuery("gpsMark",mark));
+            }else if("totalMileage".equals(target)){    //累计行驶里程(km)
+                qb = boolQueryBuilder.must(QueryBuilders.matchQuery("mileageMark",mark));
+            }else if("limitMileage".equals(target)){    //续驶里程
+                qb = boolQueryBuilder.must(QueryBuilders.matchQuery("limitMileageMark",mark));
+            }else if("maxEnergyTime".equals(target)){   //一次充满电所用最少时间
+                qb = boolQueryBuilder.must(QueryBuilders.matchQuery("maxEnergyTimeMark",mark));
+            }else if("maxElectricPower".equals(target)){    //最大充电功率
+                qb = boolQueryBuilder.must(QueryBuilders.matchQuery("maxElectricPowerMark",mark));
+            }else if("avgDailyRunTime".equals(target)){     //平均单日运行时间
+                qb = boolQueryBuilder.must(QueryBuilders.matchQuery("avgDailyRunTimeMark",mark));
+            }else if("hundredsKmusePower".equals(target)){  //百公里耗电
+                qb = boolQueryBuilder.must(QueryBuilders.matchQuery("hundredsKmusePowerMark",mark));
+            }
+
+            SearchRequestBuilder search = client.prepareSearch(HISCOUNT_DATAL2_INDEX)
+                    .setTypes(HISCOUNT_DATAL2_TYPE).setQuery(qb)
+                    .setFrom((currentPage - 1) * pageSize)
+                    .setSize(pageSize);
+            SearchResponse sr = search.get();//得到查询结果
+            count = sr.getHits().getTotalHits() ;
+            for (SearchHit hits : sr.getHits()) {
+                String json = JacksonUtil.toJSon(hits.getSource());
+                s_logger.debug(json);
+                HisCountDataL2 hisCountData = JacksonUtil.readValue(json, HisCountDataL2.class);
+                list.add(hisCountData);
+            }
+        }catch (Exception e){
+            s_logger.error("getHisCountDataL2 Connection is closed"+e.getMessage());
+            ESTools.connectionError();
+        }
+
+        List<VehicleVo> vehicleVos = OrganizationUtil.getVehicleVo(list) ;
+
+        PageResult pageResult = new PageResult(vehicleVos,currentPage,count) ;
+
+        return pageResult ;
     }
 }

@@ -17,25 +17,33 @@
         <div class="row">
             <div class="col-xs-12">
                 <h1 class="text-center" v-text="title">知豆汽车</h1>
+                <input type="hidden" value="" id="tm"/>
+                <input type="hidden" value="" id="mark"/>
+                <input type="hidden" value="" id="target"/>
                 <img alt="ZD LOGO" src="/img/zd.jpg" class="logo img-responsive center-block">
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="count">
             <div class="col-xs-12">
                 <zd-car-count></zd-car-count>
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="totalTarget">
             <div class="col-xs-12">
                 <zd-stat></zd-stat>
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="avgTarget">
             <div class="col-xs-12">
                 <zd-stat-chart></zd-stat-chart>
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="vinList" style="display: none;">
+            <div class="col-xs-12">
+                <zd-stat-list></zd-stat-list>
+            </div>
+        </div>
+        <div class="row" id="vehicleInfo">
             <div class="col-xs-12">
                 <div class="table-responsive">
                 <table class="table">
