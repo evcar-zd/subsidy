@@ -126,6 +126,9 @@
     }
 
     zdAPI.prototype.getDetail = function(){
+        var target = $("#target").val();
+        var mark = $("#mark").val();
+        $("#listTitle").text(zdAPI.prototype.getTitle(target,mark));
         $("#totalTarget").hide();
         $("#avgTarget").hide();
         $("#count").hide();
@@ -140,5 +143,41 @@
         $("#vehicleInfo").show();
         $("#vinList").hide();
     }
+
+    zdAPI.prototype.getTitle = function(target,mark){
+        //0 近期无数据, 1 正常, -1 无数据
+        var canOrGpsMap = {
+            '-1' : '无',
+            '0' : '近期无',
+            '1' : '正常'
+        } ;
+        //-1 无效, 0 偏低, 1 正常, 2 偏高
+        var targetMap = {
+            '-1' : '无效' ,
+            '0' : '偏低' ,
+            '1' : '正常' ,
+            '2' : '偏高'
+        }
+        var title = '' ;
+        if(target=='can'){
+            title = canOrGpsMap[mark] + 'CAN数据' ;
+        }else if(target=='gps'){
+            title = canOrGpsMap[mark] + 'GPS数据' ;
+        }else if(target=='totalMileage'){    //累计行驶里程(km)
+            title = '累计行驶里程-' + targetMap[mark];
+        }else if(target=='limitMileage'){    //续驶里程
+            title = '续驶里程-' + targetMap[mark];
+        }else if(target=='maxEnergyTime'){   //一次充满电所用最少时间
+            title = '一次充满电所用最少时间-' + targetMap[mark] ;
+        }else if(target=='maxElectricPower'){    //最大充电功率
+            title = '最大充电功率-' + targetMap[mark] ;
+        }else if(target=='avgDailyRunTime'){     //平均单日运行时间
+            title = '平均单日运行时间-' + targetMap[mark] ;
+        }else if(target=='hundredsKmusePower'){  //百公里耗电
+            title = '百公里耗电-' + targetMap[mark] ;
+        }
+        return title + '车辆信息';
+    }
+
     return new zdAPI();
 });
