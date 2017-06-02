@@ -19,8 +19,8 @@
             <tr>
                 <td class="text-center">GPS</td>
                 <td v-text="gpsNormal" v-on:click="getGpsDetail(1)" class="text-center" style="color: #337ab7;cursor: pointer;"></td>
-                <td v-text="gpsNearNoData" v-on:click="getGpsDetail(1)" class="text-center" style="color: #337ab7;cursor: pointer;"></td>
-                <td v-text="gpsNoData" v-on:click="getGpsDetail(1)" class="text-center" style="color: #337ab7;cursor: pointer;"></td>
+                <td v-text="gpsNearNoData" v-on:click="getGpsDetail(0)" class="text-center" style="color: #337ab7;cursor: pointer;"></td>
+                <td v-text="gpsNoData" v-on:click="getGpsDetail(-1)" class="text-center" style="color: #337ab7;cursor: pointer;"></td>
             </tr>
             <tr>
                 <td class="text-center">合计</td>
