@@ -554,7 +554,9 @@ public class VehicleL2 extends VehicleBase{
             int maxEnergyTimeMark3 = CountUtil.targeVerify(carType,maxEnergyTime3,Constant.MAXENERGYTIME3) ;
             if (maxEnergyTimeMark1 == 1 || maxEnergyTimeMark2 == 1 || maxEnergyTimeMark3 == 1){
                 maxEnergyTimeMark = 1 ;
-            }else if (maxEnergyTimeMark1 == 0 || maxEnergyTimeMark2 == 0 || maxEnergyTimeMark3 == 0){
+            }else if (maxEnergyTimeMark1 == 0 && maxEnergyTime1.compareTo(BigDecimal.ZERO) != 0
+                    || maxEnergyTimeMark2 == 0 &&maxEnergyTime2.compareTo(BigDecimal.ZERO) != 0
+                    || maxEnergyTimeMark3 == 0 &&maxEnergyTime3.compareTo(BigDecimal.ZERO) != 0){
                 maxEnergyTimeMark = 0 ;
             }else if (maxEnergyTimeMark1 == 2 || maxEnergyTimeMark2 == 2 || maxEnergyTimeMark3 == 2){
                 maxEnergyTimeMark = 2 ;

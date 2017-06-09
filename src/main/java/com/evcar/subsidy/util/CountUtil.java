@@ -10,11 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.evcar.subsidy.util.Constant.AVGDAILYRUNTIME;
-import static javafx.scene.input.KeyCode.K;
 
 /**
  * 计算共用类
@@ -64,7 +59,7 @@ public class CountUtil {
             case Constant.MAXELECTRICPOWER :
                 lgAndLt = new LgAndLt(esBeanObj.getElectricPowerMin(),esBeanObj.getElectricPowerMax()) ;
                 break;
-            case AVGDAILYRUNTIME :
+            case Constant.AVGDAILYRUNTIME :
                 lgAndLt = new LgAndLt(esBeanObj.getAvgDailyRunTimeMin(),esBeanObj.getAvgDailyRunTimeMax()) ;
                 break;
             case Constant.HUNDREDSKMUSEPOWER :
