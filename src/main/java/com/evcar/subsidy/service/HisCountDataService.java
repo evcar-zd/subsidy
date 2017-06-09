@@ -109,7 +109,7 @@ public class HisCountDataService {
         List<HisCountData> list = new ArrayList<>() ;
         try{
             Long size = getHisCountDataNumber(vinCode,startDate,endDate);
-            SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.ASC);
+            SortBuilder sortBuilder = SortBuilders.fieldSort("id").order(SortOrder.ASC);
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode",vinCode))
                     .must(QueryBuilders.rangeQuery("tm")
@@ -174,7 +174,7 @@ public class HisCountDataService {
         try{
             Long size = getHisCountDataNumberL2(vinCode,startDate,endDate);
             Client client = ESTools.getClient() ;
-            SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.ASC);
+            SortBuilder sortBuilder = SortBuilders.fieldSort("id").order(SortOrder.ASC);
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode",vinCode))
                     .must(QueryBuilders.rangeQuery("tm")
@@ -236,7 +236,7 @@ public class HisCountDataService {
         List<HisCountDataL2> list = new ArrayList<>() ;
         try {
             Client client = ESTools.getClient();
-            SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.ASC);
+            SortBuilder sortBuilder = SortBuilders.fieldSort("id").order(SortOrder.ASC);
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.rangeQuery("tm")
                             .from(DateUtil.dateToStr(startDate, DateUtil.DATEFORMATYYYYMMDD))
@@ -293,7 +293,7 @@ public class HisCountDataService {
     public static List<HisCountDataL2> getHisCountDataL2(String vinCode ,Date date,Client client){
         List<HisCountDataL2> list = new ArrayList<>() ;
         try {
-            SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.ASC);
+            SortBuilder sortBuilder = SortBuilders.fieldSort("id").order(SortOrder.ASC);
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode", vinCode))
                     .must(QueryBuilders.matchQuery("tm", ZonedDateTimeUtil.dateToStr(date)));
@@ -352,7 +352,7 @@ public class HisCountDataService {
         List<HisCountDataL2> list = new ArrayList<>() ;
         try {
             Client client = ESTools.getClient();
-            SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.ASC);
+            SortBuilder sortBuilder = SortBuilders.fieldSort("id").order(SortOrder.ASC);
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.rangeQuery("tm")
                             .from(DateUtil.dateToStr(startDate, DateUtil.DATEFORMATYYYYMMDD))
@@ -465,7 +465,7 @@ public class HisCountDataService {
     public static List<HisCountData> getHisCountDataL1(Date startDate,Date endDate,String vinCode, Client client){
         List<HisCountData> list = new ArrayList<>() ;
         try {
-            SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.ASC);
+            SortBuilder sortBuilder = SortBuilders.fieldSort("id").order(SortOrder.ASC);
             QueryBuilder qb = new BoolQueryBuilder()
                     .must(QueryBuilders.matchQuery("vinCode", vinCode))
                     .must(QueryBuilders.boolQuery()
@@ -549,7 +549,7 @@ public class HisCountDataService {
         SearchResponse sr = search.get();//得到查询结果
         long sizeNum = sr.getHits().getTotalHits();//读取数量
 
-        SortBuilder sortBuilder = SortBuilders.fieldSort("tm").order(SortOrder.DESC);
+        SortBuilder sortBuilder = SortBuilders.fieldSort("id").order(SortOrder.DESC);
         search = search.addSort(sortBuilder).setFrom(0).setSize((int)sizeNum);
         sr = search.get();//得到查询结果
 
