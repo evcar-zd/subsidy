@@ -105,7 +105,7 @@ public class Agg {
                         }
                         s_logger.info("end L2 cost {}", (System.currentTimeMillis()-startTimeL2));
                         Thread.sleep(5000);
-//                        vehicleL2.stopQueue() ;
+                        vehicleL2.stopQueue() ;
                         VehicleL3 vehicleL3 = new VehicleL3() ;
                         vehicleL3.calcL3(start ,end );
                     } catch (InterruptedException e) {
