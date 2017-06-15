@@ -29,7 +29,7 @@ define('page', ['module', 'exports'], function(module, exports){
                     self.pages = []
                     var index = 1
                     if (self.page.currentPage <= 2) {
-                        for (let i = 1; i <= self.page.totalPage; i++) {
+                        for (var i = 1; i <= self.page.totalPage; i++) {
                             if (index <= 5) {
                                 self.pages.push(i)
                                 index++
@@ -39,7 +39,7 @@ define('page', ['module', 'exports'], function(module, exports){
                         }
                     } else if (self.page.currentPage >= 3 && self.page.totalPage - 2 >= self.page.currentPage) {
                         if (index <= 5) {
-                            for (let i = self.page.currentPage - 2; i <= self.page.currentPage + 2; i++) {
+                            for (var i = self.page.currentPage - 2; i <= self.page.currentPage + 2; i++) {
                                 self.pages.push(i)
                                 index++
                             }
@@ -47,13 +47,13 @@ define('page', ['module', 'exports'], function(module, exports){
                             return
                         }
                     } else if (self.page.totalPage <= 5) {
-                        for (let i = 1; i <= self.page.totalPage; i++) {
+                        for (var i = 1; i <= self.page.totalPage; i++) {
                             self.pages.push(i)
                         }
                         return
                     } else {
                         if (index <= 5) {
-                            for (let i = self.page.totalPage - 4; i <= self.page.totalPage; i++) {
+                            for (var i = self.page.totalPage - 4; i <= self.page.totalPage; i++) {
                                 self.pages.push(i)
                                 index++
                             }
