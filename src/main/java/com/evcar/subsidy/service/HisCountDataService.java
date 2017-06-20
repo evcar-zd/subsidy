@@ -567,13 +567,16 @@ public class HisCountDataService {
      * @param tm
      * @return
      */
-    public static PageResult getLastHisCountDataL2(Date tm, String target, Integer mark, Integer currentPage , Integer pageSize){
+    public static PageResult getLastHisCountDataL2(Date tm, String target, Integer mark,String vinCode, Integer currentPage , Integer pageSize){
 
         List<HisCountDataL2> list = new ArrayList<>() ;
         long count = 0 ;
         try {
             Client client = ESTools.getClient();
             BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.matchQuery("tm",ZonedDateTimeUtil.dateToStr(tm)));
+            if (!StringUtil.isEmpty(vinCode)){
+                boolQueryBuilder = boolQueryBuilder.must(QueryBuilders.matchQuery("vinCode",vinCode)) ;
+            }
             QueryBuilder qb = null;
             if("can".equals(target)){
                 qb = boolQueryBuilder.must(QueryBuilders.matchQuery("canMark",mark));
@@ -592,6 +595,7 @@ public class HisCountDataService {
             }else if("hundredsKmusePower".equals(target)){  //百公里耗电
                 qb = boolQueryBuilder.must(QueryBuilders.matchQuery("hundredsKmusePowerMark",mark));
             }
+
 
             SearchRequestBuilder search = client.prepareSearch(HISCOUNT_DATAL2_INDEX)
                     .setTypes(HISCOUNT_DATAL2_TYPE).setQuery(qb)
