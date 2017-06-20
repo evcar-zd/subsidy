@@ -226,6 +226,7 @@ public class TargetController {
     public PageResult getVechicleInfo(@RequestParam(value = "tm",required = false)String tm,
                                       @RequestParam(value = "mark",required = false)Integer mark,
                                       @RequestParam(value = "target",required = false)String target,
+                                      @RequestParam(value = "vinCode",required = false)String vinCode,
                                       @RequestParam(value = "currentPage",required = false)Integer currentPage,
                                       @RequestParam(value = "pageSize",required = false)Integer pageSize){
 
@@ -240,7 +241,7 @@ public class TargetController {
         try{
             Long timetimeStamp = Long.valueOf(tm) ;
             Date date = new Date(timetimeStamp) ;
-            pageResult = HisCountDataService.getLastHisCountDataL2(date,target, mark, currentPage , pageSize) ;
+            pageResult = HisCountDataService.getLastHisCountDataL2(date,target, mark, vinCode, currentPage , pageSize) ;
         }catch (Exception e){
             s_logger.error("日期转换错误");
         }

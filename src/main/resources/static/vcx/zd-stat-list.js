@@ -7,6 +7,7 @@
             return '' + num
         }
     }
+
     var vcx = Vue.component('zd-stat-list', {
         template,
         data: function () {
@@ -19,6 +20,8 @@
         },
         methods : {
             getTarget: function(){
+                $("#inputVin").val("");
+                this.$root.searchPaginator.page.currentPage = 1 ;
                 zdAPI.getTarget();
             },
             _getData: function () {
@@ -27,11 +30,15 @@
                     param.tm = $("#tm").val();
                     param.target = $("#target").val();
                     param.mark = $("#mark").val();
+                    param.vinCode = $("#inputVin").val();
                     param.currentPage = page.currentPage ;
                     param.pageSize = page.pageSize ;
                     zdAPI.getVechicleInfo(param).then(callback);
                 }
                 this.$root.searchPaginator = this.searchPaginator = pageService(Paginator, 10);
+            },
+            getDateByVin : function(){
+                this.$root.searchPaginator && this.$root.searchPaginator._load() ;
             }
         },
         filters: {

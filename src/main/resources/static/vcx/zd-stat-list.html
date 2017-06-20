@@ -1,7 +1,15 @@
 ﻿<div class="table-responsive">
-    <a v-on:click="getTarget"><<-返回</a>
+    <a v-on:click="getTarget" style="font-size: 20px;"><<-返回</a>
+    <div>
+        <div>
+            <span id="listTitle" style="float: left;margin-left: 30px;margin-top: 20px;margin-bottom: 20px;font-weight: bold;">车辆信息</span>
+        </div>
+        <div style="float: right;margin-right: 266px;margin-top: 20px;margin-bottom: 20px;">
+            <input type="text" value="" id="inputVin" placeholder="请输入车辆VinCode"/>
+            <input type="button" v-on:click="getDateByVin" value="查询"/>
+        </div>
+    </div>
     <table class="table table-bordered table-condensed">
-        <caption id="listTitle">车辆信息</caption>
         <thead>
         <tr class="info">
             <th class="text-center">VIN码</th>
