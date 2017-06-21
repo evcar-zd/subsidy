@@ -18,6 +18,7 @@ public class DateUtil {
 	public static Calendar calendar = null;
 
 	public static String DATEFORMATYYYYMMDD = "yyyy-MM-dd" ;
+	public static String DATEFORMATYYYYMMDDHHmmss = "yyyy-MM-dd HH:mm:ss" ;
 	/**
 	 * 功能描述：格式化日期
 	 * 
