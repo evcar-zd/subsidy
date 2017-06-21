@@ -537,8 +537,8 @@ public class HisCountDataService {
      *
      * 获取l2详细信息
      */
-    public static List<HisCountDataL2> getVehicleL2(Date startday,Date endDate,String vinCode){
-        Client client = ESTools.getClient() ;
+    public static List<HisCountDataL2> getVehicleL2(Date startday,Date endDate,String vinCode,Client client){
+       // Client client = ESTools.getClient() ;
         List<HisCountDataL2> list = new ArrayList<>() ;
         QueryBuilder qb = new BoolQueryBuilder()
                 .must(QueryBuilders.matchQuery("vinCode",vinCode))

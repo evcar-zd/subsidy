@@ -42,7 +42,7 @@ public class MonthCountDataService {
     public static void addMonthCountData(MonthCountData monthCountData){
         try {
             Client client = ESTools.getClient() ;
-            String jsonStr = JacksonUtil.toJSon(monthCountData) ;
+                       String jsonStr = JacksonUtil.toJSon(monthCountData) ;
             JSONObject jsonObject = JSONObject.parseObject(jsonStr) ;
             Date tm = jsonObject.getDate("tm") ;
             Date calcTime = jsonObject.getDate("calcTime") ;

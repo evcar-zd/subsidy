@@ -22,7 +22,7 @@ public class ExcelInfo {
     /** sheet中内容 */
     private List<Map<String, Object>> list;
     /** Excel每个工作簿的行数*/
-    private int pageSize = 100;
+    private int pageSize = 15000;
 
     public ExcelInfo() {}
 
